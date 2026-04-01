@@ -4,10 +4,12 @@ import { Button } from '@heroui/button';
 import { Chip } from '@heroui/chip';
 import { useRouter } from 'next/navigation';
 import { ArrowBackIcon } from '@/components/icons';
+import { MarketSettingsButton } from '@/features/market-settings';
 import type { FormattedMarketGroup } from '../types';
 
 interface MarketGroupDetailHeaderProps {
   group: FormattedMarketGroup;
+  selectedMarketId: string | null;
 }
 
 const STATUS_COLOR: Record<
@@ -21,6 +23,7 @@ const STATUS_COLOR: Record<
 
 export function MarketGroupDetailHeader({
   group,
+  selectedMarketId,
 }: MarketGroupDetailHeaderProps) {
   const router = useRouter();
 
@@ -41,13 +44,21 @@ export function MarketGroupDetailHeader({
           </Button>
           <h1 className="text-2xl font-bold">{group.marketQuestion}</h1>
         </div>
-        <Chip
-          color={STATUS_COLOR[group.status] || 'default'}
-          variant="flat"
-          size="sm"
-        >
-          {group.status}
-        </Chip>
+        <div className="flex items-center gap-2">
+          <Chip
+            color={STATUS_COLOR[group.status] || 'default'}
+            variant="flat"
+            size="sm"
+          >
+            {group.status}
+          </Chip>
+          {selectedMarketId && (
+            <MarketSettingsButton
+              marketId={selectedMarketId}
+              marketCreator={group.creator}
+            />
+          )}
+        </div>
       </div>
 
       {/* Stats row */}

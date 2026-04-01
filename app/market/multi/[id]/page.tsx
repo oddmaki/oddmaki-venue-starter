@@ -16,7 +16,9 @@ import { ResolutionPanel } from '@/features/resolution/components/ResolutionPane
 import { ResolvedOutcomeCard } from '@/features/resolution/components/ResolvedOutcomeCard';
 import { RedeemPanel } from '@/features/resolution/components/RedeemPanel';
 import { RecentTradesPanel } from '@/features/market-detail/components/RecentTradesPanel';
+import { MarketDescription } from '@/features/market-detail/components/MarketDescription';
 import { TopHoldersPanel } from '@/features/market-holders';
+import { PriceChartPanel } from '@/features/price-chart';
 
 export default function MarketGroupDetailPage({
   params,
@@ -62,7 +64,7 @@ export default function MarketGroupDetailPage({
 
   return (
     <section className="flex flex-col gap-6 pt-4 pb-8 md:pt-6 md:pb-10">
-      <MarketGroupDetailHeader group={group} />
+      <MarketGroupDetailHeader group={group} selectedMarketId={selectedMarketId} />
 
       <div className="grid grid-cols-1 md:grid-cols-[1fr_338px] gap-4 items-start">
         {/* Left column */}
@@ -75,12 +77,19 @@ export default function MarketGroupDetailPage({
 
           {group.status !== 'Draft' && selectedMarket && (
             <>
+              <PriceChartPanel
+                marketId={selectedMarket.marketId}
+                tickSize={selectedMarket.tickSize}
+                outcomes={selectedMarket.outcomes}
+                lastPriceTick={selectedMarket.lastPriceTick_0}
+              />
               <OrderbookPanel
                 marketId={selectedMarket.marketId}
                 tickSize={selectedMarket.tickSize}
                 outcomes={selectedMarket.outcomes}
               />
               <MatchOrdersButton marketId={selectedMarket.marketId} tickSize={selectedMarket.tickSize} />
+              <MarketDescription description={selectedMarket.description} />
               <UserPositionsPanel
                 marketId={selectedMarket.marketId}
                 outcomes={selectedMarket.outcomes}

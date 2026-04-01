@@ -5,6 +5,7 @@ import { Accordion, AccordionItem } from '@heroui/accordion';
 import { useMarketDetail } from '@/features/market-detail/hooks/useMarketDetail';
 import { MarketDetailHeader } from '@/features/market-detail/components/MarketDetailHeader';
 import { MarketDetailSkeleton } from '@/features/market-detail/components/MarketDetailSkeleton';
+import { MarketDescription } from '@/features/market-detail/components/MarketDescription';
 import { RecentTradesPanel } from '@/features/market-detail/components/RecentTradesPanel';
 import { OrderbookPanel } from '@/features/orderbook/components/OrderbookPanel';
 import { UnifiedTradingPanel } from '@/features/trading/components/UnifiedTradingPanel';
@@ -72,14 +73,7 @@ export default function MarketDetailPage({
           />
           <MatchOrdersButton marketId={market.marketId} tickSize={market.tickSize} />
 
-          {market.description && (
-            <div className="rounded-xl border border-default-200 p-4">
-              <h2 className="text-lg font-semibold mb-2">Description</h2>
-              <p className="text-sm text-default-500 whitespace-pre-wrap">
-                {market.description}
-              </p>
-            </div>
-          )}
+          <MarketDescription description={market.description} />
           <UserPositionsPanel
             marketId={market.marketId}
             outcomes={market.outcomes}

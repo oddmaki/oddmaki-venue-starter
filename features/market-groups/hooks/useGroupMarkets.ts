@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useOddMakiClient } from '@/lib/oddmaki/hooks';
 import { queryKeys } from '@/lib/oddmaki/queryKeys';
 import { tickToPercentage, formatVolume } from '@/features/markets/utils/formatting';
+import { parseAncillaryData } from '@oddmaki-protocol/sdk';
 
 export interface GroupMarketDetail {
   marketId: string;
@@ -16,6 +17,8 @@ export interface GroupMarketDetail {
   conditionId: string;
   yesPrice: number;
   noPrice: number;
+  lastPriceTick_0: string;
+  description: string;
   totalVolume: string;
   volumeFormatted: string;
   isPlaceholder: boolean;
@@ -42,6 +45,7 @@ export function useGroupMarkets(groupId: string) {
         );
         const noPrice =
           yesPrice > 0 ? parseFloat((100 - yesPrice).toFixed(2)) : 0;
+        const { description } = parseAncillaryData(m.question || '');
 
         return {
           marketId: m.marketId,
@@ -54,6 +58,8 @@ export function useGroupMarkets(groupId: string) {
           conditionId: m.conditionId || '',
           yesPrice,
           noPrice,
+          lastPriceTick_0: m.lastPriceTick_0 || '0',
+          description,
           totalVolume: m.totalVolume || '0',
           volumeFormatted: formatVolume(m.totalVolume || '0'),
           isPlaceholder: m.marketGroupItem?.isPlaceholder || false,
