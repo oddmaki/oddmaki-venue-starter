@@ -4,30 +4,11 @@ import { Card, CardBody } from '@heroui/card';
 import { Chip } from '@heroui/chip';
 import type { PriceMarketData } from '@oddmaki-protocol/sdk';
 import { PYTH_FEED_MAP } from '../constants/pythFeeds';
+import { formatPythPrice, formatCountdown } from '../lib/format';
 
 interface PriceMarketInfoProps {
   data: PriceMarketData;
   outcomes?: string[];
-}
-
-function formatPythPrice(rawPrice: bigint, expo: number): string {
-  const factor = Math.pow(10, expo);
-  return (Number(rawPrice) * factor).toFixed(Math.abs(expo) > 4 ? 2 : Math.abs(expo));
-}
-
-function formatCountdown(closeTime: bigint): string {
-  const now = Math.floor(Date.now() / 1000);
-  const remaining = Number(closeTime) - now;
-
-  if (remaining <= 0) return 'Expired';
-
-  const hours = Math.floor(remaining / 3600);
-  const minutes = Math.floor((remaining % 3600) / 60);
-  const seconds = remaining % 60;
-
-  if (hours > 0) return `${hours}h ${minutes}m`;
-  if (minutes > 0) return `${minutes}m ${seconds}s`;
-  return `${seconds}s`;
 }
 
 export function PriceMarketInfo({ data, outcomes }: PriceMarketInfoProps) {

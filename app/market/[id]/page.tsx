@@ -17,7 +17,7 @@ import { ResolvedOutcomeCard } from '@/features/resolution/components/ResolvedOu
 import { RedeemPanel } from '@/features/resolution/components/RedeemPanel';
 import { PriceChartPanel } from '@/features/price-chart';
 import { TopHoldersPanel } from '@/features/market-holders';
-import { usePriceMarketData, PriceMarketInfo, PriceMarketResolutionPanel } from '@/features/price-market';
+import { usePriceMarketData, PriceMarketInfo, PriceMarketResolutionPanel, PriceMarketChartSection } from '@/features/price-market';
 
 export default function MarketDetailPage({
   params,
@@ -60,12 +60,22 @@ export default function MarketDetailPage({
       <div className="grid grid-cols-1 md:grid-cols-[1fr_338px] gap-4 items-start">
         {/* Left column */}
         <div className="flex flex-col gap-4">
-          <PriceChartPanel
-            marketId={market.marketId}
-            tickSize={market.tickSize}
-            outcomes={market.outcomes}
-            lastPriceTick={market.lastPriceTick_0}
-          />
+          {isPriceMarket ? (
+            <PriceMarketChartSection
+              marketId={market.marketId}
+              tickSize={market.tickSize}
+              outcomes={market.outcomes}
+              lastPriceTick={market.lastPriceTick_0}
+              priceMarketData={priceMarket!.data!}
+            />
+          ) : (
+            <PriceChartPanel
+              marketId={market.marketId}
+              tickSize={market.tickSize}
+              outcomes={market.outcomes}
+              lastPriceTick={market.lastPriceTick_0}
+            />
+          )}
           <OrderbookPanel
             marketId={market.marketId}
             tickSize={market.tickSize}

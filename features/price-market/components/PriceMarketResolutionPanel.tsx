@@ -5,26 +5,12 @@ import { Button } from '@heroui/button';
 import { useConnection } from 'wagmi';
 import type { PriceMarketData } from '@oddmaki-protocol/sdk';
 import { useResolvePriceMarket } from '../hooks/useResolvePriceMarket';
+import { formatCountdown } from '../lib/format';
 
 interface PriceMarketResolutionPanelProps {
   marketId: bigint;
   canResolve: boolean;
   data: PriceMarketData;
-}
-
-function formatCountdown(targetTime: bigint): string {
-  const now = Math.floor(Date.now() / 1000);
-  const remaining = Number(targetTime) - now;
-
-  if (remaining <= 0) return 'Expired';
-
-  const hours = Math.floor(remaining / 3600);
-  const minutes = Math.floor((remaining % 3600) / 60);
-  const seconds = remaining % 60;
-
-  if (hours > 0) return `${hours}h ${minutes}m`;
-  if (minutes > 0) return `${minutes}m ${seconds}s`;
-  return `${seconds}s`;
 }
 
 export function PriceMarketResolutionPanel({

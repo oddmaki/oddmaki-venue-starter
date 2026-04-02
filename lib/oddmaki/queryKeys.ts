@@ -121,5 +121,6 @@ export const queryKeys = {
   pyth: {
     all: ['pyth'] as const,
     feeds: () => ['pyth', 'feeds'] as const,
+    livePrice: (feedId: string) => ['pyth', 'livePrice', feedId] as const,
   },
 } as const;
