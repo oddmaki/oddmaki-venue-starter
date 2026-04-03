@@ -16,7 +16,6 @@ interface TradingModeDropdownProps {
   onModeChange: (mode: 'market' | 'limit') => void;
   onSplitOpen: () => void;
   onMergeOpen: () => void;
-  disableMarket?: boolean;
 }
 
 const MODE_LABELS: Record<'market' | 'limit', string> = {
@@ -50,7 +49,6 @@ export function TradingModeDropdown({
   onModeChange,
   onSplitOpen,
   onMergeOpen,
-  disableMarket = false,
 }: TradingModeDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [showMore, setShowMore] = useState(false);
@@ -158,10 +156,8 @@ export function TradingModeDropdown({
             style={{ top: menuPos.top, right: window.innerWidth - menuPos.left }}
           >
             <button
-              className={`${MENU_ITEM} ${mode === 'market' ? 'text-primary' : ''} ${disableMarket ? 'opacity-40 pointer-events-none' : ''}`}
+              className={`${MENU_ITEM} ${mode === 'market' ? 'text-primary' : ''}`}
               onClick={() => handleSelect('market')}
-              disabled={disableMarket}
-              title={disableMarket ? 'Market orders only support Buy side' : undefined}
             >
               Market
             </button>

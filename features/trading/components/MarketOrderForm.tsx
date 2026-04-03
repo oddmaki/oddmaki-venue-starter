@@ -32,6 +32,13 @@ function computeMaxPrice(bestAsk: string, slippagePct: number): string {
   return Math.min(withSlippage, 1.0).toFixed(2);
 }
 
+function computeMinPrice(bestBid: string, slippagePct: number): string {
+  const price = parseFloat(bestBid);
+  if (isNaN(price) || price <= 0) return '0.01';
+  const withSlippage = price * (1 - slippagePct / 100);
+  return Math.max(withSlippage, 0.01).toFixed(2);
+}
+
 export function MarketOrderForm({
   marketId,
   outcomeIndex,
@@ -39,8 +46,9 @@ export function MarketOrderForm({
   tickSize,
   side = 'BUY',
 }: MarketOrderFormProps) {
-  const sideLabel = side === 'BUY' ? 'Buy' : 'Sell';
-  const sideColor = side === 'BUY' ? 'primary' : 'secondary';
+  const isBuy = side === 'BUY';
+  const sideLabel = isBuy ? 'Buy' : 'Sell';
+  const sideColor = isBuy ? 'primary' : 'secondary';
   const { isConnected } = useConnection();
   const { startPlaceMarketOrder, flow } = usePlaceMarketOrder();
   const { data: canTrade = true } = useCanTradeOnMarket(
@@ -49,42 +57,52 @@ export function MarketOrderForm({
   const { data: orderbook } = useOrderbookLevels(marketId, outcomeIndex, tickSize);
 
   const bestAskPrice = orderbook?.bestAskPrice ?? null;
-  const hasMatchingOrders = orderbook ? orderbook.asks.length > 0 : true; // assume yes while loading
+  const bestBidPrice = orderbook?.bestBidPrice ?? null;
+  const referencePrice = isBuy ? bestAskPrice : bestBidPrice;
+  const hasMatchingOrders = orderbook
+    ? isBuy
+      ? orderbook.asks.length > 0
+      : orderbook.bids.length > 0
+    : true; // assume yes while loading
 
   const [amount, setAmount] = useState('');
-  const [maxPrice, setMaxPrice] = useState('0.99');
+  const [price, setPrice] = useState(isBuy ? '0.99' : '0.01');
   const [orderType, setOrderType] = useState<'FOK' | 'FAK'>('FAK');
   const [flowOpen, setFlowOpen] = useState(false);
 
-  // Track whether the user has manually edited the max price
+  // Track whether the user has manually edited the price
   const userEditedRef = useRef(false);
   const prevKeyRef = useRef('');
 
-  // Auto-set maxPrice from best ask + slippage when orderbook data arrives
+  // Auto-set price from best ask/bid + slippage when orderbook data arrives
   useEffect(() => {
-    const key = `${outcomeIndex}-${bestAskPrice}`;
+    const key = `${outcomeIndex}-${side}-${referencePrice}`;
     if (key === prevKeyRef.current) return;
     prevKeyRef.current = key;
 
-    if (bestAskPrice && !userEditedRef.current) {
-      setMaxPrice(computeMaxPrice(bestAskPrice, DEFAULT_SLIPPAGE_PCT));
+    if (referencePrice && !userEditedRef.current) {
+      setPrice(
+        isBuy
+          ? computeMaxPrice(referencePrice, DEFAULT_SLIPPAGE_PCT)
+          : computeMinPrice(referencePrice, DEFAULT_SLIPPAGE_PCT),
+      );
     }
-  }, [bestAskPrice, outcomeIndex]);
+  }, [referencePrice, outcomeIndex, side, isBuy]);
 
-  // Reset manual-edit flag when outcome changes
+  // Reset manual-edit flag when outcome or side changes
   useEffect(() => {
     userEditedRef.current = false;
-  }, [outcomeIndex]);
+  }, [outcomeIndex, side]);
 
-  const handleMaxPriceChange = (v: string) => {
+  const handlePriceChange = (v: string) => {
     userEditedRef.current = true;
-    setMaxPrice(v);
+    setPrice(v);
   };
 
   const isValid = (() => {
     const a = parseFloat(amount);
-    const mp = parseFloat(maxPrice);
-    return !isNaN(a) && a > 0 && !isNaN(mp) && mp > 0 && mp <= 1;
+    const p = parseFloat(price);
+    return !isNaN(a) && a > 0 && !isNaN(p) && p > 0 && p <= 1;
   })();
 
   const handleSubmit = async () => {
@@ -93,8 +111,9 @@ export function MarketOrderForm({
     await startPlaceMarketOrder({
       marketId,
       outcomeIndex,
+      side,
       amount,
-      maxPrice,
+      maxPrice: price,
       orderType,
     });
   };
@@ -107,34 +126,47 @@ export function MarketOrderForm({
     flow.reset();
   };
 
+  const priceLabel = isBuy ? 'Max Price' : 'Min Price';
+  const priceDescription = referencePrice
+    ? isBuy
+      ? `Best ask: $${referencePrice} (+${DEFAULT_SLIPPAGE_PCT}% slippage)`
+      : `Best bid: $${referencePrice} (-${DEFAULT_SLIPPAGE_PCT}% slippage)`
+    : isBuy
+      ? 'Slippage protection — no asks in orderbook'
+      : 'Slippage protection — no bids in orderbook';
+
+  const noOrdersMessage = isBuy
+    ? 'No sell orders in the orderbook to fill against. Place a limit order instead.'
+    : 'No buy orders in the orderbook to fill against. Place a limit order instead.';
+
   return (
     <div className="flex flex-col gap-3">
       <Input
         label="Amount"
-        placeholder="USDC to spend"
+        placeholder={isBuy ? 'USDC to spend' : 'Tokens to sell'}
         type="number"
         step="1"
         min="0"
         value={amount}
         onValueChange={setAmount}
-        endContent={<span className="text-xs text-default-400">USDC</span>}
+        endContent={
+          <span className="text-xs text-default-400">
+            {isBuy ? 'USDC' : 'Tokens'}
+          </span>
+        }
         size="sm"
       />
 
       <Input
-        label="Max Price"
+        label={priceLabel}
         placeholder="0.01 — 1.00"
         type="number"
         step="0.01"
         min="0.01"
         max="1.00"
-        value={maxPrice}
-        onValueChange={handleMaxPriceChange}
-        description={
-          bestAskPrice
-            ? `Best ask: $${bestAskPrice} (+${DEFAULT_SLIPPAGE_PCT}% slippage)`
-            : 'Slippage protection — no asks in orderbook'
-        }
+        value={price}
+        onValueChange={handlePriceChange}
+        description={priceDescription}
         size="sm"
       />
 
@@ -167,12 +199,12 @@ export function MarketOrderForm({
             ? 'Access Restricted'
             : !hasMatchingOrders
               ? 'No Orders Available'
-              : `${outcomeName} ${bestAskPrice ? Math.round(parseFloat(bestAskPrice) * 100) + '¢' : ''}`}
+              : `${sideLabel} ${outcomeName} ${referencePrice ? Math.round(parseFloat(referencePrice) * 100) + '¢' : ''}`}
       </Button>
 
       {!hasMatchingOrders && (
         <p className="text-xs text-default-400 text-center">
-          No sell orders in the orderbook to fill against. Place a limit order instead.
+          {noOrdersMessage}
         </p>
       )}
 

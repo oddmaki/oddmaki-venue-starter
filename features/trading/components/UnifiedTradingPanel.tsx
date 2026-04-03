@@ -40,13 +40,6 @@ export function UnifiedTradingPanel({
     }
   }, [orderbook]);
 
-  // Market orders only support buy — force limit mode when sell is selected
-  useEffect(() => {
-    if (side === 'SELL' && mode === 'market') {
-      setMode('limit');
-    }
-  }, [side, mode]);
-
   const outcomeName =
     outcomes[outcomeIndex] || (outcomeIndex === 0 ? 'Yes' : 'No');
 
@@ -88,7 +81,6 @@ export function UnifiedTradingPanel({
               onModeChange={setMode}
               onSplitOpen={() => setSplitModalOpen(true)}
               onMergeOpen={() => setMergeModalOpen(true)}
-              disableMarket={side === 'SELL'}
             />
           </div>
 
