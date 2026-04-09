@@ -72,6 +72,8 @@ export function useCreateMarket() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       }) as any;
       const creationFee = BigInt(venue.marketCreationFee);
+      const umaReward = BigInt(venue.umaRewardAmount ?? 0);
+      const totalApproval = creationFee + umaReward;
 
       const tickSizeWei = parseEther(params.tickSize || '0.01');
 
@@ -119,20 +121,20 @@ export function useCreateMarket() {
       const steps: FlowStep[] = [
         {
           id: 'usdc-approval',
-          label: `USDC Approval ($${(Number(creationFee) / Math.pow(10, USDC_DECIMALS)).toFixed(2)})`,
+          label: `USDC Approval ($${(Number(totalApproval) / Math.pow(10, USDC_DECIMALS)).toFixed(2)})`,
           shouldSkip: async () => {
             const allowance = (await client.token.getAllowance(
               USDC_ADDRESS,
               address,
               DIAMOND_ADDRESS,
             )) as bigint;
-            return allowance >= creationFee;
+            return allowance >= totalApproval;
           },
           execute: async () => {
             const hash = await client.token.approve(
               USDC_ADDRESS,
               DIAMOND_ADDRESS,
-              creationFee,
+              totalApproval,
             );
             await publicClient.waitForTransactionReceipt({ hash });
             await waitForAllowance(
@@ -140,7 +142,7 @@ export function useCreateMarket() {
               USDC_ADDRESS,
               address,
               DIAMOND_ADDRESS,
-              creationFee,
+              totalApproval,
             );
           },
         },

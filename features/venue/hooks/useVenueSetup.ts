@@ -66,8 +66,8 @@ export function useVenueSetup() {
             creatorFeeBps: params.creatorFeeBps ?? 0,
             defaultTickSize: parseEther(params.defaultTickSize || '0.01'),
             marketCreationFee: parseUnits('5', 6), // 5 USDC minimum
-            umaRewardAmount: parseUnits('5', 6),
-            umaMinBond: parseUnits('1', 6),
+            umaRewardAmount: parseUnits('5', 6),   // 5 USDC reward for asserters
+            umaMinBond: parseUnits('750', 6),     // 750 USDC bond (Polymarket standard)
           }),
         );
 

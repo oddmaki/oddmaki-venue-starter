@@ -197,8 +197,8 @@ export function VenueSetupModal() {
           creatorFeeBps: 0,
           defaultTickSize: parseEther(tickSize),
           marketCreationFee: creationFee,
-          umaRewardAmount: parseUnits('5', USDC_DECIMALS),
-          umaMinBond: parseUnits('1', USDC_DECIMALS),
+          umaRewardAmount: parseUnits('5', USDC_DECIMALS),   // 5 USDC reward for asserters
+          umaMinBond: parseUnits('750', USDC_DECIMALS),     // 750 USDC bond (Polymarket standard)
         });
         const receipt = await publicClient.waitForTransactionReceipt({ hash });
 

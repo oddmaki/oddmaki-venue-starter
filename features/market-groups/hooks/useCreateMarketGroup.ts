@@ -61,28 +61,30 @@ export function useCreateMarketGroup() {
         args: [venueId],
       })) as any;
       const creationFee = BigInt(venue.marketCreationFee);
+      const umaReward = BigInt(venue.umaRewardAmount ?? 0);
+      const totalApproval = creationFee + umaReward;
 
       let createdGroupId: bigint | undefined;
       const activateImmediately = params.activateImmediately !== false;
 
       const steps: FlowStep[] = [
-        // Step 1: USDC Approval
+        // Step 1: USDC Approval (creation fee + UMA reward)
         {
           id: 'usdc-approval',
-          label: `USDC Approval ($${(Number(creationFee) / Math.pow(10, USDC_DECIMALS)).toFixed(2)})`,
+          label: `USDC Approval ($${(Number(totalApproval) / Math.pow(10, USDC_DECIMALS)).toFixed(2)})`,
           shouldSkip: async () => {
             const allowance = (await client.token.getAllowance(
               USDC_ADDRESS,
               address,
               DIAMOND_ADDRESS,
             )) as bigint;
-            return allowance >= creationFee;
+            return allowance >= totalApproval;
           },
           execute: async () => {
             const hash = await client.token.approve(
               USDC_ADDRESS,
               DIAMOND_ADDRESS,
-              creationFee,
+              totalApproval,
             );
             await publicClient.waitForTransactionReceipt({ hash });
             await waitForAllowance(
@@ -90,7 +92,7 @@ export function useCreateMarketGroup() {
               USDC_ADDRESS,
               address,
               DIAMOND_ADDRESS,
-              creationFee,
+              totalApproval,
             );
           },
         },
