@@ -1,10 +1,15 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { Input } from '@heroui/input';
 import { Button } from '@heroui/button';
 import { Select, SelectItem } from '@heroui/select';
+import { Divider } from '@heroui/divider';
 import { useConnection } from 'wagmi';
+import { useTokenBalance } from '@/features/wallet';
+import { ChevronDownIcon } from '@/components/icons';
+
+const AMOUNT_DELTAS = [1, 5, 10, 100];
 import { usePlaceMarketOrder } from '../hooks/usePlaceMarketOrder';
 import { useOrderbookLevels } from '@/features/orderbook/hooks/useOrderbookLevels';
 import { TransactionFlowModal } from '@/lib/oddmaki/TransactionFlowModal';
@@ -65,9 +70,11 @@ export function MarketOrderForm({
       : orderbook.bids.length > 0
     : true; // assume yes while loading
 
+  const { formatted: walletBalance } = useTokenBalance();
   const [amount, setAmount] = useState('');
   const [price, setPrice] = useState(isBuy ? '0.99' : '0.01');
   const [orderType, setOrderType] = useState<'FOK' | 'FAK'>('FAK');
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const [flowOpen, setFlowOpen] = useState(false);
 
   // Track whether the user has manually edited the price
@@ -105,6 +112,14 @@ export function MarketOrderForm({
     return !isNaN(a) && a > 0 && !isNaN(p) && p > 0 && p <= 1;
   })();
 
+  // Estimated shares (to win) for buy orders: amount / reference price
+  const estimatedShares = useMemo(() => {
+    const a = parseFloat(amount);
+    const ref = referencePrice ? parseFloat(referencePrice) : null;
+    if (!a || !ref || ref <= 0) return null;
+    return (a / ref).toFixed(2);
+  }, [amount, referencePrice]);
+
   const handleSubmit = async () => {
     if (!isValid) return;
     setFlowOpen(true);
@@ -141,50 +156,120 @@ export function MarketOrderForm({
 
   return (
     <div className="flex flex-col gap-3">
-      <Input
-        label="Amount"
-        placeholder={isBuy ? 'USDC to spend' : 'Tokens to sell'}
-        type="number"
-        step="1"
-        min="0"
-        value={amount}
-        onValueChange={setAmount}
-        endContent={
-          <span className="text-xs text-default-400">
-            {isBuy ? 'USDC' : 'Tokens'}
-          </span>
-        }
-        size="sm"
-      />
+      {/* Amount — compact row: label left, input right */}
+      <div className="flex items-center justify-between">
+        <span className="text-sm text-default-500">Amount</span>
+        <div className="flex items-center gap-1">
+          <span className="text-lg font-semibold text-foreground">$</span>
+          <input
+            type="number"
+            step="1"
+            min="0"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            placeholder="0"
+            className="w-20 text-right bg-transparent text-lg font-semibold text-foreground outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+          />
+        </div>
+      </div>
 
-      <Input
-        label={priceLabel}
-        placeholder="0.01 — 1.00"
-        type="number"
-        step="0.01"
-        min="0.01"
-        max="1.00"
-        value={price}
-        onValueChange={handlePriceChange}
-        description={priceDescription}
-        size="sm"
-      />
-
-      <Select
-        label="Order Type"
-        selectedKeys={[orderType]}
-        onSelectionChange={(keys) => {
-          const selected = Array.from(keys)[0] as string;
-          if (selected === 'FOK' || selected === 'FAK') {
-            setOrderType(selected);
-          }
-        }}
-        size="sm"
-      >
-        {ORDER_TYPE_OPTIONS.map((opt) => (
-          <SelectItem key={opt.key}>{opt.label}</SelectItem>
+      {/* Quick-add chips with container background */}
+      <div className="flex gap-1 rounded-lg p-1.5">
+        {AMOUNT_DELTAS.map((d) => (
+          <Button
+            key={d}
+            size="sm"
+            variant="flat"
+            className="min-w-0 h-6 px-2 bg-default-100 text-xs flex-1"
+            onPress={() => {
+              const current = parseFloat(amount) || 0;
+              setAmount(String(current + d));
+            }}
+          >
+            +${d}
+          </Button>
         ))}
-      </Select>
+        <Button
+          size="sm"
+          variant="flat"
+          className="min-w-0 h-6 px-2 bg-default-100 text-xs flex-1"
+          isDisabled={!isConnected}
+          onPress={() => setAmount(walletBalance)}
+        >
+          Max
+        </Button>
+      </div>
+
+      {/* To Win summary */}
+      {amount && parseFloat(amount) > 0 && (
+        <>
+          <Divider />
+          <div className="flex flex-col gap-1 px-1">
+            {isBuy && estimatedShares && (
+              <>
+                <div className="flex justify-between text-sm">
+                  <span className="text-default-400">
+                    To win
+                  </span>
+                  <span className="font-semibold text-success">
+                    ${estimatedShares}
+                  </span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-default-400">
+                    Avg. Price {referencePrice ? `${Math.round(parseFloat(referencePrice) * 100)}¢` : ''}
+                  </span>
+                </div>
+              </>
+            )}
+          </div>
+        </>
+      )}
+
+      {/* Collapsible advanced fields */}
+      <button
+        className="flex items-center gap-1 text-xs text-default-400 hover:text-default-600 transition-colors"
+        onClick={() => setShowAdvanced(!showAdvanced)}
+      >
+        <span>Advanced</span>
+        <ChevronDownIcon
+          size={12}
+          className={`transition-transform ${showAdvanced ? 'rotate-180' : ''}`}
+        />
+      </button>
+
+      {showAdvanced && (
+        <div className="flex flex-col gap-3">
+          <Input
+            label={priceLabel}
+            placeholder="0.01 — 1.00"
+            type="number"
+            step="0.01"
+            min="0.01"
+            max="1.00"
+            value={price}
+            onValueChange={handlePriceChange}
+            description={priceDescription}
+            size="sm"
+          />
+
+          <Select
+            label="Order Type"
+            selectedKeys={[orderType]}
+            onSelectionChange={(keys) => {
+              const selected = Array.from(keys)[0] as string;
+              if (selected === 'FOK' || selected === 'FAK') {
+                setOrderType(selected);
+              }
+            }}
+            size="sm"
+          >
+            {ORDER_TYPE_OPTIONS.map((opt) => (
+              <SelectItem key={opt.key}>{opt.label}</SelectItem>
+            ))}
+          </Select>
+        </div>
+      )}
 
       <Button
         color={sideColor as 'primary' | 'secondary'}
@@ -199,7 +284,7 @@ export function MarketOrderForm({
             ? 'Access Restricted'
             : !hasMatchingOrders
               ? 'No Orders Available'
-              : `${sideLabel} ${outcomeName} ${referencePrice ? Math.round(parseFloat(referencePrice) * 100) + '¢' : ''}`}
+              : 'Trade'}
       </Button>
 
       {!hasMatchingOrders && (

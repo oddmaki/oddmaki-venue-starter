@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Card, CardHeader, CardBody } from '@heroui/card';
 import { Button } from '@heroui/button';
+import { Tabs, Tab } from '@heroui/tabs';
 import { LimitOrderForm } from './LimitOrderForm';
 import { MarketOrderForm } from './MarketOrderForm';
 import { TradingModeDropdown } from './TradingModeDropdown';
@@ -14,12 +15,17 @@ interface UnifiedTradingPanelProps {
   marketId: string;
   outcomes: string[];
   tickSize: string;
+  /** Fallback prices (0–100) from subgraph when orderbook is empty */
+  yesPrice?: number;
+  noPrice?: number;
 }
 
 export function UnifiedTradingPanel({
   marketId,
   outcomes,
   tickSize,
+  yesPrice,
+  noPrice,
 }: UnifiedTradingPanelProps) {
   const [mode, setMode] = useState<'market' | 'limit'>('limit');
   const [outcomeIndex, setOutcomeIndex] = useState<0 | 1>(0);
@@ -28,8 +34,11 @@ export function UnifiedTradingPanel({
   const [splitModalOpen, setSplitModalOpen] = useState(false);
   const [mergeModalOpen, setMergeModalOpen] = useState(false);
 
-  // Default to Market mode if orderbook has orders, otherwise Limit
-  const { data: orderbook } = useOrderbookLevels(marketId, outcomeIndex, tickSize);
+  // Fetch orderbook for both outcomes to display prices on outcome buttons
+  const { data: outcome0Book } = useOrderbookLevels(marketId, 0, tickSize);
+  const { data: outcome1Book } = useOrderbookLevels(marketId, 1, tickSize);
+  // Use the selected outcome's book for mode detection
+  const orderbook = outcomeIndex === 0 ? outcome0Book : outcome1Book;
   const hasSetDefaultRef = useRef(false);
 
   useEffect(() => {
@@ -43,6 +52,29 @@ export function UnifiedTradingPanel({
   const outcomeName =
     outcomes[outcomeIndex] || (outcomeIndex === 0 ? 'Yes' : 'No');
 
+  // Derive outcome prices in cents from each outcome's orderbook
+  const getMidPrice = (book: typeof outcome0Book) => {
+    if (book?.bestBidPrice && book?.bestAskPrice)
+      return (parseFloat(book.bestBidPrice) + parseFloat(book.bestAskPrice)) / 2;
+    if (book?.bestAskPrice) return parseFloat(book.bestAskPrice);
+    if (book?.bestBidPrice) return parseFloat(book.bestBidPrice);
+    return null;
+  };
+  const mid0 = getMidPrice(outcome0Book);
+  const mid1 = getMidPrice(outcome1Book);
+  // Use orderbook midpoint, then complement, then subgraph fallback
+  const outcome0Cents = mid0 != null ? Math.round(mid0 * 100)
+    : mid1 != null ? 100 - Math.round(mid1 * 100)
+    : yesPrice != null ? Math.round(yesPrice) : null;
+  const outcome1Cents = mid1 != null ? Math.round(mid1 * 100)
+    : mid0 != null ? 100 - Math.round(mid0 * 100)
+    : noPrice != null ? Math.round(noPrice) : null;
+
+  // Current outcome price as decimal string for LimitOrderForm default
+  const currentOutcomePrice = outcomeIndex === 0
+    ? (outcome0Cents != null ? (outcome0Cents / 100).toFixed(2) : undefined)
+    : (outcome1Cents != null ? (outcome1Cents / 100).toFixed(2) : undefined);
+
   /** Called from parent (OrderbookPanel) to prefill a price */
   const handlePriceClick = useCallback((price: string) => {
     setPrefillPrice(price);
@@ -55,26 +87,17 @@ export function UnifiedTradingPanel({
         <CardHeader className="flex flex-col gap-3 pb-0">
           {/* Row 1: Buy/Sell toggle (left) + Mode dropdown (right) */}
           <div className="flex justify-between items-center w-full">
-            <div className="flex gap-1">
-              <Button
-                size="sm"
-                variant={side === 'BUY' ? 'solid' : 'bordered'}
-                color={side === 'BUY' ? 'primary' : 'default'}
-                onPress={() => setSide('BUY')}
-                className="min-w-16"
-              >
-                Buy
-              </Button>
-              <Button
-                size="sm"
-                variant={side === 'SELL' ? 'solid' : 'bordered'}
-                color={side === 'SELL' ? 'secondary' : 'default'}
-                onPress={() => setSide('SELL')}
-                className="min-w-16"
-              >
-                Sell
-              </Button>
-            </div>
+            <Tabs
+              size="sm"
+              variant="underlined"
+              selectedKey={side}
+              onSelectionChange={(key) => setSide(key as 'BUY' | 'SELL')}
+              color={side === 'BUY' ? 'primary' : 'secondary'}
+              classNames={{ tabList: 'gap-0 w-auto', tab: 'px-4' }}
+            >
+              <Tab key="BUY" title="Buy" />
+              <Tab key="SELL" title="Sell" />
+            </Tabs>
 
             <TradingModeDropdown
               mode={mode}
@@ -93,7 +116,7 @@ export function UnifiedTradingPanel({
               onPress={() => setOutcomeIndex(0)}
               className="flex-1"
             >
-              {outcomes[0] || 'Yes'}
+              {outcomes[0] || 'Yes'}{outcome0Cents != null ? ` ${outcome0Cents}¢` : ''}
             </Button>
             <Button
               size="sm"
@@ -102,7 +125,7 @@ export function UnifiedTradingPanel({
               onPress={() => setOutcomeIndex(1)}
               className="flex-1"
             >
-              {outcomes[1] || 'No'}
+              {outcomes[1] || 'No'}{outcome1Cents != null ? ` ${outcome1Cents}¢` : ''}
             </Button>
           </div>
         </CardHeader>
@@ -122,7 +145,7 @@ export function UnifiedTradingPanel({
               outcomeIndex={outcomeIndex}
               outcomeName={outcomeName}
               side={side}
-              prefillPrice={prefillPrice}
+              prefillPrice={prefillPrice || currentOutcomePrice}
             />
           )}
         </CardBody>

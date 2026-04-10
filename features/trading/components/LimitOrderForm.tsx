@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import { Input } from '@heroui/input';
+import { useState, useMemo, useRef } from 'react';
 import { Button } from '@heroui/button';
 import { Select, SelectItem } from '@heroui/select';
+import { Switch } from '@heroui/switch';
+import { Divider } from '@heroui/divider';
 import { useConnection } from 'wagmi';
 import { usePlaceLimitOrder } from '../hooks/usePlaceLimitOrder';
 import { TransactionFlowModal } from '@/lib/oddmaki/TransactionFlowModal';
@@ -19,12 +20,14 @@ interface LimitOrderFormProps {
 }
 
 const EXPIRY_OPTIONS = [
-  { key: 'gtc', label: 'Good till cancelled' },
+  { key: '5m', label: '5 minutes' },
   { key: '1h', label: '1 hour' },
   { key: '24h', label: '24 hours' },
   { key: '7d', label: '7 days' },
   { key: '30d', label: '30 days' },
 ];
+
+const QUANTITY_DELTAS = [-100, -10, 1, 10, 100];
 
 export function LimitOrderForm({
   marketId,
@@ -41,11 +44,14 @@ export function LimitOrderForm({
 
   const [price, setPrice] = useState(prefillPrice || '');
   const [quantity, setQuantity] = useState('');
+  const [expiryEnabled, setExpiryEnabled] = useState(false);
   const [expiry, setExpiry] = useState('gtc');
   const [flowOpen, setFlowOpen] = useState(false);
 
-  // Update price when prefillPrice changes
-  if (prefillPrice && prefillPrice !== price && !flow.isRunning) {
+  // Only sync price when prefillPrice itself changes (not on every render)
+  const lastPrefillRef = useRef(prefillPrice);
+  if (prefillPrice && prefillPrice !== lastPrefillRef.current && !flow.isRunning) {
+    lastPrefillRef.current = prefillPrice;
     setPrice(prefillPrice);
   }
 
@@ -87,57 +93,131 @@ export function LimitOrderForm({
   const sideLabel = side === 'BUY' ? 'Buy' : 'Sell';
   const sideColor = side === 'BUY' ? 'primary' : 'secondary';
 
+  const priceCents = price ? Math.round(parseFloat(price) * 100) : null;
+
+  const toWin = useMemo(() => {
+    const p = parseFloat(price);
+    const q = parseFloat(quantity);
+    if (isNaN(p) || isNaN(q) || p <= 0 || q <= 0) return null;
+    return (q * (1 - p)).toFixed(2);
+  }, [price, quantity]);
+
   return (
     <div className="flex flex-col gap-3">
-      <Input
-        label="Price"
-        placeholder="0.01 — 0.99"
-        type="number"
-        step="0.01"
-        min="0.01"
-        max="0.99"
-        value={price}
-        onValueChange={setPrice}
-        endContent={<span className="text-xs text-default-400">USDC</span>}
-        size="sm"
-      />
-
-      <Input
-        label="Quantity"
-        placeholder="Amount of tokens"
-        type="number"
-        step="1"
-        min="0"
-        value={quantity}
-        onValueChange={setQuantity}
-        endContent={
-          <span className="text-xs text-default-400">{outcomeName}</span>
-        }
-        size="sm"
-      />
-
-      <Select
-        label="Expiry"
-        selectedKeys={[expiry]}
-        onSelectionChange={(keys) => {
-          const selected = Array.from(keys)[0] as string;
-          if (selected) setExpiry(selected);
-        }}
-        size="sm"
-      >
-        {EXPIRY_OPTIONS.map((opt) => (
-          <SelectItem key={opt.key}>{opt.label}</SelectItem>
-        ))}
-      </Select>
-
-      {/* Cost summary */}
-      {costEstimate && (
-        <div className="flex justify-between text-xs px-1">
-          <span className="text-default-400">
-            {side === 'BUY' ? 'Est. Cost' : 'Est. Proceeds'}
+      {/* Limit Price — compact row: label left, stepper right */}
+      <div className="flex items-center justify-between">
+        <span className="text-sm text-default-500">Limit Price</span>
+        <div className="flex items-center bg-default-100 rounded-lg">
+          <button
+            type="button"
+            className="px-3 py-1.5 text-default-400 hover:text-foreground transition-colors"
+            onClick={() => {
+              const next = Math.max(0.01, parseFloat(price || '0') - 0.01);
+              setPrice(next.toFixed(2));
+            }}
+          >
+            &minus;
+          </button>
+          <span className="px-2 py-1.5 text-sm font-semibold min-w-[3rem] text-center">
+            {priceCents != null ? `${priceCents}¢` : '—'}
           </span>
-          <span className="font-semibold">${costEstimate} USDC</span>
+          <button
+            type="button"
+            className="px-3 py-1.5 text-default-400 hover:text-foreground transition-colors"
+            onClick={() => {
+              const next = Math.min(0.99, parseFloat(price || '0') + 0.01);
+              setPrice(next.toFixed(2));
+            }}
+          >
+            +
+          </button>
         </div>
+      </div>
+
+      <Divider className="my-0" />
+
+      {/* Shares — compact row: label left, input right */}
+      <div className="flex items-center justify-between">
+        <span className="text-sm text-default-500">Shares</span>
+        <input
+          type="number"
+          step="1"
+          min="0"
+          value={quantity}
+          onChange={(e) => setQuantity(e.target.value)}
+          placeholder="0"
+          className="w-24 text-right bg-transparent text-lg font-semibold text-foreground outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        />
+      </div>
+
+      {/* Quick-add chips with container background */}
+      <div className="flex gap-1 rounded-lg p-1.5">
+        {QUANTITY_DELTAS.map((d) => (
+          <Button
+            key={d}
+            size="sm"
+            variant="flat"
+            className="min-w-0 h-6 px-2 bg-default-100 text-xs flex-1"
+            onPress={() => {
+              const next = Math.max(0, (parseInt(quantity) || 0) + d);
+              setQuantity(next > 0 ? String(next) : '');
+            }}
+          >
+            {d > 0 ? `+${d}` : String(d)}
+          </Button>
+        ))}
+      </div>
+
+      <Divider className="my-0" />
+
+      {/* Expiry toggle */}
+      <div className="flex items-center justify-between">
+        <span className="text-sm text-default-500">Set Expiration</span>
+        <Switch
+          size="sm"
+          isSelected={expiryEnabled}
+          onValueChange={(val) => {
+            setExpiryEnabled(val);
+            if (val) {
+              setExpiry('1h');
+            } else {
+              setExpiry('gtc');
+            }
+          }}
+        />
+      </div>
+      {expiryEnabled && (
+        <Select
+          selectedKeys={[expiry]}
+          onSelectionChange={(keys) => {
+            const selected = Array.from(keys)[0] as string;
+            if (selected) setExpiry(selected);
+          }}
+          size="sm"
+        >
+          {EXPIRY_OPTIONS.map((opt) => (
+            <SelectItem key={opt.key}>{opt.label}</SelectItem>
+          ))}
+        </Select>
+      )}
+
+      {/* Cost + To Win summary */}
+      {costEstimate && (
+        <>
+          <Divider />
+          <div className="flex flex-col gap-1 px-1">
+            <div className="flex justify-between text-sm">
+              <span className="text-default-400">Total</span>
+              <span className="font-semibold">${costEstimate}</span>
+            </div>
+            {side === 'BUY' && toWin && (
+              <div className="flex justify-between text-sm">
+                <span className="text-default-400">To win</span>
+                <span className="font-semibold text-success">${toWin}</span>
+              </div>
+            )}
+          </div>
+        </>
       )}
 
       <Button
@@ -151,7 +231,7 @@ export function LimitOrderForm({
           ? 'Connect Wallet'
           : !canTrade
             ? 'Access Restricted'
-            : `${sideLabel} ${outcomeName} @ $${price || '—'}`}
+            : 'Trade'}
       </Button>
 
       <TransactionFlowModal

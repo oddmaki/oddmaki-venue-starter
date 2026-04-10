@@ -122,6 +122,8 @@ export default function MarketDetailPage({
               marketId={market.marketId}
               outcomes={market.outcomes}
               tickSize={market.tickSize}
+              yesPrice={market.yesPrice}
+              noPrice={market.noPrice}
             />
           )}
           {/* Price market info (always shown for price markets) */}

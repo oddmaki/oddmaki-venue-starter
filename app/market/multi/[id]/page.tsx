@@ -128,6 +128,8 @@ export default function MarketGroupDetailPage({
                   marketId={selectedMarket.marketId}
                   outcomes={selectedMarket.outcomes}
                   tickSize={selectedMarket.tickSize}
+                  yesPrice={selectedMarket.yesPrice}
+                  noPrice={selectedMarket.noPrice}
                 />
               )}
               {selectedMarket.status === 'Resolved' ? (
