@@ -152,7 +152,7 @@ export function UserOrdersPanel({
       <CardHeader className="flex justify-between items-center">
         <h2 className="text-lg font-semibold">Your Orders</h2>
         <div className="flex items-center gap-2">
-          {activeOrders.length >= (isResolved ? 1 : 2) && (
+          {activeOrders.length > 0 && (
             <Button
               size="sm"
               color="danger"
@@ -160,7 +160,7 @@ export function UserOrdersPanel({
               isDisabled={flow.isRunning}
               onPress={() => handleCancelAll(activeOrders.map((o) => o.orderId))}
             >
-              {isResolved ? 'Cancel All Orders' : 'Cancel All'}
+              Cancel All Orders
             </Button>
           )}
           <RefreshButton onRefresh={() => refetch()} isFetching={isFetching} />
