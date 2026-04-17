@@ -164,26 +164,31 @@ export function UserSettings({ address, switchNetwork, disconnect }: UserSetting
                   <div className="relative">
                     <button
                       ref={venueItemRef}
-                      className="flex items-center px-4 py-2.5 text-sm hover:bg-default-100 transition-colors cursor-pointer w-full text-left"
+                      className="flex items-center justify-between px-4 py-2.5 text-sm hover:bg-default-100 transition-colors cursor-pointer w-full text-left"
                       onMouseEnter={openVenueSub}
                       onMouseLeave={closeVenueSub}
                       onClick={() => setShowVenueSub((v) => !v)}
+                      aria-expanded={showVenueSub}
                     >
-                      Venue
+                      <span>Venue</span>
+                      <ChevronDownIcon
+                        size={14}
+                        className={`text-default-500 transition-transform sm:-rotate-90 ${showVenueSub ? 'rotate-180 sm:-rotate-90' : ''}`}
+                      />
                     </button>
 
-                    {/* Venue sub-popover to the left */}
+                    {/* Venue submenu — inline on mobile, flyout to the left on sm+ */}
                     {showVenueSub && (
                       <div
                         ref={venueSubRef}
-                        className="absolute right-full top-0 mr-1 w-48 rounded-xl bg-content1 shadow-lg border border-default-200 py-1 z-50"
+                        className="bg-default-50 sm:bg-content1 sm:absolute sm:right-full sm:top-0 sm:mr-1 sm:w-48 sm:rounded-xl sm:shadow-lg sm:border sm:border-default-200 py-1 z-50"
                         onMouseEnter={openVenueSub}
                         onMouseLeave={closeVenueSub}
                       >
                         {VENUE_ITEMS.map(({ key, label }) => (
                           <button
                             key={key}
-                            className="flex items-center px-4 py-2.5 text-sm hover:bg-default-100 transition-colors cursor-pointer w-full text-left"
+                            className="flex items-center pl-8 pr-4 sm:px-4 py-2.5 text-sm hover:bg-default-100 transition-colors cursor-pointer w-full text-left"
                             onClick={() => handleOpenVenueModal(key)}
                           >
                             {label}
