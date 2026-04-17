@@ -37,7 +37,7 @@ export function OrderbookPanel({
 
   return (
     <Card className="h-full">
-      <CardHeader className="flex justify-between items-center pb-0">
+      <CardHeader className="flex justify-between items-center pb-0 gap-2 flex-wrap">
         <h2 className="text-lg font-semibold">Orderbook</h2>
         <div className="flex items-center gap-1">
           <Button
@@ -75,10 +75,10 @@ export function OrderbookPanel({
           <div className="flex flex-col">
             {/* Column headers */}
             <div className="flex items-center h-7 px-2 text-[10px] uppercase text-default-400 font-semibold">
-              <span className="w-[40%]" />
+              <span className="w-[25%] sm:w-[40%]" />
               <span className="flex-1 text-center">Price</span>
               <span className="flex-1 text-right">Qty</span>
-              <span className="w-[70px] text-right">Total</span>
+              <span className="w-[60px] sm:w-[70px] text-right">Total</span>
             </div>
 
             {/* Asks — chip on last row (closest to spread) */}
@@ -99,15 +99,15 @@ export function OrderbookPanel({
 
             {/* Spread row — last price left, spread center */}
             <div className="flex items-center h-7 px-2 border-y border-default-200 text-xs text-default-400">
-              <span className="w-[40%]">
+              <span className="w-[25%] sm:w-[40%] truncate">
                 {data.bestBidPrice ? `Last: ${data.bestBidPrice}` : ''}
               </span>
-              <span className="flex-1 text-center">
+              <span className="flex-1 text-center truncate">
                 {data.spread !== null
                   ? `Spread: ${data.spread}`
                   : 'No spread data'}
               </span>
-              <span className="w-[70px]" />
+              <span className="w-[60px] sm:w-[70px]" />
             </div>
 
             {/* Bids — chip on first row (closest to spread) */}

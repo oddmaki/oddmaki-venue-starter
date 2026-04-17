@@ -21,8 +21,13 @@ export function WalletPanel() {
   return (
     <Popover placement="bottom-end">
       <PopoverTrigger>
-        <Button variant="flat" size="md">
-          {isLoading ? '...' : `$${formatted} USDC`}
+        <Button variant="flat" size="sm" className="sm:h-10 sm:text-sm px-2 sm:px-4 min-w-0">
+          {isLoading ? '...' : (
+            <>
+              <span className="sm:hidden">${formatted}</span>
+              <span className="hidden sm:inline">${formatted} USDC</span>
+            </>
+          )}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-72">

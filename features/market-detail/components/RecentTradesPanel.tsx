@@ -86,8 +86,8 @@ export function RecentTradesPanel({
           </p>
         ) : (
           <div className="flex flex-col gap-2">
-            {/* Header */}
-            <div className="grid grid-cols-6 gap-2 text-xs text-default-400 px-2">
+            {/* Header — hidden on mobile (card layout takes over) */}
+            <div className="hidden sm:grid grid-cols-6 gap-2 text-xs text-default-400 px-2">
               <span>Trader</span>
               <span>Time</span>
               <span>Outcome</span>
@@ -106,40 +106,78 @@ export function RecentTradesPanel({
               return (
                 <div
                   key={trade.id}
-                  className="grid grid-cols-6 gap-2 items-center px-2 py-1.5 rounded-lg hover:bg-default-100"
+                  className="px-2 py-1.5 rounded-lg hover:bg-default-100"
                 >
-                  <NextLink
-                    href={`/trader/${trader?.id || ''}`}
-                    className="flex items-center gap-1.5 hover:text-primary transition-colors min-w-0"
-                  >
-                    <AddressAvatar address={trader?.id || '0x0'} size={18} />
-                    <span className="text-xs truncate">
-                      {trader ? generatePseudonym(trader.id) : '—'}
+                  {/* Desktop: 6-col grid */}
+                  <div className="hidden sm:grid grid-cols-6 gap-2 items-center">
+                    <NextLink
+                      href={`/trader/${trader?.id || ''}`}
+                      className="flex items-center gap-1.5 hover:text-primary transition-colors min-w-0"
+                    >
+                      <AddressAvatar address={trader?.id || '0x0'} size={18} />
+                      <span className="text-xs truncate">
+                        {trader ? generatePseudonym(trader.id) : '—'}
+                      </span>
+                    </NextLink>
+                    <span className="text-xs text-default-400">
+                      {formatTime(trade.timestamp)}
                     </span>
-                  </NextLink>
-                  <span className="text-xs text-default-400">
-                    {formatTime(trade.timestamp)}
-                  </span>
-                  <Chip
-                    size="sm"
-                    color={outcomeNum === 0 ? 'primary' : 'secondary'}
-                    variant="flat"
-                  >
-                    {outcomeName}
-                  </Chip>
-                  <span className="text-xs text-default-500">
-                    {TRADE_TYPE_LABEL[trade.tradeType] || trade.tradeType}
-                  </span>
-                  <span
-                    className={`text-sm text-right ${
-                      isBuy ? 'text-primary' : 'text-secondary'
-                    }`}
-                  >
-                    {`$${tickToPrice(trade.tick, tickSize)}`}
-                  </span>
-                  <span className="text-sm text-right">
-                    {formatQty(trade.amount)}
-                  </span>
+                    <Chip
+                      size="sm"
+                      color={outcomeNum === 0 ? 'primary' : 'secondary'}
+                      variant="flat"
+                    >
+                      {outcomeName}
+                    </Chip>
+                    <span className="text-xs text-default-500">
+                      {TRADE_TYPE_LABEL[trade.tradeType] || trade.tradeType}
+                    </span>
+                    <span
+                      className={`text-sm text-right ${
+                        isBuy ? 'text-primary' : 'text-secondary'
+                      }`}
+                    >
+                      {`$${tickToPrice(trade.tick, tickSize)}`}
+                    </span>
+                    <span className="text-sm text-right">
+                      {formatQty(trade.amount)}
+                    </span>
+                  </div>
+
+                  {/* Mobile: 2-row stacked card */}
+                  <div className="sm:hidden flex flex-col gap-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <NextLink
+                        href={`/trader/${trader?.id || ''}`}
+                        className="flex items-center gap-1.5 hover:text-primary transition-colors min-w-0 flex-1"
+                      >
+                        <AddressAvatar address={trader?.id || '0x0'} size={18} />
+                        <span className="text-xs truncate">
+                          {trader ? generatePseudonym(trader.id) : '—'}
+                        </span>
+                      </NextLink>
+                      <Chip
+                        size="sm"
+                        color={outcomeNum === 0 ? 'primary' : 'secondary'}
+                        variant="flat"
+                      >
+                        {outcomeName}
+                      </Chip>
+                    </div>
+                    <div className="flex items-center justify-between gap-2 text-xs">
+                      <span className="text-default-400">
+                        {formatTime(trade.timestamp)} · {TRADE_TYPE_LABEL[trade.tradeType] || trade.tradeType}
+                      </span>
+                      <span className="flex items-center gap-2">
+                        <span className={isBuy ? 'text-primary font-medium' : 'text-secondary font-medium'}>
+                          {`$${tickToPrice(trade.tick, tickSize)}`}
+                        </span>
+                        <span className="text-default-500">
+                          × {formatQty(trade.amount)}
+                        </span>
+                      </span>
+                    </div>
+                  </div>
                 </div>
               );
             })}

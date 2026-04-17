@@ -16,24 +16,24 @@ import { CreateMarketDropdown } from '@/features/market-creation/components';
 
 export const Navbar = () => {
   return (
-    <HeroUINavbar maxWidth="xl" position="sticky">
-      {/* Left side - Logo and App Name */}
+    <HeroUINavbar
+      maxWidth="xl"
+      position="sticky"
+      classNames={{ wrapper: 'px-3 sm:px-6' }}
+    >
+      {/* Left - Logo and App Name */}
       <NavbarContent justify="start">
         <NavbarBrand>
           <NextLink className="flex items-center gap-2" href="/">
             <Logo />
-            <p className="font-bold text-inherit">{siteConfig.name}</p>
+            <p className="font-bold text-inherit truncate">{siteConfig.name}</p>
           </NextLink>
         </NavbarBrand>
       </NavbarContent>
 
-      {/* Center - Navigation links */}
-      <NavbarContent justify="center">
-      </NavbarContent>
-
-      {/* Right side - Create Market, Wallet, and User Settings */}
-      <NavbarContent justify="end">
-        <NavbarItem>
+      {/* Right - Create Market (md+), Wallet, Connect */}
+      <NavbarContent justify="end" className="gap-1 sm:gap-2">
+        <NavbarItem className="hidden md:flex">
           <CreateMarketDropdown />
         </NavbarItem>
         <NavbarItem>

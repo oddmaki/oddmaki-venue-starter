@@ -172,8 +172,8 @@ export function UserOrdersPanel({
           </p>
         ) : (
           <div className="flex flex-col gap-2">
-            {/* Header */}
-            <div className="grid grid-cols-5 gap-2 text-xs text-default-400 px-2">
+            {/* Header — hidden on mobile (card layout takes over) */}
+            <div className="hidden sm:grid grid-cols-5 gap-2 text-xs text-default-400 px-2">
               <span>Side</span>
               <span>Outcome</span>
               <span className="text-right">Price</span>
@@ -196,29 +196,61 @@ export function UserOrdersPanel({
               return (
                 <div
                   key={order.id || orderId}
-                  className="grid grid-cols-5 gap-2 items-center px-2 py-1.5 rounded-lg hover:bg-default-100"
+                  className="px-2 py-1.5 rounded-lg hover:bg-default-100"
                 >
-                  <Chip
-                    size="sm"
-                    color={isBuy ? 'primary' : 'secondary'}
-                    variant="flat"
-                  >
-                    {isBuy ? 'Buy' : 'Sell'}
-                  </Chip>
-                  <span className="text-sm">{outcomeName}</span>
-                  <span className="text-sm text-right">${price}</span>
-                  <span className="text-sm text-right">{qty}</span>
-                  <div className="flex justify-end">
-                    <Button
+                  {/* Desktop: 5-col grid */}
+                  <div className="hidden sm:grid grid-cols-5 gap-2 items-center">
+                    <Chip
                       size="sm"
-                      color="danger"
-                      variant="light"
-                      isLoading={cancellingOrderId === orderId && flow.isRunning}
-                      isDisabled={flow.isRunning}
-                      onPress={() => handleCancel(orderId)}
+                      color={isBuy ? 'primary' : 'secondary'}
+                      variant="flat"
                     >
-                      Cancel
-                    </Button>
+                      {isBuy ? 'Buy' : 'Sell'}
+                    </Chip>
+                    <span className="text-sm">{outcomeName}</span>
+                    <span className="text-sm text-right">${price}</span>
+                    <span className="text-sm text-right">{qty}</span>
+                    <div className="flex justify-end">
+                      <Button
+                        size="sm"
+                        color="danger"
+                        variant="light"
+                        isLoading={cancellingOrderId === orderId && flow.isRunning}
+                        isDisabled={flow.isRunning}
+                        onPress={() => handleCancel(orderId)}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Mobile: stacked card */}
+                  <div className="sm:hidden flex flex-col gap-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <Chip
+                          size="sm"
+                          color={isBuy ? 'primary' : 'secondary'}
+                          variant="flat"
+                        >
+                          {isBuy ? 'Buy' : 'Sell'}
+                        </Chip>
+                        <span className="text-sm truncate">{outcomeName}</span>
+                      </div>
+                      <Button
+                        size="sm"
+                        color="danger"
+                        variant="light"
+                        isLoading={cancellingOrderId === orderId && flow.isRunning}
+                        isDisabled={flow.isRunning}
+                        onPress={() => handleCancel(orderId)}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                    <div className="flex items-center justify-between gap-2 text-xs text-default-500">
+                      <span>${price} × {qty}</span>
+                    </div>
                   </div>
                 </div>
               );

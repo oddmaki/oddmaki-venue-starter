@@ -29,9 +29,9 @@ export function OrderbookRow({ level, side, depthRatio, label, onPriceClick }: O
         style={{ width: `${Math.max(depthRatio * 40, 1)}%` }}
       />
 
-      {/* Content — left 40% for depth bar + optional label, data on the right */}
+      {/* Content — left area for depth bar + optional label, data on the right */}
       <div className="relative z-10 flex w-full items-center">
-        <span className="w-[40%] flex items-center">
+        <span className="w-[25%] sm:w-[40%] flex items-center">
           {label && (
             <Chip size="sm" color={label.color} variant="flat">{label.text}</Chip>
           )}
@@ -42,7 +42,7 @@ export function OrderbookRow({ level, side, depthRatio, label, onPriceClick }: O
         <span className="text-default-600 flex-1 text-right">
           {level.quantity}
         </span>
-        <span className="text-default-400 w-[70px] text-right">
+        <span className="text-default-400 w-[60px] sm:w-[70px] text-right">
           {level.cumulative}
         </span>
       </div>

@@ -46,7 +46,7 @@ export function TraderPositionsTable({ positions, isLoading }: TraderPositionsTa
         <h2 className="text-lg font-semibold">Active Positions ({positions.length})</h2>
       </CardHeader>
       <CardBody className="p-4">
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto hidden sm:block">
           <table className="w-full text-sm">
             <thead>
               <tr className="text-left text-default-500 border-b border-default-200">
@@ -122,6 +122,60 @@ export function TraderPositionsTable({ positions, isLoading }: TraderPositionsTa
               })}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile: card list */}
+        <div className="sm:hidden flex flex-col gap-3">
+          {positions.map((pos: any) => {
+            const market = pos.market;
+            const decimals = market.collateralDecimals || 6;
+            const outcomeIndex = parseInt(pos.outcome);
+            const outcomeName = market.outcomes?.[outcomeIndex] || (outcomeIndex === 0 ? 'Yes' : 'No');
+
+            const qty = parseFloat(pos.quantity) / Math.pow(10, decimals);
+            const avgPriceRaw = parseFloat(pos.avgEntryPrice || '0') / 1e18;
+            const avgPercent = (avgPriceRaw * 100).toFixed(1);
+            const currentPercent = getOutcomePrice(market, outcomeIndex);
+            const currentPrice = currentPercent / 100;
+            const value = qty * currentPrice;
+            const costBasis = parseFloat(pos.totalCostBasis) / Math.pow(10, decimals);
+            const unrealizedPnL = value - costBasis;
+            const pnlColor = unrealizedPnL >= 0 ? 'text-success' : 'text-danger';
+            const pnlPercent = costBasis > 0
+              ? ((unrealizedPnL / costBasis) * 100).toFixed(1)
+              : '0.0';
+
+            return (
+              <NextLink
+                key={pos.id}
+                href={`/market/${market.marketId}`}
+                className="flex flex-col gap-2 p-3 rounded-lg border border-default-100 hover:border-default-200 hover:bg-default-50 transition-colors"
+              >
+                <span className="text-sm font-medium line-clamp-2">
+                  {parseAncillaryData(market.question).title}
+                </span>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <Chip size="sm" variant="flat" color={outcomeIndex === 0 ? 'success' : 'danger'}>
+                    {outcomeName} {avgPercent}&cent;
+                  </Chip>
+                  <span className="text-xs text-default-500">
+                    {qty.toFixed(1)} shares
+                  </span>
+                </div>
+                <div className="flex items-center justify-between pt-1 border-t border-default-100">
+                  <span className="text-xs text-default-500">
+                    Now {currentPercent.toFixed(1)}&cent;
+                  </span>
+                  <div className="flex items-center gap-2 text-sm">
+                    <span className="font-semibold">${value.toFixed(2)}</span>
+                    <span className={`text-xs ${pnlColor}`}>
+                      {unrealizedPnL >= 0 ? '+' : ''}{pnlPercent}%
+                    </span>
+                  </div>
+                </div>
+              </NextLink>
+            );
+          })}
         </div>
       </CardBody>
     </Card>

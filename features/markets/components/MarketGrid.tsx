@@ -64,7 +64,7 @@ export function MarketGrid() {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {Array.from({ length: 4 }).map((_, i) => (
           <MarketSkeleton key={`m-${i}`} />
         ))}
@@ -94,7 +94,7 @@ export function MarketGrid() {
           description="No markets match the current filters. Try adjusting your selection."
         />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {filteredItems.map((item: UnifiedFeedItem) =>
             item.type === 'standalone' ? (
               <MarketCard key={`m-${item.data.marketId}`} market={item.data} />

@@ -60,10 +60,10 @@ export default function MarketDetailPage({
       {/* Header: title, status, prices, stats */}
       <MarketDetailHeader market={market} />
 
-      {/* Two-column layout: left (~938px) | right (338px) */}
+      {/* Two-column layout: left (~938px) | right (338px). On mobile, trading panel appears first. */}
       <div className="grid grid-cols-1 md:grid-cols-[1fr_338px] gap-4 items-start">
         {/* Left column */}
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 order-2 md:order-1">
           {isPriceMarket ? (
             <PriceMarketChartSection
               marketId={market.marketId}
@@ -111,7 +111,7 @@ export default function MarketDetailPage({
         </div>
 
         {/* Right column (sticky trading panel) */}
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 order-1 md:order-2">
           {isResolved ? (
             <ResolvedOutcomeCard
               outcomes={market.outcomes}

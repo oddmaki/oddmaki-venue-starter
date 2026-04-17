@@ -62,7 +62,7 @@ export function TraderClosedPositionsTable({ positions, isLoading }: TraderClose
         <h2 className="text-lg font-semibold">Closed Positions ({positions.length})</h2>
       </CardHeader>
       <CardBody className="p-4">
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto hidden sm:block">
           <table className="w-full text-sm">
             <thead>
               <tr className="text-left text-default-500 border-b border-default-200">
@@ -129,6 +129,48 @@ export function TraderClosedPositionsTable({ positions, isLoading }: TraderClose
               })}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile: card list */}
+        <div className="sm:hidden flex flex-col gap-3">
+          {positions.map((pos: any) => {
+            const market = pos.market;
+            const decimals = market.collateralDecimals || 6;
+            const outcomeIndex = parseInt(pos.outcome);
+            const outcomeName = market.outcomes?.[outcomeIndex] || (outcomeIndex === 0 ? 'Yes' : 'No');
+
+            const result = getResult(market, outcomeIndex);
+            const totalTraded = parseFloat(pos.totalCollateralIn || '0') / Math.pow(10, decimals);
+            const realizedPnL = parseFloat(pos.realizedPnL || '0') / Math.pow(10, decimals);
+            const pnlColor = realizedPnL >= 0 ? 'text-success' : 'text-danger';
+            const pnlPercent = totalTraded > 0
+              ? ((realizedPnL / totalTraded) * 100).toFixed(0)
+              : '0';
+
+            return (
+              <NextLink
+                key={pos.id}
+                href={`/market/${market.marketId}`}
+                className="flex flex-col gap-2 p-3 rounded-lg border border-default-100 hover:border-default-200 hover:bg-default-50 transition-colors"
+              >
+                <div className="flex items-center gap-2 justify-between">
+                  <Chip size="sm" variant="flat" color={result.color}>
+                    {result.label}
+                  </Chip>
+                  <span className={`text-sm font-semibold ${pnlColor}`}>
+                    {formatPnL(realizedPnL)} ({pnlPercent}%)
+                  </span>
+                </div>
+                <span className="text-sm font-medium line-clamp-2">
+                  {parseAncillaryData(market.question).title}
+                </span>
+                <div className="flex items-center justify-between text-xs text-default-500">
+                  <span>{outcomeName}</span>
+                  <span>Traded ${totalTraded.toFixed(2)}</span>
+                </div>
+              </NextLink>
+            );
+          })}
         </div>
       </CardBody>
     </Card>
