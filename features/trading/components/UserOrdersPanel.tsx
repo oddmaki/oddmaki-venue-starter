@@ -21,6 +21,7 @@ interface UserOrdersPanelProps {
   marketId: string;
   outcomes: string[];
   tickSize: string;
+  isResolved?: boolean;
 }
 
 function tickToPrice(tick: string, tickSize: string): string {
@@ -45,6 +46,7 @@ export function UserOrdersPanel({
   marketId,
   outcomes,
   tickSize,
+  isResolved = false,
 }: UserOrdersPanelProps) {
   const { data: orders, isLoading, isFetching, refetch } = useUserOrders(marketId);
   const { address } = useConnection();
@@ -77,9 +79,13 @@ export function UserOrdersPanel({
           id: 'batch-cancel',
           label: `Cancel ${orderIds.length} order${orderIds.length > 1 ? 's' : ''}`,
           execute: async () => {
-            const hash = await client.trade.batchCancelOrders(
-              orderIds.map((id) => BigInt(id)),
-            );
+            const ids = orderIds.map((id) => BigInt(id));
+            const hash = isResolved
+              ? await client.trade.cancelOrdersOnResolvedMarket(
+                  BigInt(marketId),
+                  ids,
+                )
+              : await client.trade.batchCancelOrders(ids);
             await publicClient.waitForTransactionReceipt({ hash });
           },
         },
@@ -87,7 +93,7 @@ export function UserOrdersPanel({
 
       await flow.start(steps);
     },
-    [client, publicClient, address, flow],
+    [client, publicClient, address, flow, isResolved, marketId],
   );
 
   const handleCancel = useCallback(
@@ -146,7 +152,7 @@ export function UserOrdersPanel({
       <CardHeader className="flex justify-between items-center">
         <h2 className="text-lg font-semibold">Your Orders</h2>
         <div className="flex items-center gap-2">
-          {activeOrders.length > 1 && (
+          {activeOrders.length >= (isResolved ? 1 : 2) && (
             <Button
               size="sm"
               color="danger"
@@ -154,7 +160,7 @@ export function UserOrdersPanel({
               isDisabled={flow.isRunning}
               onPress={() => handleCancelAll(activeOrders.map((o) => o.orderId))}
             >
-              Cancel All
+              {isResolved ? 'Cancel All Orders' : 'Cancel All'}
             </Button>
           )}
           <RefreshButton onRefresh={() => refetch()} isFetching={isFetching} />
@@ -211,16 +217,18 @@ export function UserOrdersPanel({
                     <span className="text-sm text-right">${price}</span>
                     <span className="text-sm text-right">{qty}</span>
                     <div className="flex justify-end">
-                      <Button
-                        size="sm"
-                        color="danger"
-                        variant="light"
-                        isLoading={cancellingOrderId === orderId && flow.isRunning}
-                        isDisabled={flow.isRunning}
-                        onPress={() => handleCancel(orderId)}
-                      >
-                        Cancel
-                      </Button>
+                      {!isResolved && (
+                        <Button
+                          size="sm"
+                          color="danger"
+                          variant="light"
+                          isLoading={cancellingOrderId === orderId && flow.isRunning}
+                          isDisabled={flow.isRunning}
+                          onPress={() => handleCancel(orderId)}
+                        >
+                          Cancel
+                        </Button>
+                      )}
                     </div>
                   </div>
 
@@ -237,16 +245,18 @@ export function UserOrdersPanel({
                         </Chip>
                         <span className="text-sm truncate">{outcomeName}</span>
                       </div>
-                      <Button
-                        size="sm"
-                        color="danger"
-                        variant="light"
-                        isLoading={cancellingOrderId === orderId && flow.isRunning}
-                        isDisabled={flow.isRunning}
-                        onPress={() => handleCancel(orderId)}
-                      >
-                        Cancel
-                      </Button>
+                      {!isResolved && (
+                        <Button
+                          size="sm"
+                          color="danger"
+                          variant="light"
+                          isLoading={cancellingOrderId === orderId && flow.isRunning}
+                          isDisabled={flow.isRunning}
+                          onPress={() => handleCancel(orderId)}
+                        >
+                          Cancel
+                        </Button>
+                      )}
                     </div>
                     <div className="flex items-center justify-between gap-2 text-xs text-default-500">
                       <span>${price} × {qty}</span>

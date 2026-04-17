@@ -100,6 +100,7 @@ export default function MarketGroupDetailPage({
                 marketId={selectedMarket.marketId}
                 outcomes={selectedMarket.outcomes}
                 tickSize={selectedMarket.tickSize}
+                isResolved={selectedMarket.status === 'Resolved'}
               />
               <RecentTradesPanel
                 marketId={selectedMarket.marketId}
