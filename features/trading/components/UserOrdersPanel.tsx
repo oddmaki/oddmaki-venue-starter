@@ -155,7 +155,7 @@ export function UserOrdersPanel({
           {activeOrders.length > 0 && (
             <Button
               size="sm"
-              color="danger"
+              color="secondary"
               variant="flat"
               isDisabled={flow.isRunning}
               onPress={() => handleCancelAll(activeOrders.map((o) => o.orderId))}
@@ -220,7 +220,7 @@ export function UserOrdersPanel({
                       {!isResolved && (
                         <Button
                           size="sm"
-                          color="danger"
+                          color="secondary"
                           variant="light"
                           isLoading={cancellingOrderId === orderId && flow.isRunning}
                           isDisabled={flow.isRunning}
@@ -248,7 +248,7 @@ export function UserOrdersPanel({
                       {!isResolved && (
                         <Button
                           size="sm"
-                          color="danger"
+                          color="secondary"
                           variant="light"
                           isLoading={cancellingOrderId === orderId && flow.isRunning}
                           isDisabled={flow.isRunning}
