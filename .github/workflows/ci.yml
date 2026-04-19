@@ -14,54 +14,25 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - name: Checkout venue-starter
-        uses: actions/checkout@v4
-        with:
-          path: oddmaki-venue-starter
+      - uses: actions/checkout@v4
 
-      # The venue-starter consumes @oddmaki-protocol/sdk via a local link
-      # (link:../oddmaki-sdk) until the SDK is published to npm. Check it
-      # out as a sibling so the link resolves, then build its dist.
-      - name: Checkout oddmaki-sdk (sibling)
-        uses: actions/checkout@v4
-        with:
-          repository: oddmaki/oddmaki-sdk
-          ref: main
-          path: oddmaki-sdk
-          token: ${{ secrets.ODDMAKI_SDK_TOKEN || secrets.GITHUB_TOKEN }}
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v4
         with:
           version: 9
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: pnpm
-          cache-dependency-path: |
-            oddmaki-venue-starter/package.json
-            oddmaki-sdk/pnpm-lock.yaml
 
-      - name: Install and build SDK
-        working-directory: oddmaki-sdk
-        run: |
-          pnpm install --frozen-lockfile
-          pnpm build
-
-      - name: Install venue-starter dependencies
-        working-directory: oddmaki-venue-starter
+      - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
 
       - name: Lint
-        working-directory: oddmaki-venue-starter
         run: pnpm lint:ci
 
       - name: Typecheck
-        working-directory: oddmaki-venue-starter
         run: pnpm typecheck
 
       - name: Build
-        working-directory: oddmaki-venue-starter
         run: pnpm build
