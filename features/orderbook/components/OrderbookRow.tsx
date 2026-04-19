@@ -20,8 +20,16 @@ export function OrderbookRow({ level, side, depthRatio, label, onPriceClick }: O
 
   return (
     <div
+      role="button"
+      tabIndex={0}
       className="relative flex items-center h-7 px-2 cursor-pointer hover:bg-default-100 transition-colors text-xs font-mono"
       onClick={() => onPriceClick?.(level.price, level.tick)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onPriceClick?.(level.price, level.tick);
+        }
+      }}
     >
       {/* Depth bar background — anchored left */}
       <div

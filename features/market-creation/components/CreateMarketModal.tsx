@@ -203,10 +203,10 @@ export function CreateMarketModal({ isOpen, onClose }: CreateMarketModalProps) {
           <TagSelector selectedTags={tags} onChange={setTags} />
 
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium">
+            <span className="text-sm font-medium">
               Thumbnail Image
               <span className="text-default-400 font-normal"> (optional)</span>
-            </label>
+            </span>
             {imagePreview ? (
               <div className="relative w-full">
                 {/* eslint-disable-next-line @next/next/no-img-element */}

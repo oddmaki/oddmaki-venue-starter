@@ -397,7 +397,7 @@ export function CreatePriceMarketModal({
 
           {/* Close Time */}
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium">Close Time</label>
+            <span className="text-sm font-medium">Close Time</span>
             <div className="flex gap-2 flex-wrap">
               {DURATION_PRESETS.map((preset) => (
                 <Button
