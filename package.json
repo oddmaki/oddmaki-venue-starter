@@ -8,7 +8,9 @@
     "dev:webpack": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint --fix"
+    "lint": "eslint --fix",
+    "lint:ci": "eslint .",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@heroui/accordion": "2.2.27",
@@ -72,6 +74,9 @@
     "wagmi": "^3.4.1"
   },
   "devDependencies": {
+    "@eslint/compat": "^2.0.5",
+    "@eslint/eslintrc": "^3.3.5",
+    "@eslint/js": "^9.25.1",
     "@next/eslint-plugin-next": "15.5.9",
     "@react-types/shared": "3.32.1",
     "@tailwindcss/postcss": "4.1.11",
