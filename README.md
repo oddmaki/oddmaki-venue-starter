@@ -125,6 +125,12 @@ Standard Next.js deployment. Set the required environment variables in your plat
 - [oddmaki-sdk](https://github.com/oddmaki/oddmaki-sdk) — TypeScript SDK
 - [oddmaki-subgraph](https://github.com/oddmaki/oddmaki-subgraph) — Subgraph
 
+## Links
+
+- **Protocol** — [oddmaki.com](https://oddmaki.com)
+- **Maintainer** — [predictablereality.com](https://predictablereality.com)
+- **Contact** — team@oddmaki.com
+
 ## License
 
-[MIT](./LICENSE) — fork it, brand it, ship it.
+[MIT](./LICENSE) — fork it, brand it, ship it. Copyright (c) 2025-2026 Predictable Reality, Inc.
