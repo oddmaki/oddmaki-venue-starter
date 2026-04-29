@@ -3,6 +3,11 @@
   "version": "0.1.0",
   "description": "White-label prediction market starter app for the Octopus Protocol",
   "private": true,
+  "author": "Predictable Reality, Inc.",
+  "contributors": [
+    "Carlos Revelo (https://github.com/crevelop)"
+  ],
+  "license": "MIT",
   "scripts": {
     "dev": "next dev --turbopack",
     "dev:webpack": "next dev",
