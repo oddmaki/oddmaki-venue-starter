@@ -5,7 +5,7 @@
  */
 
 import type { PrivyClientConfig } from '@privy-io/react-auth';
-import { baseSepolia } from 'viem/chains';
+import { ACTIVE_CHAIN } from '@/lib/oddmaki/chain';
 
 export const privyConfig: PrivyClientConfig = {
   loginMethods: ['email', 'wallet', 'google', 'apple'],
@@ -19,6 +19,6 @@ export const privyConfig: PrivyClientConfig = {
       createOnLogin: 'users-without-wallets',
     },
   },
-  supportedChains: [baseSepolia],
-  defaultChain: baseSepolia,
+  supportedChains: [ACTIVE_CHAIN],
+  defaultChain: ACTIVE_CHAIN,
 };

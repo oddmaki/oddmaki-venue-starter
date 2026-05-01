@@ -43,6 +43,7 @@ Everything a venue operator needs to run a prediction market platform:
 |---|---|---|
 | `NEXT_PUBLIC_VENUE_ID` | Yes | Your venue ID on the OddMaki Protocol |
 | `NEXT_PUBLIC_SUBGRAPH_URL` | Yes | Subgraph GraphQL endpoint |
+| `NEXT_PUBLIC_CHAIN_ID` | No | `8453` (Base mainnet, default) or `84532` (Base Sepolia) |
 | `NEXT_PUBLIC_VENUE_NAME` | No | Display name (default: `"OddMaki Markets"`) |
 | `NEXT_PUBLIC_AUTH_PROVIDER` | No | `rainbowkit` or `privy` (default: `rainbowkit`) |
 | `NEXT_PUBLIC_PRIVY_APP_ID` | No | Required if using Privy auth |

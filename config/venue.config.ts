@@ -6,6 +6,8 @@
  * instructs the developer to set the env var and restart.
  */
 
+import { ACTIVE_CHAIN_ID } from '@/lib/oddmaki/chain';
+
 const envVenueIdRaw = process.env.NEXT_PUBLIC_VENUE_ID;
 const envVenueId =
   envVenueIdRaw !== undefined && envVenueIdRaw !== ''
@@ -41,10 +43,10 @@ export const venueConfig = {
       process.env.NEXT_PUBLIC_ENABLE_THEME_EDITOR === 'true',
   },
 
-  // Network settings
+  // Network settings — driven by NEXT_PUBLIC_CHAIN_ID (see lib/oddmaki/chain.ts)
   network: {
-    defaultChainId: 84532, // Base Sepolia testnet
-    supportedChains: [84532], // Add more chain IDs as needed
+    defaultChainId: ACTIVE_CHAIN_ID,
+    supportedChains: [ACTIVE_CHAIN_ID],
   },
 
   // UI settings

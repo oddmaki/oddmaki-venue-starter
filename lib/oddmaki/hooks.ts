@@ -9,7 +9,7 @@
 import { useMemo } from 'react';
 import { useWalletClient } from 'wagmi';
 import { createOddMakiClient } from '@oddmaki-protocol/sdk';
-import { baseSepolia } from 'viem/chains';
+import { ACTIVE_CHAIN } from './chain';
 
 /**
  * Hook to get an initialized OddMaki client
@@ -23,7 +23,7 @@ export function useOddMakiClient() {
     // The SDK creates its own public client internally
     // We just pass the wallet client (optional) and chain
     return createOddMakiClient({
-      chain: baseSepolia,
+      chain: ACTIVE_CHAIN,
       walletClient: walletClient as any, // Cast to any to avoid version mismatches
     });
   }, [walletClient]);

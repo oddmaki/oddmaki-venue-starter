@@ -5,11 +5,11 @@
  * Each adapter imports these to build its own wagmi config.
  */
 
-import { baseSepolia } from 'wagmi/chains';
 import { http } from 'wagmi';
+import { ACTIVE_CHAIN } from '@/lib/oddmaki/chain';
 
-export const supportedChains = [baseSepolia] as const;
+export const supportedChains = [ACTIVE_CHAIN] as const;
 
 export const transports = {
-  [baseSepolia.id]: http(),
+  [ACTIVE_CHAIN.id]: http(),
 } as const;

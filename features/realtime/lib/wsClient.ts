@@ -7,7 +7,7 @@
  */
 
 import { createPublicClient, webSocket } from 'viem';
-import { baseSepolia } from 'viem/chains';
+import { ACTIVE_CHAIN } from '@/lib/oddmaki/chain';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let wsClient: any = null;
@@ -21,7 +21,7 @@ export function getWsPublicClient() {
   if (wsClient) return wsClient;
 
   wsClient = createPublicClient({
-    chain: baseSepolia,
+    chain: ACTIVE_CHAIN,
     transport: webSocket(wsUrl, {
       reconnect: {
         attempts: 10,
