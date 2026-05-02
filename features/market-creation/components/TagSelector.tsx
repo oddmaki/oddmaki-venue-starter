@@ -1,7 +1,8 @@
-'use client';
+"use client";
 
-import { Chip } from '@heroui/chip';
-import { SUGGESTED_TAGS, MAX_TAGS } from '@/config/tags.config';
+import { Chip } from "@heroui/chip";
+
+import { SUGGESTED_TAGS, MAX_TAGS } from "@/config/tags.config";
 
 interface TagSelectorProps {
   selectedTags: string[];
@@ -27,7 +28,7 @@ export function TagSelector({
   return (
     <div className="flex flex-col gap-2">
       <label className="text-sm font-medium text-default-700">
-        Tags{' '}
+        Tags{" "}
         <span className="text-default-400 font-normal">
           ({selectedTags.length}/{maxTags})
         </span>
@@ -35,13 +36,14 @@ export function TagSelector({
       <div className="flex flex-wrap gap-2">
         {SUGGESTED_TAGS.map((tag) => {
           const isSelected = selectedTags.includes(tag);
+
           return (
             <Chip
               key={tag}
-              variant={isSelected ? 'solid' : 'bordered'}
-              color={isSelected ? 'primary' : 'default'}
               className="cursor-pointer select-none"
+              color={isSelected ? "primary" : "default"}
               isDisabled={!isSelected && atLimit}
+              variant={isSelected ? "solid" : "bordered"}
               onClick={() => toggleTag(tag)}
             >
               {tag}

@@ -1,20 +1,21 @@
-'use client';
+"use client";
 
-import { useConnection } from 'wagmi';
-import { useOddMakiClient } from '@/lib/oddmaki/hooks';
-import { useTransaction } from '@/lib/oddmaki/useTransaction';
-import { queryKeys } from '@/lib/oddmaki/queryKeys';
+import { useConnection } from "wagmi";
+
+import { useOddMakiClient } from "@/lib/oddmaki/hooks";
+import { useTransaction } from "@/lib/oddmaki/useTransaction";
+import { queryKeys } from "@/lib/oddmaki/queryKeys";
 
 export function useReportResolution(marketId: string) {
   const client = useOddMakiClient();
   const { address } = useConnection();
 
-  const marketIdBig = BigInt(marketId || '0');
+  const marketIdBig = BigInt(marketId || "0");
 
   const { execute, isLoading, error } = useTransaction({
-    pendingMessage: 'Reporting resolution...',
-    successMessage: 'Resolution reported to CTF',
-    errorMessage: 'Report failed',
+    pendingMessage: "Reporting resolution...",
+    successMessage: "Resolution reported to CTF",
+    errorMessage: "Report failed",
     invalidateKeys: [
       queryKeys.resolution.status(marketIdBig),
       queryKeys.resolution.assertion(marketIdBig),

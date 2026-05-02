@@ -1,7 +1,8 @@
-'use client';
+"use client";
 
-import { Button } from '@heroui/button';
-import { useResolvePriceMarket } from '../hooks/useResolvePriceMarket';
+import { Button } from "@heroui/button";
+
+import { useResolvePriceMarket } from "../hooks/useResolvePriceMarket";
 
 interface PriceMarketResolveButtonProps {
   marketId: bigint;
@@ -19,10 +20,10 @@ export function PriceMarketResolveButton({
   return (
     <Button
       color="primary"
-      variant="flat"
-      onPress={resolvePriceMarket}
       isLoading={isLoading}
       size="sm"
+      variant="flat"
+      onPress={resolvePriceMarket}
     >
       Resolve On-Chain
     </Button>

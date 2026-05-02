@@ -1,9 +1,10 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Button } from '@heroui/button';
-import { useConnection } from 'wagmi';
-import { useAssertOutcome } from '../hooks/useAssertOutcome';
+import { useState } from "react";
+import { Button } from "@heroui/button";
+import { useConnection } from "wagmi";
+
+import { useAssertOutcome } from "../hooks/useAssertOutcome";
 
 interface AssertOutcomeFormProps {
   marketId: string;
@@ -15,13 +16,16 @@ interface AssertOutcomeFormProps {
 function formatBond(bond: bigint): string {
   // Bond is in USDC (6 decimals)
   const num = Number(bond) / 1e6;
+
   return num.toFixed(2);
 }
 
 function formatLiveness(seconds: bigint): string {
   const s = Number(seconds);
+
   if (s >= 86400) return `${Math.floor(s / 86400)}d`;
   if (s >= 3600) return `${Math.floor(s / 3600)}h`;
+
   return `${Math.floor(s / 60)}m`;
 }
 
@@ -45,11 +49,13 @@ export function AssertOutcomeForm({
     <div className="flex flex-col gap-4">
       <div>
         <p className="text-sm text-default-500 mb-2">
-          Select the outcome you believe is correct. You must post a bond of{' '}
-          <span className="font-semibold">${formatBond(requiredBond)} USDC</span>.
-          If unchallenged for{' '}
-          <span className="font-semibold">{formatLiveness(liveness)}</span>,
-          the assertion will be accepted.
+          Select the outcome you believe is correct. You must post a bond of{" "}
+          <span className="font-semibold">
+            ${formatBond(requiredBond)} USDC
+          </span>
+          . If unchallenged for{" "}
+          <span className="font-semibold">{formatLiveness(liveness)}</span>, the
+          assertion will be accepted.
         </p>
       </div>
 
@@ -57,17 +63,17 @@ export function AssertOutcomeForm({
         {outcomes.map((outcome, i) => (
           <Button
             key={outcome}
-            size="sm"
-            variant={selectedOutcome === outcome ? 'solid' : 'bordered'}
+            className="flex-1"
             color={
               selectedOutcome === outcome
                 ? i === 0
-                  ? 'primary'
-                  : 'secondary'
-                : 'default'
+                  ? "primary"
+                  : "secondary"
+                : "default"
             }
+            size="sm"
+            variant={selectedOutcome === outcome ? "solid" : "bordered"}
             onPress={() => setSelectedOutcome(outcome)}
-            className="flex-1"
           >
             {outcome}
           </Button>
@@ -75,17 +81,17 @@ export function AssertOutcomeForm({
       </div>
 
       <Button
+        className="w-full"
         color="primary"
         isDisabled={!isConnected || !selectedOutcome}
         isLoading={isLoading}
         onPress={handleAssert}
-        className="w-full"
       >
         {!isConnected
-          ? 'Connect Wallet'
+          ? "Connect Wallet"
           : selectedOutcome
-          ? `Assert "${selectedOutcome}" (Bond: $${formatBond(requiredBond)})`
-          : 'Select an outcome'}
+            ? `Assert "${selectedOutcome}" (Bond: $${formatBond(requiredBond)})`
+            : "Select an outcome"}
       </Button>
     </div>
   );

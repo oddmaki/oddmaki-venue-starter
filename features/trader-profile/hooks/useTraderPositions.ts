@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
-import { useQuery } from '@tanstack/react-query';
-import { useOddMakiClient } from '@/lib/oddmaki/hooks';
-import { queryKeys } from '@/lib/oddmaki/queryKeys';
+import { useQuery } from "@tanstack/react-query";
+
+import { useOddMakiClient } from "@/lib/oddmaki/hooks";
+import { queryKeys } from "@/lib/oddmaki/queryKeys";
 
 export function useTraderPositions(address: string) {
   const client = useOddMakiClient();
@@ -10,7 +11,10 @@ export function useTraderPositions(address: string) {
   return useQuery({
     queryKey: queryKeys.trader.positions(address),
     queryFn: async () => {
-      const result = await client.public.getTraderPositions({ trader: address });
+      const result = await client.public.getTraderPositions({
+        trader: address,
+      });
+
       return result.traderPositions ?? [];
     },
     enabled: !!address,
@@ -25,7 +29,10 @@ export function useTraderClosedPositions(address: string) {
   return useQuery({
     queryKey: queryKeys.trader.closedPositions(address),
     queryFn: async () => {
-      const result = await client.public.getTraderClosedPositions({ trader: address });
+      const result = await client.public.getTraderClosedPositions({
+        trader: address,
+      });
+
       return result.traderPositions ?? [];
     },
     enabled: !!address,

@@ -1,7 +1,8 @@
-'use client';
+"use client";
 
-import { createContext, useContext } from 'react';
-import type { ThemeConfig, ResolvedTheme } from '@/lib/theme';
+import type { ThemeConfig, ResolvedTheme } from "@/lib/theme";
+
+import { createContext, useContext } from "react";
 
 export interface ThemeOverrideContextValue {
   /** Current overrides (null = using build-time defaults) */

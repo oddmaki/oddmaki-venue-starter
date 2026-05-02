@@ -1,18 +1,21 @@
-'use client';
+"use client";
 
-import { useQuery } from '@tanstack/react-query';
-import { useOddMakiClient } from '@/lib/oddmaki/hooks';
-import { queryKeys } from '@/lib/oddmaki/queryKeys';
+import type { Timeframe } from "../lib/timeframes";
+import type { ChartDataPoint } from "../lib/aggregation";
+
+import { useQuery } from "@tanstack/react-query";
+
 import {
   tradesToChartData,
   deduplicateByTimestamp,
   downsampleLTTB,
   padToTimeWindow,
   CHART_MAX_POINTS,
-} from '../lib/aggregation';
-import { getTimestampFrom, getTimeframeWindow } from '../lib/timeframes';
-import type { Timeframe } from '../lib/timeframes';
-import type { ChartDataPoint } from '../lib/aggregation';
+} from "../lib/aggregation";
+import { getTimestampFrom, getTimeframeWindow } from "../lib/timeframes";
+
+import { useOddMakiClient } from "@/lib/oddmaki/hooks";
+import { queryKeys } from "@/lib/oddmaki/queryKeys";
 
 export interface PriceChartResult {
   data: ChartDataPoint[];
@@ -55,9 +58,7 @@ export function usePriceChartData(
       // For ALL: use first data point's time as start (or 1 day before now)
       const effectiveStart =
         timeWindow.start ??
-        (downsampled.length > 0
-          ? downsampled[0].time
-          : timeWindow.end - 86400);
+        (downsampled.length > 0 ? downsampled[0].time : timeWindow.end - 86400);
 
       const padded = padToTimeWindow(
         downsampled,

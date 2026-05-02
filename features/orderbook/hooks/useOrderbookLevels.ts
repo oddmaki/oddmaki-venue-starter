@@ -1,11 +1,13 @@
-'use client';
+"use client";
 
-import { useQuery } from '@tanstack/react-query';
-import { usePublicClient } from 'wagmi';
-import { queryKeys } from '@/lib/oddmaki/queryKeys';
-import { DIAMOND_ADDRESS, USDC_DECIMALS } from '@/lib/oddmaki/constants';
-import { OrderBookFacetABI } from '@oddmaki-protocol/sdk';
-import type { Abi } from 'viem';
+import type { Abi } from "viem";
+
+import { useQuery } from "@tanstack/react-query";
+import { usePublicClient } from "wagmi";
+import { OrderBookFacetABI } from "@oddmaki-protocol/sdk";
+
+import { queryKeys } from "@/lib/oddmaki/queryKeys";
+import { DIAMOND_ADDRESS, USDC_DECIMALS } from "@/lib/oddmaki/constants";
 
 export interface OrderbookLevel {
   price: string; // e.g. "0.65"
@@ -30,15 +32,18 @@ const MAX_TICK_SCAN = 30; // Max ticks to scan from top of book
 
 function tickToPrice(tick: bigint, tickSize: bigint): string {
   const price = Number(tick * tickSize) / 1e18;
+
   return price.toFixed(2);
 }
 
 function formatQty(qty: bigint, decimals: number = USDC_DECIMALS): string {
   const formatted = Number(qty) / Math.pow(10, decimals);
-  if (formatted === 0) return '0';
+
+  if (formatted === 0) return "0";
   if (formatted >= 1_000_000) return `${(formatted / 1_000_000).toFixed(1)}M`;
   if (formatted >= 1_000) return `${(formatted / 1_000).toFixed(1)}K`;
   if (formatted < 0.01) return formatted.toFixed(4);
+
   return formatted.toFixed(2);
 }
 
@@ -59,12 +64,12 @@ export function useOrderbookLevels(
   tickSize: string,
 ) {
   const publicClient = usePublicClient();
-  const tickSizeBigInt = BigInt(tickSize || '0');
+  const tickSizeBigInt = BigInt(tickSize || "0");
 
   return useQuery<OrderbookData>({
     queryKey: queryKeys.orderbook.byMarket(BigInt(marketId), outcomeIndex),
     queryFn: async () => {
-      if (!publicClient) throw new Error('No public client');
+      if (!publicClient) throw new Error("No public client");
       const marketIdBig = BigInt(marketId);
       const outcomeId = BigInt(outcomeIndex);
 
@@ -73,38 +78,44 @@ export function useOrderbookLevels(
         contracts: [
           {
             ...orderbookContract,
-            functionName: 'getTopOfBook',
+            functionName: "getTopOfBook",
             args: [marketIdBig, outcomeId, 0], // BUY side
           },
           {
             ...orderbookContract,
-            functionName: 'getTopOfBook',
+            functionName: "getTopOfBook",
             args: [marketIdBig, outcomeId, 1], // SELL side
           },
         ],
       });
 
-      const topBidTick = topBidResult.status === 'success'
-        ? (topBidResult.result as bigint)
-        : BigInt(0);
-      const topAskTick = topAskResult.status === 'success'
-        ? (topAskResult.result as bigint)
-        : BigInt(0);
+      const topBidTick =
+        topBidResult.status === "success"
+          ? (topBidResult.result as bigint)
+          : BigInt(0);
+      const topAskTick =
+        topAskResult.status === "success"
+          ? (topAskResult.result as bigint)
+          : BigInt(0);
 
       // Build tick scan ranges for both sides
       const bidTicks: bigint[] = [];
+
       if (topBidTick > BigInt(0)) {
         for (let i = 0; i < MAX_TICK_SCAN; i++) {
           const tick = topBidTick - BigInt(i);
+
           if (tick <= BigInt(0)) break;
           bidTicks.push(tick);
         }
       }
 
       const askTicks: bigint[] = [];
+
       if (topAskTick > BigInt(0)) {
         for (let i = 0; i < MAX_TICK_SCAN; i++) {
           const tick = topAskTick + BigInt(i);
+
           if (tick > BigInt(100)) break; // Max tick is 100 (price $1.00)
           askTicks.push(tick);
         }
@@ -114,12 +125,12 @@ export function useOrderbookLevels(
       const tickContracts = [
         ...bidTicks.map((tick) => ({
           ...orderbookContract,
-          functionName: 'getTickLevel' as const,
+          functionName: "getTickLevel" as const,
           args: [marketIdBig, outcomeId, 0, tick] as const, // BUY side
         })),
         ...askTicks.map((tick) => ({
           ...orderbookContract,
-          functionName: 'getTickLevel' as const,
+          functionName: "getTickLevel" as const,
           args: [marketIdBig, outcomeId, 1, tick] as const, // SELL side
         })),
       ];
@@ -131,17 +142,21 @@ export function useOrderbookLevels(
         const allResults = await publicClient.multicall({
           contracts: tickContracts,
         });
+
         bidResults = allResults.slice(0, bidTicks.length) as any;
         askResults = allResults.slice(bidTicks.length) as any;
       }
 
       // Process bid levels
       const bids: OrderbookLevel[] = [];
+
       for (let i = 0; i < bidTicks.length; i++) {
         const result = bidResults[i];
-        if (result.status !== 'success') continue;
+
+        if (result.status !== "success") continue;
         const lev = result.result as any;
         const totalQty = lev.totalQty as bigint;
+
         if (totalQty > BigInt(0)) {
           bids.push({
             price: tickToPrice(bidTicks[i], tickSizeBigInt),
@@ -149,7 +164,7 @@ export function useOrderbookLevels(
             quantity: formatQty(totalQty),
             quantityRaw: totalQty,
             orders: Number(lev.depth),
-            cumulative: '0',
+            cumulative: "0",
             cumulativeRaw: BigInt(0),
           });
         }
@@ -158,11 +173,14 @@ export function useOrderbookLevels(
 
       // Process ask levels
       const asks: OrderbookLevel[] = [];
+
       for (let i = 0; i < askTicks.length; i++) {
         const result = askResults[i];
-        if (result.status !== 'success') continue;
+
+        if (result.status !== "success") continue;
         const lev = result.result as any;
         const totalQty = lev.totalQty as bigint;
+
         if (totalQty > BigInt(0)) {
           asks.push({
             price: tickToPrice(askTicks[i], tickSizeBigInt),
@@ -170,7 +188,7 @@ export function useOrderbookLevels(
             quantity: formatQty(totalQty),
             quantityRaw: totalQty,
             orders: Number(lev.depth),
-            cumulative: '0',
+            cumulative: "0",
             cumulativeRaw: BigInt(0),
           });
         }
@@ -179,6 +197,7 @@ export function useOrderbookLevels(
 
       // Calculate cumulative quantities
       let cumBid = BigInt(0);
+
       for (const bid of bids) {
         cumBid += bid.quantityRaw;
         bid.cumulativeRaw = cumBid;
@@ -186,6 +205,7 @@ export function useOrderbookLevels(
       }
 
       let cumAsk = BigInt(0);
+
       for (const ask of asks) {
         cumAsk += ask.quantityRaw;
         ask.cumulativeRaw = cumAsk;
@@ -194,10 +214,15 @@ export function useOrderbookLevels(
 
       // Calculate spread
       let spread: string | null = null;
-      const bestBidPrice = topBidTick > BigInt(0) ? tickToPrice(topBidTick, tickSizeBigInt) : null;
-      const bestAskPrice = topAskTick > BigInt(0) ? tickToPrice(topAskTick, tickSizeBigInt) : null;
+      const bestBidPrice =
+        topBidTick > BigInt(0) ? tickToPrice(topBidTick, tickSizeBigInt) : null;
+      const bestAskPrice =
+        topAskTick > BigInt(0) ? tickToPrice(topAskTick, tickSizeBigInt) : null;
+
       if (bestBidPrice && bestAskPrice) {
-        spread = (parseFloat(bestAskPrice) - parseFloat(bestBidPrice)).toFixed(2);
+        spread = (parseFloat(bestAskPrice) - parseFloat(bestBidPrice)).toFixed(
+          2,
+        );
       }
 
       return {

@@ -1,10 +1,10 @@
-import type { MarketStatus } from './market';
+import type { MarketStatus } from "./market";
 
 /**
  * Market filter and sorting options
  */
 export interface MarketFilters {
   status?: MarketStatus;
-  sortBy?: 'volume' | 'created' | 'updated';
-  sortOrder?: 'asc' | 'desc';
+  sortBy?: "volume" | "created" | "updated";
+  sortOrder?: "asc" | "desc";
 }

@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * Transaction Flow Modal
@@ -7,21 +7,23 @@
  * Each step shows an icon reflecting its status (pending, active, completed, error).
  */
 
+import type { FlowStepState } from "./useTransactionFlow";
+
 import {
   Modal,
   ModalContent,
   ModalHeader,
   ModalBody,
   ModalFooter,
-} from '@heroui/modal';
-import { Button } from '@heroui/button';
+} from "@heroui/modal";
+import { Button } from "@heroui/button";
+
 import {
   CheckCircleIcon,
   SpinnerIcon,
   ErrorCircleIcon,
   CircleIcon,
-} from '@/components/icons';
-import type { FlowStepState } from './useTransactionFlow';
+} from "@/components/icons";
 
 interface TransactionFlowModalProps {
   isOpen: boolean;
@@ -36,27 +38,27 @@ interface TransactionFlowModalProps {
 
 function StepIcon({ status }: { status: string }) {
   switch (status) {
-    case 'completed':
-      return <CheckCircleIcon size={20} className="text-primary" />;
-    case 'active':
-      return <SpinnerIcon size={20} className="text-primary animate-spin" />;
-    case 'error':
-      return <ErrorCircleIcon size={20} className="text-danger" />;
+    case "completed":
+      return <CheckCircleIcon className="text-primary" size={20} />;
+    case "active":
+      return <SpinnerIcon className="text-primary animate-spin" size={20} />;
+    case "error":
+      return <ErrorCircleIcon className="text-danger" size={20} />;
     default:
-      return <CircleIcon size={20} className="text-default-300" />;
+      return <CircleIcon className="text-default-300" size={20} />;
   }
 }
 
 function stepTextClass(status: string): string {
   switch (status) {
-    case 'completed':
-      return 'text-primary';
-    case 'active':
-      return 'font-semibold text-foreground';
-    case 'error':
-      return 'text-danger';
+    case "completed":
+      return "text-primary";
+    case "active":
+      return "font-semibold text-foreground";
+    case "error":
+      return "text-danger";
     default:
-      return 'text-default-400';
+      return "text-default-400";
   }
 }
 
@@ -72,9 +74,9 @@ export function TransactionFlowModal({
 }: TransactionFlowModalProps) {
   return (
     <Modal
-      isOpen={isOpen}
-      isDismissable={!isRunning}
       hideCloseButton={isRunning}
+      isDismissable={!isRunning}
+      isOpen={isOpen}
       size="sm"
       onClose={onClose}
     >
@@ -92,9 +94,9 @@ export function TransactionFlowModal({
                   <div className="flex ml-[9px]">
                     <div
                       className={`w-0.5 h-4 ${
-                        stepStates[i - 1].status === 'completed'
-                          ? 'bg-primary'
-                          : 'bg-default-200'
+                        stepStates[i - 1].status === "completed"
+                          ? "bg-primary"
+                          : "bg-default-200"
                       }`}
                     />
                   </div>
@@ -108,10 +110,10 @@ export function TransactionFlowModal({
                     <span className={`text-sm ${stepTextClass(step.status)}`}>
                       {step.label}
                     </span>
-                    {step.status === 'error' && step.error && (
+                    {step.status === "error" && step.error && (
                       <span className="text-xs text-danger mt-0.5 break-words">
                         {step.error.length > 120
-                          ? step.error.slice(0, 120) + '...'
+                          ? step.error.slice(0, 120) + "..."
                           : step.error}
                       </span>
                     )}
@@ -125,7 +127,7 @@ export function TransactionFlowModal({
         <ModalFooter>
           {hasError && (
             <>
-              <Button variant="flat" size="sm" onPress={onClose}>
+              <Button size="sm" variant="flat" onPress={onClose}>
                 Close
               </Button>
               <Button color="primary" size="sm" onPress={onRetry}>

@@ -1,34 +1,39 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import type { AccessControlType } from "@/features/access-control";
+
+import { useState } from "react";
 import {
   Modal,
   ModalContent,
   ModalHeader,
   ModalBody,
   ModalFooter,
-} from '@heroui/modal';
-import { Button } from '@heroui/button';
-import { Input } from '@heroui/input';
-import { Select, SelectItem } from '@heroui/select';
-import { useConnection, usePublicClient } from 'wagmi';
-import { useQuery } from '@tanstack/react-query';
-import { VenueFacetABI } from '@oddmaki-protocol/sdk';
-import { useCreateMarket } from '../hooks/useCreateMarket';
-import { TransactionFlowModal } from '@/lib/oddmaki/TransactionFlowModal';
-import { TagSelector } from './TagSelector';
-import { AccessControlTypeSelector } from '@/features/access-control';
-import type { AccessControlType } from '@/features/access-control';
-import { DIAMOND_ADDRESS } from '@/lib/oddmaki/constants';
-import { queryKeys } from '@/lib/oddmaki/queryKeys';
-import { getVenueId } from '@/config/venue.config';
+} from "@heroui/modal";
+import { Button } from "@heroui/button";
+import { Input } from "@heroui/input";
+import { Select, SelectItem } from "@heroui/select";
+import { useConnection, usePublicClient } from "wagmi";
+import { useQuery } from "@tanstack/react-query";
+import { VenueFacetABI } from "@oddmaki-protocol/sdk";
 
-const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+import { useCreateMarket } from "../hooks/useCreateMarket";
+
+import { TagSelector } from "./TagSelector";
+
+import { TransactionFlowModal } from "@/lib/oddmaki/TransactionFlowModal";
+import { AccessControlTypeSelector } from "@/features/access-control";
+import { DIAMOND_ADDRESS } from "@/lib/oddmaki/constants";
+import { queryKeys } from "@/lib/oddmaki/queryKeys";
+import { getVenueId } from "@/config/venue.config";
+
+const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
 function formatACAddress(addr: string | undefined): string {
   if (!addr || addr === ZERO_ADDRESS) {
-    return 'Public (no restrictions)';
+    return "Public (no restrictions)";
   }
+
   return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
 }
 
@@ -45,13 +50,14 @@ export function CreateMarketModal({ isOpen, onClose }: CreateMarketModalProps) {
 
   // Fetch venue data to display current AC and check operator status
   const { data: venue } = useQuery({
-    queryKey: queryKeys.venue.detail(venueId?.toString() ?? ''),
+    queryKey: queryKeys.venue.detail(venueId?.toString() ?? ""),
     queryFn: async () => {
       if (!publicClient || venueId === undefined) return null;
+
       return publicClient.readContract({
         address: DIAMOND_ADDRESS,
         abi: VenueFacetABI,
-        functionName: 'getVenue',
+        functionName: "getVenue",
         args: [venueId],
       });
     },
@@ -59,44 +65,44 @@ export function CreateMarketModal({ isOpen, onClose }: CreateMarketModalProps) {
     staleTime: 60_000,
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const venueData = venue as any;
   const isOperator =
     !!address &&
     !!venueData?.operator &&
     venueData.operator.toLowerCase() === address.toLowerCase();
 
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [tickSize, setTickSize] = useState('0.01');
-  const [formError, setFormError] = useState('');
+  const [tickSize, setTickSize] = useState("0.01");
+  const [formError, setFormError] = useState("");
   const [flowActive, setFlowActive] = useState(false);
 
   // AC override state
-  const [tradingACType, setTradingACType] = useState<AccessControlType>('public');
-  const [tradingCustomAddress, setTradingCustomAddress] = useState('');
-  const [tradingNftContract, setTradingNftContract] = useState('');
-  const [tradingNftTokenId, setTradingNftTokenId] = useState('0');
-  const [tradingTokenContract, setTradingTokenContract] = useState('');
-  const [tradingTokenMinBalance, setTradingTokenMinBalance] = useState('');
+  const [tradingACType, setTradingACType] =
+    useState<AccessControlType>("public");
+  const [tradingCustomAddress, setTradingCustomAddress] = useState("");
+  const [tradingNftContract, setTradingNftContract] = useState("");
+  const [tradingNftTokenId, setTradingNftTokenId] = useState("0");
+  const [tradingTokenContract, setTradingTokenContract] = useState("");
+  const [tradingTokenMinBalance, setTradingTokenMinBalance] = useState("");
 
   const resetForm = () => {
-    setTitle('');
-    setDescription('');
+    setTitle("");
+    setDescription("");
     setTags([]);
     setImageFile(null);
     setImagePreview(null);
-    setTickSize('0.01');
-    setFormError('');
-    setTradingACType('public');
-    setTradingCustomAddress('');
-    setTradingNftContract('');
-    setTradingNftTokenId('0');
-    setTradingTokenContract('');
-    setTradingTokenMinBalance('');
+    setTickSize("0.01");
+    setFormError("");
+    setTradingACType("public");
+    setTradingCustomAddress("");
+    setTradingNftContract("");
+    setTradingNftTokenId("0");
+    setTradingTokenContract("");
+    setTradingTokenMinBalance("");
   };
 
   const handleClose = () => {
@@ -109,14 +115,16 @@ export function CreateMarketModal({ isOpen, onClose }: CreateMarketModalProps) {
   };
 
   const handleSubmit = async () => {
-    setFormError('');
+    setFormError("");
 
     if (!title.trim()) {
-      setFormError('Market question is required');
+      setFormError("Market question is required");
+
       return;
     }
     if (!description.trim()) {
-      setFormError('Resolution criteria is required');
+      setFormError("Resolution criteria is required");
+
       return;
     }
 
@@ -129,7 +137,7 @@ export function CreateMarketModal({ isOpen, onClose }: CreateMarketModalProps) {
       // Optional image for market metadata
       ...(imageFile ? { imageFile } : {}),
       // AC override params (only if operator selected non-public)
-      ...(isOperator && tradingACType !== 'public'
+      ...(isOperator && tradingACType !== "public"
         ? {
             tradingACType,
             tradingCustomAddress,
@@ -158,20 +166,20 @@ export function CreateMarketModal({ isOpen, onClose }: CreateMarketModalProps) {
   if (flowActive) {
     return (
       <TransactionFlowModal
-        isOpen={isOpen}
-        onClose={handleFlowClose}
-        title="Creating Market"
-        stepStates={flow.stepStates}
-        isRunning={flow.isRunning}
-        isComplete={flow.isComplete}
         hasError={flow.hasError}
+        isComplete={flow.isComplete}
+        isOpen={isOpen}
+        isRunning={flow.isRunning}
+        stepStates={flow.stepStates}
+        title="Creating Market"
+        onClose={handleFlowClose}
         onRetry={flow.retry}
       />
     );
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} size="lg">
+    <Modal isOpen={isOpen} size="lg" onClose={handleClose}>
       <ModalContent>
         <ModalHeader>
           <h2 className="text-xl font-bold">Create Market</h2>
@@ -179,25 +187,25 @@ export function CreateMarketModal({ isOpen, onClose }: CreateMarketModalProps) {
 
         <ModalBody className="gap-4">
           <Input
+            isRequired
             label="Question"
             placeholder="Will BTC reach $100k by end of 2026?"
             value={title}
             onValueChange={(v) => {
               setTitle(v);
-              setFormError('');
+              setFormError("");
             }}
-            isRequired
           />
 
           <Input
+            isRequired
             label="Resolution Criteria"
             placeholder="Resolves YES if the price of BTC on CoinGecko exceeds $100,000 at any point before January 1, 2027."
             value={description}
             onValueChange={(v) => {
               setDescription(v);
-              setFormError('');
+              setFormError("");
             }}
-            isRequired
           />
 
           <TagSelector selectedTags={tags} onChange={setTags} />
@@ -211,14 +219,14 @@ export function CreateMarketModal({ isOpen, onClose }: CreateMarketModalProps) {
               <div className="relative w-full">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={imagePreview}
                   alt="Market thumbnail preview"
                   className="w-full h-32 object-cover rounded-lg"
+                  src={imagePreview}
                 />
                 <Button
+                  className="absolute top-2 right-2"
                   size="sm"
                   variant="flat"
-                  className="absolute top-2 right-2"
                   onPress={() => {
                     setImageFile(null);
                     setImagePreview(null);
@@ -233,11 +241,12 @@ export function CreateMarketModal({ isOpen, onClose }: CreateMarketModalProps) {
                   Click to upload an image
                 </span>
                 <input
-                  type="file"
                   accept="image/*"
                   className="hidden"
+                  type="file"
                   onChange={(e) => {
                     const file = e.target.files?.[0];
+
                     if (file) {
                       setImageFile(file);
                       setImagePreview(URL.createObjectURL(file));
@@ -249,14 +258,19 @@ export function CreateMarketModal({ isOpen, onClose }: CreateMarketModalProps) {
           </div>
 
           <Select
+            description={
+              tickSize === "0.01"
+                ? "100 price levels (standard)"
+                : "1,000 price levels (fine)"
+            }
             label="Tick Size"
             selectedKeys={[tickSize]}
+            size="sm"
             onSelectionChange={(keys) => {
               const selected = Array.from(keys)[0] as string;
+
               if (selected) setTickSize(selected);
             }}
-            size="sm"
-            description={tickSize === '0.01' ? '100 price levels (standard)' : '1,000 price levels (fine)'}
           >
             <SelectItem key="0.01">$0.01 (1%)</SelectItem>
             <SelectItem key="0.001">$0.001 (0.1%)</SelectItem>
@@ -274,34 +288,33 @@ export function CreateMarketModal({ isOpen, onClose }: CreateMarketModalProps) {
               <div className="flex flex-col gap-1">
                 <p className="text-sm font-medium">Trading Access Control</p>
                 <p className="text-xs text-default-400">
-                  Venue default: {formatACAddress(venueData?.tradingAccessControl)}
+                  Venue default:{" "}
+                  {formatACAddress(venueData?.tradingAccessControl)}
                 </p>
                 <p className="text-xs text-default-400">
-                  Select &quot;Public&quot; to inherit the venue setting, or choose a
-                  different type to override for this market only.
+                  Select &quot;Public&quot; to inherit the venue setting, or
+                  choose a different type to override for this market only.
                 </p>
               </div>
               <AccessControlTypeSelector
+                customAddress={tradingCustomAddress}
                 label="Market Trading Access Control"
+                nftContract={tradingNftContract}
+                nftTokenId={tradingNftTokenId}
+                tokenContract={tradingTokenContract}
+                tokenMinBalance={tradingTokenMinBalance}
                 value={tradingACType}
                 onChange={setTradingACType}
-                customAddress={tradingCustomAddress}
                 onCustomAddressChange={setTradingCustomAddress}
-                nftContract={tradingNftContract}
                 onNftContractChange={setTradingNftContract}
-                nftTokenId={tradingNftTokenId}
                 onNftTokenIdChange={setTradingNftTokenId}
-                tokenContract={tradingTokenContract}
                 onTokenContractChange={setTradingTokenContract}
-                tokenMinBalance={tradingTokenMinBalance}
                 onTokenMinBalanceChange={setTradingTokenMinBalance}
               />
             </div>
           )}
 
-          {formError && (
-            <p className="text-danger text-sm">{formError}</p>
-          )}
+          {formError && <p className="text-danger text-sm">{formError}</p>}
         </ModalBody>
 
         <ModalFooter>
@@ -310,8 +323,8 @@ export function CreateMarketModal({ isOpen, onClose }: CreateMarketModalProps) {
           </Button>
           <Button
             color="primary"
-            onPress={handleSubmit}
             isDisabled={!title.trim() || !description.trim()}
+            onPress={handleSubmit}
           >
             Create Market
           </Button>

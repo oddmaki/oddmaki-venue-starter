@@ -1,7 +1,8 @@
-'use client';
+"use client";
 
-import { useState, useCallback } from 'react';
-import { useOddMakiClient } from '@/lib/oddmaki/hooks';
+import { useState, useCallback } from "react";
+
+import { useOddMakiClient } from "@/lib/oddmaki/hooks";
 
 /**
  * Hook for checking if an address is whitelisted on demand.
@@ -22,6 +23,7 @@ export function useCheckWhitelist(acContract: `0x${string}` | undefined) {
           acContract,
           user,
         });
+
         setResult(allowed);
       } finally {
         setIsLoading(false);

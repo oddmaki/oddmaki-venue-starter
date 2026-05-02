@@ -1,20 +1,21 @@
-'use client';
+"use client";
 
-import { useConnection } from 'wagmi';
-import { useOddMakiClient } from '@/lib/oddmaki/hooks';
-import { useTransaction } from '@/lib/oddmaki/useTransaction';
-import { queryKeys } from '@/lib/oddmaki/queryKeys';
+import { useConnection } from "wagmi";
+
+import { useOddMakiClient } from "@/lib/oddmaki/hooks";
+import { useTransaction } from "@/lib/oddmaki/useTransaction";
+import { queryKeys } from "@/lib/oddmaki/queryKeys";
 
 export function useRedeemWinnings(marketId: string) {
   const client = useOddMakiClient();
   const { address } = useConnection();
 
-  const marketIdBig = BigInt(marketId || '0');
+  const marketIdBig = BigInt(marketId || "0");
 
   const { execute, isLoading, error } = useTransaction({
-    pendingMessage: 'Redeeming winnings...',
-    successMessage: 'Winnings redeemed',
-    errorMessage: 'Redemption failed',
+    pendingMessage: "Redeeming winnings...",
+    successMessage: "Winnings redeemed",
+    errorMessage: "Redemption failed",
     invalidateKeys: address
       ? [
           queryKeys.positions.byMarketUser(marketIdBig, address),

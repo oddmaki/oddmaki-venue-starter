@@ -1,15 +1,18 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Card, CardHeader, CardBody } from '@heroui/card';
-import { Button } from '@heroui/button';
-import { Chip } from '@heroui/chip';
-import { useVenueData } from '@/features/venue/hooks/useVenueData';
-import { useMarketTradingAC } from '../hooks/useMarketTradingAC';
-import { useWhitelistOwner } from '../hooks/useWhitelistOwner';
-import { WhitelistManagementModal } from './WhitelistManagementModal';
+import { useState } from "react";
+import { Card, CardHeader, CardBody } from "@heroui/card";
+import { Button } from "@heroui/button";
+import { Chip } from "@heroui/chip";
 
-const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+import { useMarketTradingAC } from "../hooks/useMarketTradingAC";
+import { useWhitelistOwner } from "../hooks/useWhitelistOwner";
+
+import { WhitelistManagementModal } from "./WhitelistManagementModal";
+
+import { useVenueData } from "@/features/venue/hooks/useVenueData";
+
+const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
 function truncateAddress(addr: string) {
   return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
@@ -54,17 +57,17 @@ export function MarketAccessControlPanel({
           <div className="flex items-center justify-between">
             <span className="text-sm text-default-500">Status</span>
             {isPublic ? (
-              <Chip size="sm" variant="flat" color="primary">
+              <Chip color="primary" size="sm" variant="flat">
                 Public
               </Chip>
             ) : (
               <div className="flex items-center gap-2">
                 <Chip
+                  color={hasMarketOverride ? "secondary" : "default"}
                   size="sm"
                   variant="flat"
-                  color={hasMarketOverride ? 'secondary' : 'default'}
                 >
-                  {hasMarketOverride ? 'Market Override' : 'Venue Level'}
+                  {hasMarketOverride ? "Market Override" : "Venue Level"}
                 </Chip>
                 <span className="font-mono text-xs">
                   {truncateAddress(effectiveAC!)}
@@ -76,8 +79,8 @@ export function MarketAccessControlPanel({
           {/* Manage whitelist button */}
           {isWhitelist && (
             <Button
-              variant="flat"
               size="sm"
+              variant="flat"
               onPress={() => setWhitelistOpen(true)}
             >
               Manage Whitelist
@@ -88,14 +91,14 @@ export function MarketAccessControlPanel({
 
       {isWhitelist && effectiveAC && (
         <WhitelistManagementModal
-          isOpen={whitelistOpen}
-          onClose={() => setWhitelistOpen(false)}
           acContract={effectiveAC as `0x${string}`}
+          isOpen={whitelistOpen}
           title={
             hasMarketOverride
-              ? 'Market Trading Whitelist'
-              : 'Venue Trading Whitelist'
+              ? "Market Trading Whitelist"
+              : "Venue Trading Whitelist"
           }
+          onClose={() => setWhitelistOpen(false)}
         />
       )}
     </>

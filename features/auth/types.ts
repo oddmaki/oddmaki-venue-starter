@@ -5,7 +5,7 @@
  */
 
 /** Supported auth provider identifiers. Configured via NEXT_PUBLIC_AUTH_PROVIDER. */
-export type AuthProviderType = 'privy' | 'rainbowkit';
+export type AuthProviderType = "privy" | "rainbowkit";
 
 /** Props for auth provider wrapper components. Each adapter must accept these. */
 export interface AuthProviderProps {

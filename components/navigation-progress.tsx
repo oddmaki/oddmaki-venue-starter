@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { Suspense, useEffect, useRef, useState } from 'react';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { Suspense, useEffect, useRef, useState } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
 
 function NavigationProgressInner() {
   const pathname = usePathname();
@@ -41,7 +41,6 @@ function NavigationProgressInner() {
 
   useEffect(() => {
     finish();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname, searchParams]);
 
   useEffect(() => {
@@ -50,6 +49,7 @@ function NavigationProgressInner() {
       updateProgress(10);
       tickRef.current = setInterval(() => {
         const current = progressRef.current;
+
         if (current === null || current >= 90) return;
         updateProgress(current + (90 - current) * 0.15);
       }, 200);
@@ -59,21 +59,31 @@ function NavigationProgressInner() {
     const handleClick = (event: MouseEvent) => {
       if (event.defaultPrevented) return;
       if (event.button !== 0) return;
-      if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+      if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey)
+        return;
 
-      const anchor = (event.target as HTMLElement | null)?.closest('a');
+      const anchor = (event.target as HTMLElement | null)?.closest("a");
+
       if (!anchor) return;
 
-      const targetAttr = anchor.getAttribute('target');
-      if (targetAttr && targetAttr !== '_self') return;
-      if (anchor.hasAttribute('download')) return;
+      const targetAttr = anchor.getAttribute("target");
 
-      const href = anchor.getAttribute('href');
-      if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:')) {
+      if (targetAttr && targetAttr !== "_self") return;
+      if (anchor.hasAttribute("download")) return;
+
+      const href = anchor.getAttribute("href");
+
+      if (
+        !href ||
+        href.startsWith("#") ||
+        href.startsWith("mailto:") ||
+        href.startsWith("tel:")
+      ) {
         return;
       }
 
       let url: URL;
+
       try {
         url = new URL(href, window.location.href);
       } catch {
@@ -81,16 +91,20 @@ function NavigationProgressInner() {
       }
 
       if (url.origin !== window.location.origin) return;
-      if (url.pathname === window.location.pathname && url.search === window.location.search) {
+      if (
+        url.pathname === window.location.pathname &&
+        url.search === window.location.search
+      ) {
         return;
       }
 
       start();
     };
 
-    document.addEventListener('click', handleClick, true);
+    document.addEventListener("click", handleClick, true);
+
     return () => {
-      document.removeEventListener('click', handleClick, true);
+      document.removeEventListener("click", handleClick, true);
       clearTimers();
     };
   }, []);
@@ -110,8 +124,8 @@ function NavigationProgressInner() {
           width: `${progress}%`,
           opacity: isComplete ? 0 : 1,
           transition: isComplete
-            ? 'width 200ms ease-out, opacity 250ms ease-out 150ms'
-            : 'width 200ms ease-out',
+            ? "width 200ms ease-out, opacity 250ms ease-out 150ms"
+            : "width 200ms ease-out",
         }}
       />
     </div>

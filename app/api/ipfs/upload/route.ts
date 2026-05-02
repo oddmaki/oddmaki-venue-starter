@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { PinataSDK } from 'pinata';
+import { NextRequest, NextResponse } from "next/server";
+import { PinataSDK } from "pinata";
 
 const pinata = new PinataSDK({
   pinataJwt: process.env.PINATA_JWT,
@@ -18,22 +18,23 @@ const pinata = new PinataSDK({
 export async function POST(request: NextRequest) {
   if (!process.env.PINATA_JWT) {
     return NextResponse.json(
-      { error: 'PINATA_JWT not configured' },
+      { error: "PINATA_JWT not configured" },
       { status: 500 },
     );
   }
 
-  const contentType = request.headers.get('content-type') || '';
+  const contentType = request.headers.get("content-type") || "";
 
   try {
     let file: File;
 
-    if (contentType.includes('multipart/form-data')) {
+    if (contentType.includes("multipart/form-data")) {
       const formData = await request.formData();
-      const uploaded = formData.get('file');
+      const uploaded = formData.get("file");
+
       if (!uploaded || !(uploaded instanceof File)) {
         return NextResponse.json(
-          { error: 'No file provided' },
+          { error: "No file provided" },
           { status: 400 },
         );
       }
@@ -41,11 +42,10 @@ export async function POST(request: NextRequest) {
     } else {
       // JSON upload — wrap as a File for the unified v3 API
       const body = await request.json();
-      file = new File(
-        [JSON.stringify(body)],
-        'metadata.json',
-        { type: 'application/json' },
-      );
+
+      file = new File([JSON.stringify(body)], "metadata.json", {
+        type: "application/json",
+      });
     }
 
     const result = await pinata.upload.public.file(file);
@@ -55,7 +55,8 @@ export async function POST(request: NextRequest) {
       uri: `ipfs://${result.cid}`,
     });
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Unknown error';
+    const message = err instanceof Error ? err.message : "Unknown error";
+
     return NextResponse.json(
       { error: `Upload failed: ${message}` },
       { status: 500 },

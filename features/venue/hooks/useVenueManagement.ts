@@ -1,23 +1,24 @@
-'use client';
+"use client";
 
-import { useOddMakiClient } from '@/lib/oddmaki/hooks';
-import { useTransaction } from '@/lib/oddmaki/useTransaction';
-import { queryKeys } from '@/lib/oddmaki/queryKeys';
-import { getVenueId } from '@/config/venue.config';
+import { useOddMakiClient } from "@/lib/oddmaki/hooks";
+import { useTransaction } from "@/lib/oddmaki/useTransaction";
+import { queryKeys } from "@/lib/oddmaki/queryKeys";
+import { getVenueId } from "@/config/venue.config";
 
 export function useUpdateVenueFees() {
   const client = useOddMakiClient();
   const venueId = getVenueId();
 
   const { execute, isLoading, error } = useTransaction({
-    pendingMessage: 'Updating venue fees...',
-    successMessage: 'Venue fees updated!',
-    errorMessage: 'Failed to update fees',
+    pendingMessage: "Updating venue fees...",
+    successMessage: "Venue fees updated!",
+    errorMessage: "Failed to update fees",
     invalidateKeys: [queryKeys.venue.all],
   });
 
   const updateFees = async (venueFeeBps: number, creatorFeeBps: number) => {
     if (venueId === undefined) return;
+
     return execute(() =>
       client.venue.updateFees({ venueId, venueFeeBps, creatorFeeBps }),
     );
@@ -31,9 +32,9 @@ export function useUpdateOracleParams() {
   const venueId = getVenueId();
 
   const { execute, isLoading, error } = useTransaction({
-    pendingMessage: 'Updating oracle params...',
-    successMessage: 'Oracle params updated!',
-    errorMessage: 'Failed to update oracle params',
+    pendingMessage: "Updating oracle params...",
+    successMessage: "Oracle params updated!",
+    errorMessage: "Failed to update oracle params",
     invalidateKeys: [queryKeys.venue.all],
   });
 
@@ -42,6 +43,7 @@ export function useUpdateOracleParams() {
     umaMinBond: bigint,
   ) => {
     if (venueId === undefined) return;
+
     return execute(() =>
       client.venue.updateOracleParams({ venueId, umaRewardAmount, umaMinBond }),
     );
@@ -55,14 +57,15 @@ export function useToggleVenuePause() {
   const venueId = getVenueId();
 
   const { execute, isLoading, error } = useTransaction({
-    pendingMessage: 'Updating venue status...',
-    successMessage: 'Venue status updated!',
-    errorMessage: 'Failed to update venue status',
+    pendingMessage: "Updating venue status...",
+    successMessage: "Venue status updated!",
+    errorMessage: "Failed to update venue status",
     invalidateKeys: [queryKeys.venue.all],
   });
 
   const togglePause = async (currentlyActive: boolean) => {
     if (venueId === undefined) return;
+
     return execute(() => client.venue.setPaused(venueId, currentlyActive));
   };
 
@@ -74,9 +77,9 @@ export function useUpdateVenue() {
   const venueId = getVenueId();
 
   const { execute, isLoading, error } = useTransaction({
-    pendingMessage: 'Updating venue...',
-    successMessage: 'Venue updated!',
-    errorMessage: 'Failed to update venue',
+    pendingMessage: "Updating venue...",
+    successMessage: "Venue updated!",
+    errorMessage: "Failed to update venue",
     invalidateKeys: [queryKeys.venue.all],
   });
 
@@ -88,9 +91,8 @@ export function useUpdateVenue() {
     feeRecipient: `0x${string}`;
   }) => {
     if (venueId === undefined) return;
-    return execute(() =>
-      client.venue.updateVenue({ venueId, ...params }),
-    );
+
+    return execute(() => client.venue.updateVenue({ venueId, ...params }));
   };
 
   return { updateVenue, isLoading, error };

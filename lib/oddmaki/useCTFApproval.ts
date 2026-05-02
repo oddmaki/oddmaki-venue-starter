@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * CTF (Conditional Tokens) Approval Hook
@@ -7,35 +7,37 @@
  * on the ConditionalTokens contract. Required for selling outcome tokens.
  */
 
-import { useQuery } from '@tanstack/react-query';
-import { useConnection, usePublicClient } from 'wagmi';
-import type { Address } from 'viem';
-import { useTransaction } from './useTransaction';
-import { queryKeys } from './queryKeys';
-import { CTF_ADDRESS, DIAMOND_ADDRESS } from './constants';
-import { useOddMakiClient } from './hooks';
+import type { Address } from "viem";
+
+import { useQuery } from "@tanstack/react-query";
+import { useConnection, usePublicClient } from "wagmi";
+
+import { useTransaction } from "./useTransaction";
+import { queryKeys } from "./queryKeys";
+import { CTF_ADDRESS, DIAMOND_ADDRESS } from "./constants";
+import { useOddMakiClient } from "./hooks";
 
 // ERC-1155 ABI subset for approval (not in SDK's ConditionalTokens ABI)
 const ERC1155_APPROVAL_ABI = [
   {
-    type: 'function',
-    name: 'isApprovedForAll',
+    type: "function",
+    name: "isApprovedForAll",
     inputs: [
-      { name: 'account', type: 'address' },
-      { name: 'operator', type: 'address' },
+      { name: "account", type: "address" },
+      { name: "operator", type: "address" },
     ],
-    outputs: [{ name: '', type: 'bool' }],
-    stateMutability: 'view',
+    outputs: [{ name: "", type: "bool" }],
+    stateMutability: "view",
   },
   {
-    type: 'function',
-    name: 'setApprovalForAll',
+    type: "function",
+    name: "setApprovalForAll",
     inputs: [
-      { name: 'operator', type: 'address' },
-      { name: 'approved', type: 'bool' },
+      { name: "operator", type: "address" },
+      { name: "approved", type: "bool" },
     ],
     outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: "nonpayable",
   },
 ] as const;
 
@@ -44,7 +46,9 @@ interface UseCTFApprovalOptions {
   operator?: Address;
 }
 
-export function useCTFApproval({ operator = DIAMOND_ADDRESS }: UseCTFApprovalOptions = {}) {
+export function useCTFApproval({
+  operator = DIAMOND_ADDRESS,
+}: UseCTFApprovalOptions = {}) {
   const { address } = useConnection();
   const publicClient = usePublicClient();
   const client = useOddMakiClient();
@@ -59,7 +63,7 @@ export function useCTFApproval({ operator = DIAMOND_ADDRESS }: UseCTFApprovalOpt
       publicClient!.readContract({
         address: CTF_ADDRESS,
         abi: ERC1155_APPROVAL_ABI,
-        functionName: 'isApprovedForAll',
+        functionName: "isApprovedForAll",
         args: [address!, operator],
       }),
     enabled: !!address && !!publicClient,
@@ -68,9 +72,9 @@ export function useCTFApproval({ operator = DIAMOND_ADDRESS }: UseCTFApprovalOpt
   const needsApproval = isApproved === false;
 
   const { execute, isLoading: isApproving } = useTransaction({
-    pendingMessage: 'Approving outcome tokens...',
-    successMessage: 'Outcome tokens approved',
-    errorMessage: 'CTF approval failed',
+    pendingMessage: "Approving outcome tokens...",
+    successMessage: "Outcome tokens approved",
+    errorMessage: "CTF approval failed",
     invalidateKeys: address ? [queryKeys.approval.ctf(address, operator)] : [],
   });
 
@@ -84,12 +88,11 @@ export function useCTFApproval({ operator = DIAMOND_ADDRESS }: UseCTFApprovalOpt
       const { request } = await publicClient!.simulateContract({
         address: CTF_ADDRESS,
         abi: ERC1155_APPROVAL_ABI,
-        functionName: 'setApprovalForAll',
+        functionName: "setApprovalForAll",
         args: [operator, true],
         account,
       });
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return wallet.writeContract(request as any);
     });
 

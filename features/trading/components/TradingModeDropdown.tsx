@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React, {
   useState,
@@ -6,25 +6,26 @@ import React, {
   useEffect,
   useCallback,
   useLayoutEffect,
-} from 'react';
-import { createPortal } from 'react-dom';
-import { Button } from '@heroui/button';
-import { ChevronDownIcon } from '@/components/icons';
+} from "react";
+import { createPortal } from "react-dom";
+import { Button } from "@heroui/button";
+
+import { ChevronDownIcon } from "@/components/icons";
 
 interface TradingModeDropdownProps {
-  mode: 'market' | 'limit';
-  onModeChange: (mode: 'market' | 'limit') => void;
+  mode: "market" | "limit";
+  onModeChange: (mode: "market" | "limit") => void;
   onSplitOpen: () => void;
   onMergeOpen: () => void;
 }
 
-const MODE_LABELS: Record<'market' | 'limit', string> = {
-  market: 'Market',
-  limit: 'Limit',
+const MODE_LABELS: Record<"market" | "limit", string> = {
+  market: "Market",
+  limit: "Limit",
 };
 
 const MENU_ITEM =
-  'flex items-center justify-between w-full px-3 py-1.5 rounded-md text-sm hover:bg-default-100 cursor-pointer transition-colors';
+  "flex items-center justify-between w-full px-3 py-1.5 rounded-md text-sm hover:bg-default-100 cursor-pointer transition-colors";
 
 export function TradingModeDropdown({
   mode,
@@ -44,6 +45,7 @@ export function TradingModeDropdown({
   useLayoutEffect(() => {
     if (!isOpen || !triggerRef.current) return;
     const rect = triggerRef.current.getBoundingClientRect();
+
     setMenuPos({
       top: rect.bottom + 4,
       left: rect.right,
@@ -55,6 +57,7 @@ export function TradingModeDropdown({
     if (!isOpen) return;
     const handler = (e: MouseEvent) => {
       const target = e.target as Node;
+
       if (
         triggerRef.current?.contains(target) ||
         menuRef.current?.contains(target)
@@ -63,8 +66,10 @@ export function TradingModeDropdown({
       }
       setIsOpen(false);
     };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
+
+    document.addEventListener("mousedown", handler);
+
+    return () => document.removeEventListener("mousedown", handler);
   }, [isOpen]);
 
   const close = useCallback(() => {
@@ -74,16 +79,16 @@ export function TradingModeDropdown({
   const handleSelect = useCallback(
     (action: string) => {
       switch (action) {
-        case 'market':
-          onModeChange('market');
+        case "market":
+          onModeChange("market");
           break;
-        case 'limit':
-          onModeChange('limit');
+        case "limit":
+          onModeChange("limit");
           break;
-        case 'split':
+        case "split":
           onSplitOpen();
           break;
-        case 'merge':
+        case "merge":
           onMergeOpen();
           break;
       }
@@ -112,21 +117,18 @@ export function TradingModeDropdown({
 
   // Click toggles between market/limit and closes the menu
   const handleClick = () => {
-    onModeChange(mode === 'market' ? 'limit' : 'market');
+    onModeChange(mode === "market" ? "limit" : "market");
     setIsOpen(false);
   };
 
   return (
     <>
-      <div
-        onMouseEnter={handleTriggerEnter}
-        onMouseLeave={handleTriggerLeave}
-      >
+      <div onMouseEnter={handleTriggerEnter} onMouseLeave={handleTriggerLeave}>
         <Button
           ref={triggerRef}
-          variant="flat"
-          size="sm"
           endContent={<ChevronDownIcon size={14} />}
+          size="sm"
+          variant="flat"
           onPress={handleClick}
         >
           {MODE_LABELS[mode]}
@@ -138,35 +140,32 @@ export function TradingModeDropdown({
           <div
             ref={menuRef}
             className="fixed bg-content1 border border-default-200 rounded-lg shadow-lg p-1 min-w-[120px] z-[9999]"
-            style={{ top: menuPos.top, right: window.innerWidth - menuPos.left }}
+            style={{
+              top: menuPos.top,
+              right: window.innerWidth - menuPos.left,
+            }}
             onMouseEnter={handleMenuEnter}
             onMouseLeave={handleMenuLeave}
           >
             <button
-              className={`${MENU_ITEM} ${mode === 'market' ? 'text-primary' : ''}`}
-              onClick={() => handleSelect('market')}
+              className={`${MENU_ITEM} ${mode === "market" ? "text-primary" : ""}`}
+              onClick={() => handleSelect("market")}
             >
               Market
             </button>
             <button
-              className={`${MENU_ITEM} ${mode === 'limit' ? 'text-primary' : ''}`}
-              onClick={() => handleSelect('limit')}
+              className={`${MENU_ITEM} ${mode === "limit" ? "text-primary" : ""}`}
+              onClick={() => handleSelect("limit")}
             >
               Limit
             </button>
 
             <div className="my-1 border-t border-default-200" />
 
-            <button
-              className={MENU_ITEM}
-              onClick={() => handleSelect('merge')}
-            >
+            <button className={MENU_ITEM} onClick={() => handleSelect("merge")}>
               Merge
             </button>
-            <button
-              className={MENU_ITEM}
-              onClick={() => handleSelect('split')}
-            >
+            <button className={MENU_ITEM} onClick={() => handleSelect("split")}>
               Split
             </button>
           </div>,

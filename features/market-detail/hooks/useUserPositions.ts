@@ -1,10 +1,12 @@
-'use client';
+"use client";
 
-import { useQuery } from '@tanstack/react-query';
-import { useConnection } from 'wagmi';
-import { useOddMakiClient } from '@/lib/oddmaki/hooks';
-import { queryKeys } from '@/lib/oddmaki/queryKeys';
-import type { Address } from 'viem';
+import type { Address } from "viem";
+
+import { useQuery } from "@tanstack/react-query";
+import { useConnection } from "wagmi";
+
+import { useOddMakiClient } from "@/lib/oddmaki/hooks";
+import { queryKeys } from "@/lib/oddmaki/queryKeys";
 
 export interface UserPositions {
   YES: string;
@@ -27,6 +29,7 @@ export function useUserPositions(marketId: string) {
         address as Address,
         { formatted: true },
       );
+
       return balances as UserPositions;
     },
     enabled: !!address && !!marketId,

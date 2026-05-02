@@ -1,10 +1,12 @@
-'use client';
+"use client";
 
-import { useQuery } from '@tanstack/react-query';
-import { useConnection } from 'wagmi';
-import { useOddMakiClient } from '@/lib/oddmaki/hooks';
-import { queryKeys } from '@/lib/oddmaki/queryKeys';
-import type { Address } from 'viem';
+import type { Address } from "viem";
+
+import { useQuery } from "@tanstack/react-query";
+import { useConnection } from "wagmi";
+
+import { useOddMakiClient } from "@/lib/oddmaki/hooks";
+import { queryKeys } from "@/lib/oddmaki/queryKeys";
 
 export interface SubgraphOrder {
   id: string;
@@ -34,11 +36,11 @@ export function useUserOrders(marketId: string) {
         first: 100,
       })) as any;
       const rawOrders: any[] = result.orders || [];
+
       // Flatten nested fields and filter to this user's orders
       return rawOrders
         .filter(
-          (o) =>
-            o.trader?.address?.toLowerCase() === address!.toLowerCase(),
+          (o) => o.trader?.address?.toLowerCase() === address!.toLowerCase(),
         )
         .map((o) => ({
           id: o.id,
@@ -49,7 +51,7 @@ export function useUserOrders(marketId: string) {
           amount: o.amount,
           filled: o.filled,
           status: o.status,
-          trader: o.trader?.address ?? '',
+          trader: o.trader?.address ?? "",
           createdAt: o.createdAt,
         }));
     },

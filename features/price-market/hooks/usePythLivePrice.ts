@@ -1,9 +1,10 @@
-'use client';
+"use client";
 
-import { useQuery } from '@tanstack/react-query';
-import { queryKeys } from '@/lib/oddmaki/queryKeys';
+import { useQuery } from "@tanstack/react-query";
 
-const PYTH_HERMES_BASE = 'https://hermes.pyth.network';
+import { queryKeys } from "@/lib/oddmaki/queryKeys";
+
+const PYTH_HERMES_BASE = "https://hermes.pyth.network";
 
 export interface PythLivePrice {
   /** Human-readable price (e.g., 67432.15) */
@@ -18,13 +19,15 @@ async function fetchPythLatestPrice(feedId: string): Promise<PythLivePrice> {
   const res = await fetch(
     `${PYTH_HERMES_BASE}/v2/updates/price/latest?ids[]=${feedId}`,
   );
+
   if (!res.ok) {
     throw new Error(`Pyth Hermes error (${res.status})`);
   }
   const data = await res.json();
   const parsed = data?.parsed?.[0];
+
   if (!parsed?.price) {
-    throw new Error('No price data returned from Pyth');
+    throw new Error("No price data returned from Pyth");
   }
 
   const expo = parsed.price.expo as number;
@@ -43,7 +46,7 @@ async function fetchPythLatestPrice(feedId: string): Promise<PythLivePrice> {
  */
 export function usePythLivePrice(feedId: string | undefined) {
   return useQuery({
-    queryKey: queryKeys.pyth.livePrice(feedId ?? ''),
+    queryKey: queryKeys.pyth.livePrice(feedId ?? ""),
     queryFn: () => fetchPythLatestPrice(feedId!),
     enabled: !!feedId,
     refetchInterval: 5_000,

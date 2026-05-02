@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * Generic Transaction Hook
@@ -7,11 +7,12 @@
  * Uses sonner for notifications and TanStack Query for cache invalidation.
  */
 
-import { useState, useCallback } from 'react';
-import { usePublicClient } from 'wagmi';
-import { useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
-import type { Hash } from 'viem';
+import type { Hash } from "viem";
+
+import { useState, useCallback } from "react";
+import { usePublicClient } from "wagmi";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 interface UseTransactionOptions {
   /** Toast message shown while waiting for confirmation */
@@ -30,11 +31,13 @@ interface UseTransactionReturn {
   error: Error | null;
 }
 
-export function useTransaction(options: UseTransactionOptions = {}): UseTransactionReturn {
+export function useTransaction(
+  options: UseTransactionOptions = {},
+): UseTransactionReturn {
   const {
-    pendingMessage = 'Transaction pending...',
-    successMessage = 'Transaction confirmed',
-    errorMessage = 'Transaction failed',
+    pendingMessage = "Transaction pending...",
+    successMessage = "Transaction confirmed",
+    errorMessage = "Transaction failed",
     invalidateKeys = [],
   } = options;
 
@@ -56,8 +59,11 @@ export function useTransaction(options: UseTransactionOptions = {}): UseTransact
         const hash = await txFn();
 
         if (publicClient) {
-          const receipt = await publicClient.waitForTransactionReceipt({ hash });
-          if (receipt.status === 'reverted') {
+          const receipt = await publicClient.waitForTransactionReceipt({
+            hash,
+          });
+
+          if (receipt.status === "reverted") {
             throw new Error(`Transaction reverted (tx: ${hash})`);
           }
         }
@@ -71,17 +77,27 @@ export function useTransaction(options: UseTransactionOptions = {}): UseTransact
 
         return hash;
       } catch (err) {
-        const message = err instanceof Error ? err.message : 'Unknown error';
+        const message = err instanceof Error ? err.message : "Unknown error";
         // Shorten the message for the toast
-        const shortMessage = message.length > 100 ? message.slice(0, 100) + '...' : message;
+        const shortMessage =
+          message.length > 100 ? message.slice(0, 100) + "..." : message;
+
         toast.error(`${errorMessage}: ${shortMessage}`, { id: toastId });
         setError(err instanceof Error ? err : new Error(message));
+
         return undefined;
       } finally {
         setIsLoading(false);
       }
     },
-    [publicClient, queryClient, pendingMessage, successMessage, errorMessage, invalidateKeys],
+    [
+      publicClient,
+      queryClient,
+      pendingMessage,
+      successMessage,
+      errorMessage,
+      invalidateKeys,
+    ],
   );
 
   return { execute, isLoading, error };

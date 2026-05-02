@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { Card, CardBody } from '@heroui/card';
+import { Card, CardBody } from "@heroui/card";
 
 interface EmptyStateProps {
   title?: string;
@@ -8,8 +8,8 @@ interface EmptyStateProps {
 }
 
 export function EmptyState({
-  title = 'No markets found',
-  description = 'There are currently no active markets. Check back later!',
+  title = "No markets found",
+  description = "There are currently no active markets. Check back later!",
 }: EmptyStateProps) {
   return (
     <Card className="w-full">

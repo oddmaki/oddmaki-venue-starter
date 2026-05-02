@@ -1,18 +1,21 @@
-'use client';
+"use client";
 
-import { useState, useMemo } from 'react';
-import { Card, CardHeader, CardBody } from '@heroui/card';
-import { Button } from '@heroui/button';
-import { Skeleton } from '@heroui/skeleton';
-import { useOrderbookLevels } from '../hooks/useOrderbookLevels';
-import { OrderbookRow } from './OrderbookRow';
-import { RefreshButton } from '@/lib/oddmaki/RefreshButton';
+import { useState, useMemo } from "react";
+import { Card, CardHeader, CardBody } from "@heroui/card";
+import { Button } from "@heroui/button";
+import { Skeleton } from "@heroui/skeleton";
+
+import { useOrderbookLevels } from "../hooks/useOrderbookLevels";
+
+import { OrderbookRow } from "./OrderbookRow";
+
+import { RefreshButton } from "@/lib/oddmaki/RefreshButton";
 
 interface OrderbookPanelProps {
   marketId: string;
   tickSize: string;
   outcomes: string[];
-  onPriceClick?: (price: string, tick: bigint, side: 'bid' | 'ask') => void;
+  onPriceClick?: (price: string, tick: bigint, side: "bid" | "ask") => void;
 }
 
 export function OrderbookPanel({
@@ -22,13 +25,19 @@ export function OrderbookPanel({
   onPriceClick,
 }: OrderbookPanelProps) {
   const [outcomeIndex, setOutcomeIndex] = useState(0);
-  const { data, isLoading, isFetching, refetch, error } = useOrderbookLevels(marketId, outcomeIndex, tickSize);
+  const { data, isLoading, isFetching, refetch, error } = useOrderbookLevels(
+    marketId,
+    outcomeIndex,
+    tickSize,
+  );
 
   // Compute max cumulative for depth bar scaling
   const maxCumulative = useMemo(() => {
     if (!data) return BigInt(1);
     const allLevels = [...data.bids, ...data.asks];
+
     if (allLevels.length === 0) return BigInt(1);
+
     return allLevels.reduce(
       (max, l) => (l.cumulativeRaw > max ? l.cumulativeRaw : max),
       BigInt(1),
@@ -41,22 +50,22 @@ export function OrderbookPanel({
         <h2 className="text-lg font-semibold">Orderbook</h2>
         <div className="flex items-center gap-1">
           <Button
+            color={outcomeIndex === 0 ? "primary" : "default"}
             size="sm"
-            variant={outcomeIndex === 0 ? 'solid' : 'flat'}
-            color={outcomeIndex === 0 ? 'primary' : 'default'}
+            variant={outcomeIndex === 0 ? "solid" : "flat"}
             onPress={() => setOutcomeIndex(0)}
           >
-            {outcomes[0] || 'Yes'}
+            {outcomes[0] || "Yes"}
           </Button>
           <Button
+            color={outcomeIndex === 1 ? "secondary" : "default"}
             size="sm"
-            variant={outcomeIndex === 1 ? 'solid' : 'flat'}
-            color={outcomeIndex === 1 ? 'secondary' : 'default'}
+            variant={outcomeIndex === 1 ? "solid" : "flat"}
             onPress={() => setOutcomeIndex(1)}
           >
-            {outcomes[1] || 'No'}
+            {outcomes[1] || "No"}
           </Button>
-          <RefreshButton onRefresh={() => refetch()} isFetching={isFetching} />
+          <RefreshButton isFetching={isFetching} onRefresh={() => refetch()} />
         </div>
       </CardHeader>
 
@@ -85,14 +94,16 @@ export function OrderbookPanel({
             {data.asks.map((level, i) => (
               <OrderbookRow
                 key={`ask-${level.tick.toString()}`}
+                depthRatio={Number(level.cumulativeRaw) / Number(maxCumulative)}
+                label={
+                  i === data.asks.length - 1
+                    ? { text: "Asks", color: "secondary" }
+                    : undefined
+                }
                 level={level}
                 side="ask"
-                depthRatio={
-                  Number(level.cumulativeRaw) / Number(maxCumulative)
-                }
-                label={i === data.asks.length - 1 ? { text: 'Asks', color: 'secondary' } : undefined}
                 onPriceClick={(price, tick) =>
-                  onPriceClick?.(price, tick, 'ask')
+                  onPriceClick?.(price, tick, "ask")
                 }
               />
             ))}
@@ -100,12 +111,12 @@ export function OrderbookPanel({
             {/* Spread row — last price left, spread center */}
             <div className="flex items-center h-7 px-2 border-y border-default-200 text-xs text-default-400">
               <span className="w-[25%] sm:w-[40%] truncate">
-                {data.bestBidPrice ? `Last: ${data.bestBidPrice}` : ''}
+                {data.bestBidPrice ? `Last: ${data.bestBidPrice}` : ""}
               </span>
               <span className="flex-1 text-center truncate">
                 {data.spread !== null
                   ? `Spread: ${data.spread}`
-                  : 'No spread data'}
+                  : "No spread data"}
               </span>
               <span className="w-[60px] sm:w-[70px]" />
             </div>
@@ -114,14 +125,12 @@ export function OrderbookPanel({
             {data.bids.map((level, i) => (
               <OrderbookRow
                 key={`bid-${level.tick.toString()}`}
+                depthRatio={Number(level.cumulativeRaw) / Number(maxCumulative)}
+                label={i === 0 ? { text: "Bids", color: "primary" } : undefined}
                 level={level}
                 side="bid"
-                depthRatio={
-                  Number(level.cumulativeRaw) / Number(maxCumulative)
-                }
-                label={i === 0 ? { text: 'Bids', color: 'primary' } : undefined}
                 onPriceClick={(price, tick) =>
-                  onPriceClick?.(price, tick, 'bid')
+                  onPriceClick?.(price, tick, "bid")
                 }
               />
             ))}

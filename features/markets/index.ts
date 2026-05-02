@@ -1,8 +1,8 @@
 // Types
-export * from './types';
+export * from "./types";
 
 // Hooks
-export * from './hooks/useMarkets';
+export * from "./hooks/useMarkets";
 
 // Components
-export * from './components';
+export * from "./components";

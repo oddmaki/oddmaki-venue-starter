@@ -1,21 +1,20 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Tabs, Tab } from '@heroui/tabs';
-import {
-  useLeaderboard,
-  LeaderboardTable,
-} from '@/features/leaderboard';
-import type { LeaderboardSortField } from '@/features/leaderboard';
+import type { LeaderboardSortField } from "@/features/leaderboard";
+
+import { useState } from "react";
+import { Tabs, Tab } from "@heroui/tabs";
+
+import { useLeaderboard, LeaderboardTable } from "@/features/leaderboard";
 
 const SORT_TABS: { key: LeaderboardSortField; label: string }[] = [
-  { key: 'totalVolume', label: 'Volume' },
-  { key: 'totalRealizedPnL', label: 'P&L' },
-  { key: 'totalTradeCount', label: 'Trades' },
+  { key: "totalVolume", label: "Volume" },
+  { key: "totalRealizedPnL", label: "P&L" },
+  { key: "totalTradeCount", label: "Trades" },
 ];
 
 export default function LeaderboardPage() {
-  const [sortBy, setSortBy] = useState<LeaderboardSortField>('totalVolume');
+  const [sortBy, setSortBy] = useState<LeaderboardSortField>("totalVolume");
   const { data: users = [], isLoading } = useLeaderboard(sortBy);
 
   return (
@@ -24,9 +23,9 @@ export default function LeaderboardPage() {
         <h1 className="text-2xl font-bold">Leaderboard</h1>
         <Tabs
           aria-label="Sort by"
-          variant="bordered"
-          size="sm"
           selectedKey={sortBy}
+          size="sm"
+          variant="bordered"
           onSelectionChange={(key) => setSortBy(key as LeaderboardSortField)}
         >
           {SORT_TABS.map((tab) => (
@@ -35,7 +34,7 @@ export default function LeaderboardPage() {
         </Tabs>
       </div>
 
-      <LeaderboardTable users={users} isLoading={isLoading} />
+      <LeaderboardTable isLoading={isLoading} users={users} />
     </section>
   );
 }

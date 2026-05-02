@@ -1,14 +1,15 @@
-'use client';
+"use client";
 
-import { useQuery } from '@tanstack/react-query';
-import { useOddMakiClient } from '@/lib/oddmaki/hooks';
-import { queryKeys } from '@/lib/oddmaki/queryKeys';
+import { useQuery } from "@tanstack/react-query";
+
+import { useOddMakiClient } from "@/lib/oddmaki/hooks";
+import { queryKeys } from "@/lib/oddmaki/queryKeys";
 
 export interface PriceChange {
   /** Absolute change in percentage points (e.g., +3.5 or -2.1) */
   change: number;
   /** Whether the price went up, down, or stayed the same */
-  direction: 'up' | 'down' | 'flat';
+  direction: "up" | "down" | "flat";
 }
 
 /**
@@ -23,7 +24,7 @@ export function useMarketPriceChange(
   const client = useOddMakiClient();
 
   return useQuery<PriceChange | null>({
-    queryKey: queryKeys.trades.chart(marketId, 'priceChange'),
+    queryKey: queryKeys.trades.chart(marketId, "priceChange"),
     queryFn: async () => {
       // Fetch early trades (oldest first, ascending order)
       // Pass timestampGte=0 to avoid null filter issues in subgraph
@@ -34,12 +35,12 @@ export function useMarketPriceChange(
       })) as any;
 
       const trades = result.trades || [];
+
       if (trades.length === 0) return null;
 
       // Find the first YES (outcome 0) trade
-      const firstYesTrade = trades.find(
-        (t: any) => String(t.outcome) === '0',
-      );
+      const firstYesTrade = trades.find((t: any) => String(t.outcome) === "0");
+
       if (!firstYesTrade) return null;
 
       return computeChange(firstYesTrade, tickSize, currentYesPrice);
@@ -56,16 +57,13 @@ function computeChange(
   currentYesPrice: number,
 ): PriceChange {
   const tickSizeNum = parseFloat(tickSize);
-  const initialPrice =
-    (parseFloat(trade.tick) * tickSizeNum) / 1e18;
+  const initialPrice = (parseFloat(trade.tick) * tickSizeNum) / 1e18;
   const initialPercentage = parseFloat((initialPrice * 100).toFixed(2));
 
-  const change = parseFloat(
-    (currentYesPrice - initialPercentage).toFixed(1),
-  );
+  const change = parseFloat((currentYesPrice - initialPercentage).toFixed(1));
 
   return {
     change,
-    direction: change > 0 ? 'up' : change < 0 ? 'down' : 'flat',
+    direction: change > 0 ? "up" : change < 0 ? "down" : "flat",
   };
 }

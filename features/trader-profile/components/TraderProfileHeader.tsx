@@ -1,10 +1,15 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Chip } from '@heroui/chip';
-import { Skeleton } from '@heroui/skeleton';
-import { Tooltip } from '@heroui/tooltip';
-import { AddressAvatar, generatePseudonym, shortenAddress } from '@/lib/identity';
+import { useState } from "react";
+import { Chip } from "@heroui/chip";
+import { Skeleton } from "@heroui/skeleton";
+import { Tooltip } from "@heroui/tooltip";
+
+import {
+  AddressAvatar,
+  generatePseudonym,
+  shortenAddress,
+} from "@/lib/identity";
 
 interface TraderProfileHeaderProps {
   address: string;
@@ -14,10 +19,15 @@ interface TraderProfileHeaderProps {
 
 function formatDate(timestamp: string): string {
   const date = new Date(parseInt(timestamp) * 1000);
-  return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+
+  return date.toLocaleDateString("en-US", { month: "short", year: "numeric" });
 }
 
-export function TraderProfileHeader({ address, user, isLoading }: TraderProfileHeaderProps) {
+export function TraderProfileHeader({
+  address,
+  user,
+  isLoading,
+}: TraderProfileHeaderProps) {
   const pseudonym = generatePseudonym(address);
   const [copied, setCopied] = useState(false);
 
@@ -33,12 +43,12 @@ export function TraderProfileHeader({ address, user, isLoading }: TraderProfileH
       <div className="flex flex-col gap-1">
         <h1 className="text-2xl font-bold">{pseudonym}</h1>
         <div className="flex items-center gap-2">
-          <Tooltip content={copied ? 'Copied!' : address} placement="bottom">
+          <Tooltip content={copied ? "Copied!" : address} placement="bottom">
             <Chip
+              className="cursor-pointer font-mono"
+              color="default"
               size="sm"
               variant="flat"
-              color="default"
-              className="cursor-pointer font-mono"
               onClick={handleCopy}
             >
               {shortenAddress(address)}

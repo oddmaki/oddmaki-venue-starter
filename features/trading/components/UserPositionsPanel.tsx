@@ -1,10 +1,11 @@
-'use client';
+"use client";
 
-import { Card, CardHeader, CardBody } from '@heroui/card';
-import { Chip } from '@heroui/chip';
-import { Skeleton } from '@heroui/skeleton';
-import { useUserPositions } from '@/features/market-detail/hooks/useUserPositions';
-import { RefreshButton } from '@/lib/oddmaki/RefreshButton';
+import { Card, CardHeader, CardBody } from "@heroui/card";
+import { Chip } from "@heroui/chip";
+import { Skeleton } from "@heroui/skeleton";
+
+import { useUserPositions } from "@/features/market-detail/hooks/useUserPositions";
+import { RefreshButton } from "@/lib/oddmaki/RefreshButton";
 
 interface UserPositionsPanelProps {
   marketId: string;
@@ -15,17 +16,21 @@ interface UserPositionsPanelProps {
 
 function formatBalance(balance: string): string {
   const num = parseFloat(balance);
-  if (isNaN(num) || num === 0) return '0';
+
+  if (isNaN(num) || num === 0) return "0";
   if (num >= 1_000_000) return `${(num / 1_000_000).toFixed(1)}M`;
   if (num >= 1_000) return `${(num / 1_000).toFixed(1)}K`;
   if (num < 0.01) return num.toFixed(4);
+
   return num.toFixed(2);
 }
 
 function formatValue(balance: string, price: number): string {
   const bal = parseFloat(balance);
-  if (isNaN(bal) || bal === 0 || price === 0) return '$0.00';
+
+  if (isNaN(bal) || bal === 0 || price === 0) return "$0.00";
   const value = bal * (price / 100); // price is percentage, convert to decimal
+
   return `$${value.toFixed(2)}`;
 }
 
@@ -35,21 +40,25 @@ export function UserPositionsPanel({
   yesPrice,
   noPrice,
 }: UserPositionsPanelProps) {
-  const { data: positions, isLoading, isFetching, refetch } = useUserPositions(marketId);
+  const {
+    data: positions,
+    isLoading,
+    isFetching,
+    refetch,
+  } = useUserPositions(marketId);
 
-  const yesLabel = outcomes[0] || 'Yes';
-  const noLabel = outcomes[1] || 'No';
+  const yesLabel = outcomes[0] || "Yes";
+  const noLabel = outcomes[1] || "No";
 
-  const yesBalance = positions?.YES || '0';
-  const noBalance = positions?.NO || '0';
-  const hasPositions =
-    parseFloat(yesBalance) > 0 || parseFloat(noBalance) > 0;
+  const yesBalance = positions?.YES || "0";
+  const noBalance = positions?.NO || "0";
+  const hasPositions = parseFloat(yesBalance) > 0 || parseFloat(noBalance) > 0;
 
   return (
     <Card>
       <CardHeader className="flex justify-between items-center">
         <h2 className="text-lg font-semibold">Your Positions</h2>
-        <RefreshButton onRefresh={() => refetch()} isFetching={isFetching} />
+        <RefreshButton isFetching={isFetching} onRefresh={() => refetch()} />
       </CardHeader>
       <CardBody>
         {isLoading ? (
@@ -67,7 +76,7 @@ export function UserPositionsPanel({
             {parseFloat(yesBalance) > 0 && (
               <div className="flex items-center justify-between p-3 rounded-lg bg-primary/5">
                 <div className="flex items-center gap-2">
-                  <Chip size="sm" color="primary" variant="flat">
+                  <Chip color="primary" size="sm" variant="flat">
                     {yesLabel}
                   </Chip>
                   <span className="text-sm font-medium">
@@ -83,7 +92,7 @@ export function UserPositionsPanel({
             {parseFloat(noBalance) > 0 && (
               <div className="flex items-center justify-between p-3 rounded-lg bg-secondary/5">
                 <div className="flex items-center gap-2">
-                  <Chip size="sm" color="secondary" variant="flat">
+                  <Chip color="secondary" size="sm" variant="flat">
                     {noLabel}
                   </Chip>
                   <span className="text-sm font-medium">

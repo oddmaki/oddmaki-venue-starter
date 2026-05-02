@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
-import { useQuery } from '@tanstack/react-query';
-import { useOddMakiClient } from '@/lib/oddmaki/hooks';
-import { queryKeys } from '@/lib/oddmaki/queryKeys';
+import { useQuery } from "@tanstack/react-query";
+
+import { useOddMakiClient } from "@/lib/oddmaki/hooks";
+import { queryKeys } from "@/lib/oddmaki/queryKeys";
 
 export function useMarketTopHolders(marketId: string, first: number = 20) {
   const client = useOddMakiClient();
@@ -14,6 +15,7 @@ export function useMarketTopHolders(marketId: string, first: number = 20) {
         marketId,
         first,
       });
+
       return result.traderPositions ?? [];
     },
     enabled: !!marketId,

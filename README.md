@@ -42,14 +42,36 @@ Everything a venue operator needs to run a prediction market platform:
 | Variable | Required | Description |
 |---|---|---|
 | `NEXT_PUBLIC_VENUE_ID` | Yes | Your venue ID on the OddMaki Protocol |
-| `NEXT_PUBLIC_SUBGRAPH_URL` | Yes | Subgraph GraphQL endpoint |
+| `NEXT_PUBLIC_GRAPH_API_KEY` | Production | The Graph gateway API key. Optional locally — see [Subgraph data](#subgraph-data) |
 | `NEXT_PUBLIC_CHAIN_ID` | No | `8453` (Base mainnet, default) or `84532` (Base Sepolia) |
 | `NEXT_PUBLIC_VENUE_NAME` | No | Display name (default: `"OddMaki Markets"`) |
 | `NEXT_PUBLIC_AUTH_PROVIDER` | No | `rainbowkit` or `privy` (default: `rainbowkit`) |
 | `NEXT_PUBLIC_PRIVY_APP_ID` | No | Required if using Privy auth |
-| `NEXT_PUBLIC_ENABLE_MARKET_CREATION` | No | Enable market creation UI |
 | `NEXT_PUBLIC_ENABLE_THEME_EDITOR` | No | Enable theme editor at `/admin/theme` |
 | `PINATA_JWT` | No | Pinata JWT for IPFS uploads (server-side) |
+
+### Subgraph data
+
+This app reads market and trading data from the OddMaki subgraph on [The Graph](https://thegraph.com). The canonical Subgraph ID is bundled in the SDK — you don't configure it. What you *do* configure is your own API key:
+
+- **Local development:** leave `NEXT_PUBLIC_GRAPH_API_KEY` unset. The SDK falls back to The Graph's hosted Studio endpoint, which is free and rate-limited but fine for development.
+- **Production / staging:** set `NEXT_PUBLIC_GRAPH_API_KEY` to your own key. The SDK switches to the decentralized gateway, which has higher limits, better redundancy, and is what you should be paying for in production.
+
+**How to get an API key (free, ~2 minutes):**
+
+1. Go to [thegraph.com/studio](https://thegraph.com/studio) and connect a wallet.
+2. Sidebar → **API Keys** → **Create API Key**.
+3. Click into the new key. Under its security/settings, configure all three:
+   - **Authorized Subgraphs** — paste the OddMaki Base mainnet Subgraph ID:
+     ```
+     QmPaESDtwZvtYPx8vvAU3nHE7kZBZ121XQCiPxM4bQauGh
+     ```
+     This is also exported from the SDK as `SUBGRAPH_IDS[base.id]`. Locking the key to this specific subgraph means it can't be reused against unrelated subgraphs if it ever leaks.
+   - **Authorized Domains** — add your production domain(s) (e.g. `markets.example.com`). For preview deployments add `*.vercel.app` or similar. **Do not** add `localhost` here — create a separate key for local dev if you need the production query path locally.
+   - **Spending limit** — set a monthly USD cap appropriate to your traffic. The first 100k queries/month are free; pay-as-you-go after that.
+4. Copy the key into `NEXT_PUBLIC_GRAPH_API_KEY` in your hosting platform's environment variables (Vercel, Railway, etc.).
+
+The key is exposed to the browser (it has to be — queries originate from the client). The subgraph allowlist + domain allowlist + spending cap are what keep it safe — a leaked key with all three set is largely useless to anyone else.
 
 ## Theming
 

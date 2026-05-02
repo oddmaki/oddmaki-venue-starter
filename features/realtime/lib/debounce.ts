@@ -20,6 +20,7 @@ export function createInvalidationDebouncer(
   function add(keys: readonly (readonly unknown[])[]) {
     for (const key of keys) {
       const serialized = JSON.stringify(key);
+
       if (!pendingSet.has(serialized)) {
         pendingSet.add(serialized);
         pendingKeys.push(key);
@@ -35,6 +36,7 @@ export function createInvalidationDebouncer(
   function flush() {
     timer = null;
     const keys = pendingKeys;
+
     pendingKeys = [];
     pendingSet.clear();
     if (keys.length > 0) {

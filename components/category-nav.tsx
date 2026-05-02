@@ -1,7 +1,8 @@
-'use client';
+"use client";
 
-import { Suspense } from 'react';
-import { CategoryFilter } from '@/features/markets/components/CategoryFilter';
+import { Suspense } from "react";
+
+import { CategoryFilter } from "@/features/markets/components/CategoryFilter";
 
 export function CategoryNav() {
   return (

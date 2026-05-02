@@ -1,21 +1,31 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Card, CardHeader, CardBody } from '@heroui/card';
-import { Button } from '@heroui/button';
-import { Skeleton } from '@heroui/skeleton';
-import type { PriceMarketData } from '@oddmaki-protocol/sdk';
-import { PriceChart } from '@/features/price-chart/components/PriceChart';
-import { AssetPriceChart } from '@/features/price-chart/components/AssetPriceChart';
-import { ChartTabSwitcher, type ChartTab } from '@/features/price-chart/components/ChartTabSwitcher';
-import { usePriceChartData } from '@/features/price-chart/hooks/usePriceChartData';
-import { TIMEFRAMES, DEFAULT_TIMEFRAME } from '@/features/price-chart/lib/timeframes';
-import type { Timeframe } from '@/features/price-chart/lib/timeframes';
-import { PYTH_FEED_MAP } from '../constants/pythFeeds';
-import { usePythPriceHistory } from '../hooks/usePythPriceHistory';
-import { usePythLivePrice } from '../hooks/usePythLivePrice';
-import { PriceInfoHeader } from './PriceInfoHeader';
-import { CountdownTimer } from './CountdownTimer';
+import type { PriceMarketData } from "@oddmaki-protocol/sdk";
+import type { Timeframe } from "@/features/price-chart/lib/timeframes";
+
+import { useState } from "react";
+import { Card, CardHeader, CardBody } from "@heroui/card";
+import { Button } from "@heroui/button";
+import { Skeleton } from "@heroui/skeleton";
+
+import { PYTH_FEED_MAP } from "../constants/pythFeeds";
+import { usePythPriceHistory } from "../hooks/usePythPriceHistory";
+import { usePythLivePrice } from "../hooks/usePythLivePrice";
+
+import { PriceInfoHeader } from "./PriceInfoHeader";
+import { CountdownTimer } from "./CountdownTimer";
+
+import { PriceChart } from "@/features/price-chart/components/PriceChart";
+import { AssetPriceChart } from "@/features/price-chart/components/AssetPriceChart";
+import {
+  ChartTabSwitcher,
+  type ChartTab,
+} from "@/features/price-chart/components/ChartTabSwitcher";
+import { usePriceChartData } from "@/features/price-chart/hooks/usePriceChartData";
+import {
+  TIMEFRAMES,
+  DEFAULT_TIMEFRAME,
+} from "@/features/price-chart/lib/timeframes";
 
 interface PriceMarketChartSectionProps {
   marketId: string;
@@ -32,7 +42,7 @@ export function PriceMarketChartSection({
   lastPriceTick,
   priceMarketData,
 }: PriceMarketChartSectionProps) {
-  const [activeTab, setActiveTab] = useState<ChartTab>('probability');
+  const [activeTab, setActiveTab] = useState<ChartTab>("probability");
   const [timeframe, setTimeframe] = useState<Timeframe>(DEFAULT_TIMEFRAME);
 
   // Feed metadata
@@ -52,7 +62,9 @@ export function PriceMarketChartSection({
     if (!lastPriceTick || !tickSize) return undefined;
     const tickSizeNum = parseFloat(tickSize);
     const tickNum = parseFloat(lastPriceTick);
+
     if (tickSizeNum === 0 || tickNum === 0) return undefined;
+
     return (tickNum * tickSizeNum) / 1e18;
   })();
 
@@ -67,10 +79,10 @@ export function PriceMarketChartSection({
   const strikeNum =
     Number(priceMarketData.strikePrice) *
     Math.pow(10, priceMarketData.priceExpo);
-  const priceDirection: 'up' | 'down' | null = livePrice
+  const priceDirection: "up" | "down" | null = livePrice
     ? livePrice.price >= strikeNum
-      ? 'up'
-      : 'down'
+      ? "up"
+      : "down"
     : null;
 
   const hasNoProbabilityData =
@@ -78,9 +90,10 @@ export function PriceMarketChartSection({
     (chartResult.data.length === 0 && fallbackPrice === undefined);
 
   const isResolved = priceMarketData.resolved;
-  const effectiveTab = isResolved ? 'probability' : activeTab;
+  const effectiveTab = isResolved ? "probability" : activeTab;
   const finalPriceNum = isResolved
-    ? Number(priceMarketData.finalPrice) * Math.pow(10, priceMarketData.priceExpo)
+    ? Number(priceMarketData.finalPrice) *
+      Math.pow(10, priceMarketData.priceExpo)
     : undefined;
 
   return (
@@ -89,29 +102,31 @@ export function PriceMarketChartSection({
       <CardHeader className="flex-col gap-3 pb-0">
         <div className="flex items-start justify-between w-full">
           <PriceInfoHeader
-            strikePriceNum={strikeNum}
             currentPrice={livePrice?.price}
+            finalPrice={finalPriceNum}
             isLoading={livePriceLoading}
             priceDirection={priceDirection}
-            finalPrice={finalPriceNum}
             resolved={isResolved}
+            strikePriceNum={strikeNum}
           />
-          {!isResolved && <CountdownTimer closeTime={priceMarketData.closeTime} />}
+          {!isResolved && (
+            <CountdownTimer closeTime={priceMarketData.closeTime} />
+          )}
         </div>
 
         {/* Subheader: Timeframe buttons + tab switcher */}
         <div className="flex items-center justify-between w-full">
           {/* Timeframe selector — only for probability tab */}
           <div className="flex items-center gap-1">
-            {effectiveTab === 'probability' ? (
+            {effectiveTab === "probability" ? (
               TIMEFRAMES.map((tf) => (
                 <Button
                   key={tf.key}
-                  size="sm"
-                  variant={timeframe.key === tf.key ? 'solid' : 'flat'}
-                  color={timeframe.key === tf.key ? 'primary' : 'default'}
-                  onPress={() => setTimeframe(tf)}
                   className="min-w-0 px-2"
+                  color={timeframe.key === tf.key ? "primary" : "default"}
+                  size="sm"
+                  variant={timeframe.key === tf.key ? "solid" : "flat"}
+                  onPress={() => setTimeframe(tf)}
                 >
                   {tf.label}
                 </Button>
@@ -124,13 +139,16 @@ export function PriceMarketChartSection({
           </div>
 
           {!isResolved && (
-            <ChartTabSwitcher activeTab={activeTab} onTabChange={setActiveTab} />
+            <ChartTabSwitcher
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+            />
           )}
         </div>
       </CardHeader>
 
       <CardBody className="pt-2">
-        {effectiveTab === 'probability' ? (
+        {effectiveTab === "probability" ? (
           // Probability chart (existing behavior)
           chartLoading ? (
             <PriceChartSkeleton />
@@ -140,12 +158,12 @@ export function PriceMarketChartSection({
             </div>
           ) : (
             <PriceChart
+              currentPrice={chartResult!.currentPrice}
               data={chartResult!.data}
+              height={300}
+              outcomeLabel={outcomes[0] || "Yes"}
               timeWindow={chartResult!.timeWindow}
               timeframeKey={timeframe.key}
-              currentPrice={chartResult!.currentPrice}
-              outcomeLabel={outcomes[0] || 'Yes'}
-              height={300}
             />
           )
         ) : // Asset price chart
@@ -157,7 +175,10 @@ export function PriceMarketChartSection({
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
               </span>
               <span className="text-sm text-default-400">
-                Collecting live price data{priceChartCurrent ? ` — ${feedSymbol ?? ''} $${priceChartCurrent.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '...'}
+                Collecting live price data
+                {priceChartCurrent
+                  ? ` — ${feedSymbol ?? ""} $${priceChartCurrent.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                  : "..."}
               </span>
             </div>
             <span className="text-xs text-default-300">
@@ -166,11 +187,11 @@ export function PriceMarketChartSection({
           </div>
         ) : (
           <AssetPriceChart
-            data={priceHistoryData}
             currentPrice={priceChartCurrent}
-            strikePrice={strikeNum}
+            data={priceHistoryData}
             feedSymbol={feedSymbol}
             height={300}
+            strikePrice={strikeNum}
           />
         )}
       </CardBody>

@@ -1,8 +1,12 @@
-'use client';
+"use client";
 
-import { createContext, useContext } from 'react';
+import { createContext, useContext } from "react";
 
-export type ConnectionStatus = 'connected' | 'connecting' | 'disconnected' | 'unavailable';
+export type ConnectionStatus =
+  | "connected"
+  | "connecting"
+  | "disconnected"
+  | "unavailable";
 
 export interface RealtimeContextValue {
   status: ConnectionStatus;
@@ -11,7 +15,7 @@ export interface RealtimeContextValue {
 }
 
 export const RealtimeContext = createContext<RealtimeContextValue>({
-  status: 'unavailable',
+  status: "unavailable",
   eventCount: 0,
   lastEventAt: null,
 });

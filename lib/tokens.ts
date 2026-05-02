@@ -7,9 +7,11 @@
 // To change the venue's brand, edit theme.config.json and rebuild.
 // ═══════════════════════════════════════════════════════════════
 
-import themeConfig from '../theme.config.json';
-import type { ThemeConfig } from './theme';
-import { resolveTheme, toHeroThemeColors } from './theme';
+import type { ThemeConfig } from "./theme";
+
+import themeConfig from "../theme.config.json";
+
+import { resolveTheme, toHeroThemeColors } from "./theme";
 
 // ─── RESOLVE THEME FROM CONFIG ──────────────────────────────
 
@@ -47,8 +49,8 @@ export const colors = {
 
   // Overlay & transparency
   blurOverlay: resolved.background + "90", // 56% opacity
-  navOverlay: resolved.background + "CC",  // 80% opacity
-  subtitleBg: resolved.background + "BB",  // 73% opacity
+  navOverlay: resolved.background + "CC", // 80% opacity
+  subtitleBg: resolved.background + "BB", // 73% opacity
 } as const;
 
 // Alpha utility: append hex alpha to any color
@@ -57,6 +59,7 @@ export function alpha(hex: string, opacity: number): string {
   const a = Math.round(opacity * 255)
     .toString(16)
     .padStart(2, "0");
+
   // Strip any existing alpha
   return hex.slice(0, 7) + a;
 }
@@ -69,18 +72,18 @@ export const fonts = {
 } as const;
 
 export const fontSizes = {
-  xs: 9,       // column headers, timestamps
-  sm: 10,      // labels, badges, uppercase headers
-  base: 12,    // body small, links, nav items
-  md: 13,      // nav items, table text
-  lg: 14,      // body text, descriptions
-  xl: 15,      // subtitle, section intros
-  "2xl": 16,   // section body, button large
-  "3xl": 22,   // mobile headings
-  "4xl": 28,   // desktop sub-headings, use case titles
-  "5xl": 36,   // section headings (desktop, via clamp)
-  "6xl": 48,   // hero heading minimum
-  "7xl": 84,   // hero heading maximum
+  xs: 9, // column headers, timestamps
+  sm: 10, // labels, badges, uppercase headers
+  base: 12, // body small, links, nav items
+  md: 13, // nav items, table text
+  lg: 14, // body text, descriptions
+  xl: 15, // subtitle, section intros
+  "2xl": 16, // section body, button large
+  "3xl": 22, // mobile headings
+  "4xl": 28, // desktop sub-headings, use case titles
+  "5xl": 36, // section headings (desktop, via clamp)
+  "6xl": 48, // hero heading minimum
+  "7xl": 84, // hero heading maximum
 } as const;
 
 export const fontWeights = {
@@ -92,31 +95,31 @@ export const fontWeights = {
 } as const;
 
 export const lineHeights = {
-  tight: 1.05,    // hero heading
-  snug: 1.15,     // section headings
-  normal: 1.2,    // sub-headings
-  relaxed: 1.5,   // cards, compact text
-  loose: 1.55,    // descriptions
+  tight: 1.05, // hero heading
+  snug: 1.15, // section headings
+  normal: 1.2, // sub-headings
+  relaxed: 1.5, // cards, compact text
+  loose: 1.55, // descriptions
   spacious: 1.65, // body text
 } as const;
 
 export const letterSpacings = {
-  tighter: "-0.045em",  // hero heading
-  tight: "-0.035em",    // large headings
-  snug: "-0.03em",      // section headings
-  normal: "-0.02em",    // nav logo
-  wide: "0.03em",       // badge labels
-  wider: "0.08em",      // uppercase micro labels
-  widest: "0.12em",     // section labels
+  tighter: "-0.045em", // hero heading
+  tight: "-0.035em", // large headings
+  snug: "-0.03em", // section headings
+  normal: "-0.02em", // nav logo
+  wide: "0.03em", // badge labels
+  wider: "0.08em", // uppercase micro labels
+  widest: "0.12em", // section labels
 } as const;
 
 // ─── SPACING & LAYOUT ────────────────────────────────────────
 
 export const layout = {
-  maxContent: 1060,  // max width for two-column sections
-  textWidth: 400,    // text column width
-  visualWidth: 460,  // visual column width
-  gap: 64,           // gap between text and visual columns
+  maxContent: 1060, // max width for two-column sections
+  textWidth: 400, // text column width
+  visualWidth: 460, // visual column width
+  gap: 64, // gap between text and visual columns
   mobileBreakpoint: 820,
 } as const;
 
@@ -166,7 +169,8 @@ export const shadows = {
   card: "0 16px 50px #00000050",
   cardLight: "0 12px 40px #00000040",
   glow: (color: string) => `0 0 12px ${color}, 0 0 24px ${alpha(color, 0.38)}`,
-  glowLg: (color: string) => `0 0 16px ${color}, 0 0 40px ${alpha(color, 0.38)}`,
+  glowLg: (color: string) =>
+    `0 0 16px ${color}, 0 0 40px ${alpha(color, 0.38)}`,
   button: (color: string) => `0 0 20px ${alpha(color, 0.19)}`,
   buttonHover: (color: string) => `0 0 30px ${alpha(color, 0.31)}`,
 } as const;
@@ -189,8 +193,8 @@ export const animation = {
   // ScrollReveal
   revealThreshold: 0.75,
   revealRootMargin: "-120px 0px",
-  revealDistance: 60,       // px travel distance
-  revealScale: 0.92,       // scale-from value
+  revealDistance: 60, // px travel distance
+  revealScale: 0.92, // scale-from value
   revealStagger: {
     label: 100,
     heading: 220,

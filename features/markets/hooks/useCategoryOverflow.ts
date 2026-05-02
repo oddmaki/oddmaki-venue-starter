@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from "react";
 
 /**
  * Hook that detects how many category items fit in a container
@@ -22,6 +22,7 @@ export function useCategoryOverflow(itemCount: number) {
 
   useEffect(() => {
     const container = containerRef.current;
+
     if (!container) return;
 
     // Approximate width of the "More" button + gap
@@ -34,6 +35,7 @@ export function useCategoryOverflow(itemCount: number) {
 
       for (let i = 0; i < items.length; i++) {
         const item = items[i];
+
         if (!item) continue;
 
         const rightEdge =
@@ -54,6 +56,7 @@ export function useCategoryOverflow(itemCount: number) {
     };
 
     const observer = new ResizeObserver(calculate);
+
     observer.observe(container);
     // Initial calculation after first paint
     calculate();

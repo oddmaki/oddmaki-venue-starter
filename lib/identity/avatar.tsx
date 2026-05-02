@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * Deterministic avatar generator from Ethereum addresses.
@@ -11,7 +11,7 @@
  * Uses different byte ranges for each color to maximize visual diversity.
  */
 function deriveColors(address: string): [string, string, string] {
-  const hex = address.replace('0x', '').toLowerCase();
+  const hex = address.replace("0x", "").toLowerCase();
 
   // Use different parts of the address for each color
   const h1 = parseInt(hex.slice(0, 4), 16) % 360;
@@ -37,7 +37,8 @@ function deriveColors(address: string): [string, string, string] {
  * Derive gradient angle from address bytes.
  */
 function deriveAngle(address: string): number {
-  const hex = address.replace('0x', '').toLowerCase();
+  const hex = address.replace("0x", "").toLowerCase();
+
   return parseInt(hex.slice(24, 28), 16) % 360;
 }
 
@@ -51,7 +52,11 @@ export interface AddressAvatarProps {
  * Renders a deterministic gradient avatar for an Ethereum address.
  * The gradient colors and angle are derived from the address bytes.
  */
-export function AddressAvatar({ address, size = 40, className = '' }: AddressAvatarProps) {
+export function AddressAvatar({
+  address,
+  size = 40,
+  className = "",
+}: AddressAvatarProps) {
   const [c1, c2, c3] = deriveColors(address);
   const angle = deriveAngle(address);
 
@@ -73,5 +78,6 @@ export function AddressAvatar({ address, size = 40, className = '' }: AddressAva
 export function getAvatarGradient(address: string): string {
   const [c1, c2, c3] = deriveColors(address);
   const angle = deriveAngle(address);
+
   return `linear-gradient(${angle}deg, ${c1}, ${c2}, ${c3})`;
 }

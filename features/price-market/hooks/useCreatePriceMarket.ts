@@ -1,31 +1,47 @@
-'use client';
+"use client";
 
-import { useCallback } from 'react';
-import { useConnection, usePublicClient } from 'wagmi';
-import { parseEther } from 'viem';
-import { VenueFacetABI } from '@oddmaki-protocol/sdk';
-import type { Address } from 'viem';
-import { useOddMakiClient } from '@/lib/oddmaki/hooks';
-import { queryKeys } from '@/lib/oddmaki/queryKeys';
-import { USDC_ADDRESS, DIAMOND_ADDRESS, USDC_DECIMALS } from '@/lib/oddmaki/constants';
-import { useTransactionFlow, waitForAllowance } from '@/lib/oddmaki/useTransactionFlow';
-import type { FlowStep } from '@/lib/oddmaki/useTransactionFlow';
+import type { Address } from "viem";
+import type { FlowStep } from "@/lib/oddmaki/useTransactionFlow";
+
+import { useCallback } from "react";
+import { useConnection, usePublicClient } from "wagmi";
+import { parseEther } from "viem";
+import { VenueFacetABI } from "@oddmaki-protocol/sdk";
+
+import { useOddMakiClient } from "@/lib/oddmaki/hooks";
+import { queryKeys } from "@/lib/oddmaki/queryKeys";
+import {
+  USDC_ADDRESS,
+  DIAMOND_ADDRESS,
+  USDC_DECIMALS,
+} from "@/lib/oddmaki/constants";
+import {
+  useTransactionFlow,
+  waitForAllowance,
+} from "@/lib/oddmaki/useTransactionFlow";
 
 /** Wait for RPC nodes to propagate state after a confirmed transaction. */
-const waitForRPCSync = (ms = 2000) => new Promise((resolve) => setTimeout(resolve, ms));
+const waitForRPCSync = (ms = 2000) =>
+  new Promise((resolve) => setTimeout(resolve, ms));
 
-const PYTH_HERMES_BASE = 'https://hermes.pyth.network';
+const PYTH_HERMES_BASE = "https://hermes.pyth.network";
 
 /** Validate a Pyth feed ID by fetching its latest price from Hermes. */
 async function validatePythFeedId(feedId: string): Promise<void> {
-  const res = await fetch(`${PYTH_HERMES_BASE}/v2/updates/price/latest?ids[]=${feedId}`);
+  const res = await fetch(
+    `${PYTH_HERMES_BASE}/v2/updates/price/latest?ids[]=${feedId}`,
+  );
+
   if (!res.ok) {
     throw new Error(`Invalid Pyth Feed ID or Hermes API error (${res.status})`);
   }
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   const data: any = await res.json();
+
   if (!data.parsed || data.parsed.length === 0) {
-    throw new Error('Pyth Feed ID not found. Check the ID at pyth.network/developers/price-feed-ids');
+    throw new Error(
+      "Pyth Feed ID not found. Check the ID at pyth.network/developers/price-feed-ids",
+    );
   }
 }
 
@@ -59,25 +75,24 @@ export function useCreatePriceMarket() {
       if (!address || !publicClient) return;
 
       // Read the market creation fee from the venue config on-chain
-      const venue = await publicClient.readContract({
+      const venue = (await publicClient.readContract({
         address: DIAMOND_ADDRESS,
         abi: VenueFacetABI,
-        functionName: 'getVenue',
+        functionName: "getVenue",
         args: [params.venueId],
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      }) as any;
+      })) as any;
       const creationFee = BigInt(venue.marketCreationFee);
 
       const steps: FlowStep[] = [
         {
-          id: 'validate-feed',
-          label: 'Validate Pyth Feed',
+          id: "validate-feed",
+          label: "Validate Pyth Feed",
           execute: async () => {
             await validatePythFeedId(params.pythFeedId);
           },
         },
         {
-          id: 'usdc-approval',
+          id: "usdc-approval",
           label: `USDC Approval ($${(Number(creationFee) / Math.pow(10, USDC_DECIMALS)).toFixed(2)})`,
           shouldSkip: async () => {
             const allowance = (await client.token.getAllowance(
@@ -85,6 +100,7 @@ export function useCreatePriceMarket() {
               address,
               DIAMOND_ADDRESS,
             )) as bigint;
+
             return allowance >= creationFee;
           },
           execute: async () => {
@@ -93,6 +109,7 @@ export function useCreatePriceMarket() {
               DIAMOND_ADDRESS,
               creationFee,
             );
+
             await publicClient.waitForTransactionReceipt({ hash });
             await waitForAllowance(
               publicClient,
@@ -104,8 +121,8 @@ export function useCreatePriceMarket() {
           },
         },
         {
-          id: 'create-price-market',
-          label: 'Create Price Market',
+          id: "create-price-market",
+          label: "Create Price Market",
           execute: async () => {
             await waitForRPCSync();
             const hash = await client.priceMarket.createPyth({
@@ -113,8 +130,8 @@ export function useCreatePriceMarket() {
               pythFeedId: params.pythFeedId,
               strikePrice: params.strikePrice,
               closeTime: BigInt(params.closeTime),
-              outcomes: params.outcomes ?? ['Up', 'Down'],
-              tickSize: parseEther(params.tickSize || '0.01'),
+              outcomes: params.outcomes ?? ["Up", "Down"],
+              tickSize: parseEther(params.tickSize || "0.01"),
               collateralToken: USDC_ADDRESS as Address,
               question: {
                 title: params.title,
@@ -123,6 +140,7 @@ export function useCreatePriceMarket() {
               liveness: BigInt(0),
               tags: params.tags,
             });
+
             await publicClient.waitForTransactionReceipt({ hash });
           },
         },

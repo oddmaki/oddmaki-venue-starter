@@ -1,10 +1,11 @@
-'use client';
+"use client";
 
-import { useQuery } from '@tanstack/react-query';
-import { useConnection } from 'wagmi';
-import { useOddMakiClient } from '@/lib/oddmaki/hooks';
-import { queryKeys } from '@/lib/oddmaki/queryKeys';
-import { USDC_ADDRESS, USDC_DECIMALS } from '@/lib/oddmaki/constants';
+import { useQuery } from "@tanstack/react-query";
+import { useConnection } from "wagmi";
+
+import { useOddMakiClient } from "@/lib/oddmaki/hooks";
+import { queryKeys } from "@/lib/oddmaki/queryKeys";
+import { USDC_ADDRESS, USDC_DECIMALS } from "@/lib/oddmaki/constants";
 
 /**
  * Hook to poll the user's USDC balance.
@@ -20,7 +21,8 @@ export function useTokenBalance() {
     refetch,
   } = useQuery<bigint>({
     queryKey: queryKeys.balance.usdc(address!),
-    queryFn: () => client.token.getBalance(USDC_ADDRESS, address!) as Promise<bigint>,
+    queryFn: () =>
+      client.token.getBalance(USDC_ADDRESS, address!) as Promise<bigint>,
     enabled: !!address,
     refetchInterval: 15_000, // Poll every 15s
   });
@@ -28,7 +30,7 @@ export function useTokenBalance() {
   const formatted =
     balance != null
       ? (Number(balance) / 10 ** USDC_DECIMALS).toFixed(2)
-      : '0.00';
+      : "0.00";
 
   return {
     balance: balance ?? BigInt(0),

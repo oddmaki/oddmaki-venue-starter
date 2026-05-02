@@ -1,44 +1,47 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import type { VenueMetadata } from "@oddmaki-protocol/sdk";
+import type { VenueData } from "../hooks/useVenueData";
+
+import { useState, useEffect } from "react";
 import {
   Modal,
   ModalContent,
   ModalHeader,
   ModalBody,
   ModalFooter,
-} from '@heroui/modal';
-import { Button } from '@heroui/button';
-import { Chip } from '@heroui/chip';
-import { Divider } from '@heroui/divider';
-import { Input, Textarea } from '@heroui/input';
-import { Switch } from '@heroui/switch';
-import { formatUnits, parseUnits } from 'viem';
-import type { VenueMetadata } from '@oddmaki-protocol/sdk';
-import type { VenueData } from '../hooks/useVenueData';
+} from "@heroui/modal";
+import { Button } from "@heroui/button";
+import { Chip } from "@heroui/chip";
+import { Divider } from "@heroui/divider";
+import { Input, Textarea } from "@heroui/input";
+import { Switch } from "@heroui/switch";
+import { formatUnits, parseUnits } from "viem";
+
 import {
   useUpdateVenueFees,
   useUpdateOracleParams,
   useToggleVenuePause,
   useUpdateVenue,
-} from '../hooks/useVenueManagement';
-import { USDC_DECIMALS } from '@/lib/oddmaki/constants';
-import { useWhitelistOwner } from '@/features/access-control/hooks/useWhitelistOwner';
-import { WhitelistManagementModal } from '@/features/access-control/components/WhitelistManagementModal';
-import { useMetadata } from '@/lib/ipfs/useMetadata';
-import { uploadToIPFS } from '@/lib/ipfs';
-import { shortenAddress } from '@/lib/identity/pseudonym';
+} from "../hooks/useVenueManagement";
 
-const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+import { USDC_DECIMALS } from "@/lib/oddmaki/constants";
+import { useWhitelistOwner } from "@/features/access-control/hooks/useWhitelistOwner";
+import { WhitelistManagementModal } from "@/features/access-control/components/WhitelistManagementModal";
+import { useMetadata } from "@/lib/ipfs/useMetadata";
+import { uploadToIPFS } from "@/lib/ipfs";
+import { shortenAddress } from "@/lib/identity/pseudonym";
+
+const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
 export type SectionKey =
-  | 'access-control'
-  | 'fees'
-  | 'oracle'
-  | 'general'
-  | 'branding'
-  | 'whitelist-trading'
-  | 'whitelist-creation';
+  | "access-control"
+  | "fees"
+  | "oracle"
+  | "general"
+  | "branding"
+  | "whitelist-trading"
+  | "whitelist-creation";
 
 export function InfoRow({
   label,
@@ -75,13 +78,11 @@ function AccessControlRow({
       <span className="text-sm text-default-500">{label}</span>
       <div className="flex items-center gap-2">
         {isPublic ? (
-          <Chip size="sm" variant="flat" color="primary">
+          <Chip color="primary" size="sm" variant="flat">
             Public
           </Chip>
         ) : (
-          <span className="font-mono text-xs">
-            {shortenAddress(acAddress)}
-          </span>
+          <span className="font-mono text-xs">{shortenAddress(acAddress)}</span>
         )}
         {isWhitelist && onManage && (
           <Button size="sm" variant="flat" onPress={onManage}>
@@ -104,22 +105,22 @@ export function AccessControlModal({
   isOpen: boolean;
   onClose: () => void;
   venue: VenueData;
-  onManageWhitelist: (key: 'whitelist-trading' | 'whitelist-creation') => void;
+  onManageWhitelist: (key: "whitelist-trading" | "whitelist-creation") => void;
 }) {
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="md">
+    <Modal isOpen={isOpen} size="md" onClose={onClose}>
       <ModalContent>
         <ModalHeader>Access Control</ModalHeader>
         <ModalBody>
           <AccessControlRow
-            label="Trading"
             acAddress={venue.tradingAccessControl}
-            onManage={() => onManageWhitelist('whitelist-trading')}
+            label="Trading"
+            onManage={() => onManageWhitelist("whitelist-trading")}
           />
           <AccessControlRow
-            label="Market Creation"
             acAddress={venue.creationAccessControl}
-            onManage={() => onManageWhitelist('whitelist-creation')}
+            label="Market Creation"
+            onManage={() => onManageWhitelist("whitelist-creation")}
           />
         </ModalBody>
         <ModalFooter>
@@ -143,8 +144,8 @@ export function FeesModal({
   onClose: () => void;
   venue: VenueData;
 }) {
-  const [venueFee, setVenueFee] = useState('');
-  const [creatorFee, setCreatorFee] = useState('');
+  const [venueFee, setVenueFee] = useState("");
+  const [creatorFee, setCreatorFee] = useState("");
   const { updateFees, isLoading } = useUpdateVenueFees();
 
   useEffect(() => {
@@ -157,26 +158,27 @@ export function FeesModal({
   const handleSave = async () => {
     const vf = parseInt(venueFee, 10);
     const cf = parseInt(creatorFee, 10);
+
     if (isNaN(vf) || isNaN(cf)) return;
     await updateFees(vf, cf);
     onClose();
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="md">
+    <Modal isOpen={isOpen} size="md" onClose={onClose}>
       <ModalContent>
         <ModalHeader>Fees</ModalHeader>
         <ModalBody>
           <Input
-            label="Venue Fee (bps)"
             description="Trading fee in basis points (1-200). 100 bps = 1%."
+            label="Venue Fee (bps)"
             type="number"
             value={venueFee}
             onValueChange={setVenueFee}
           />
           <Input
-            label="Creator Fee (bps)"
             description={`Portion of venue fee shared with market creator (0-${venueFee}).`}
+            label="Creator Fee (bps)"
             type="number"
             value={creatorFee}
             onValueChange={setCreatorFee}
@@ -186,7 +188,7 @@ export function FeesModal({
           <Button variant="flat" onPress={onClose}>
             Cancel
           </Button>
-          <Button color="primary" onPress={handleSave} isLoading={isLoading}>
+          <Button color="primary" isLoading={isLoading} onPress={handleSave}>
             Save
           </Button>
         </ModalFooter>
@@ -206,8 +208,8 @@ export function OracleModal({
   onClose: () => void;
   venue: VenueData;
 }) {
-  const [reward, setReward] = useState('');
-  const [bond, setBond] = useState('');
+  const [reward, setReward] = useState("");
+  const [bond, setBond] = useState("");
   const { updateOracleParams, isLoading } = useUpdateOracleParams();
 
   useEffect(() => {
@@ -220,6 +222,7 @@ export function OracleModal({
   const handleSave = async () => {
     const r = parseFloat(reward);
     const b = parseFloat(bond);
+
     if (isNaN(r) || isNaN(b)) return;
     await updateOracleParams(
       parseUnits(reward, USDC_DECIMALS),
@@ -229,20 +232,20 @@ export function OracleModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="md">
+    <Modal isOpen={isOpen} size="md" onClose={onClose}>
       <ModalContent>
         <ModalHeader>Oracle</ModalHeader>
         <ModalBody>
           <Input
-            label="UMA Reward (USDC)"
             description="Reward paid to the UMA asserter on successful resolution."
+            label="UMA Reward (USDC)"
             type="number"
             value={reward}
             onValueChange={setReward}
           />
           <Input
-            label="Min Bond (USDC)"
             description="Minimum bond required to submit a UMA assertion."
+            label="Min Bond (USDC)"
             type="number"
             value={bond}
             onValueChange={setBond}
@@ -252,7 +255,7 @@ export function OracleModal({
           <Button variant="flat" onPress={onClose}>
             Cancel
           </Button>
-          <Button color="primary" onPress={handleSave} isLoading={isLoading}>
+          <Button color="primary" isLoading={isLoading} onPress={handleSave}>
             Save
           </Button>
         </ModalFooter>
@@ -275,7 +278,7 @@ export function GeneralModal({
   const { togglePause, isLoading: isPauseLoading } = useToggleVenuePause();
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="md">
+    <Modal isOpen={isOpen} size="md" onClose={onClose}>
       <ModalContent>
         <ModalHeader>General</ModalHeader>
         <ModalBody>
@@ -284,16 +287,16 @@ export function GeneralModal({
             value={
               <div className="flex items-center gap-2">
                 <Chip
+                  color={venue.active ? "primary" : "danger"}
                   size="sm"
-                  color={venue.active ? 'primary' : 'danger'}
                   variant="flat"
                 >
-                  {venue.active ? 'Active' : 'Paused'}
+                  {venue.active ? "Active" : "Paused"}
                 </Chip>
                 <Switch
-                  size="sm"
-                  isSelected={venue.active}
                   isDisabled={isPauseLoading}
+                  isSelected={venue.active}
+                  size="sm"
                   onValueChange={() => togglePause(venue.active)}
                 />
               </div>
@@ -354,17 +357,17 @@ export function BrandingModal({
   );
   const { updateVenue, isLoading } = useUpdateVenue();
 
-  const [venueUrl, setVenueUrl] = useState('');
-  const [description, setDescription] = useState('');
+  const [venueUrl, setVenueUrl] = useState("");
+  const [description, setDescription] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (isOpen && existingMetadata) {
-      setVenueUrl(existingMetadata.venue_url ?? '');
-      setDescription(existingMetadata.description ?? '');
+      setVenueUrl(existingMetadata.venue_url ?? "");
+      setDescription(existingMetadata.description ?? "");
     } else if (isOpen) {
-      setVenueUrl('');
-      setDescription('');
+      setVenueUrl("");
+      setDescription("");
     }
   }, [isOpen, existingMetadata]);
 
@@ -372,7 +375,7 @@ export function BrandingModal({
     setIsSaving(true);
     try {
       const hasMetadata = venueUrl.trim() || description.trim();
-      let metadataURI = '';
+      let metadataURI = "";
 
       if (hasMetadata) {
         const metadata: VenueMetadata = {
@@ -380,6 +383,7 @@ export function BrandingModal({
           ...(venueUrl.trim() && { venue_url: venueUrl.trim() }),
           ...(description.trim() && { description: description.trim() }),
         };
+
         metadataURI = await uploadToIPFS(metadata);
       }
 
@@ -397,25 +401,25 @@ export function BrandingModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="md">
+    <Modal isOpen={isOpen} size="md" onClose={onClose}>
       <ModalContent>
         <ModalHeader>Branding</ModalHeader>
         <ModalBody>
           <Input
+            description="Your project or venue website URL."
             label="Venue URL"
             placeholder="https://yoursite.com"
-            description="Your project or venue website URL."
             value={venueUrl}
             onValueChange={setVenueUrl}
           />
           <Textarea
-            label="Description"
-            placeholder="A brief description of your venue..."
             description="Describe what your venue is about."
+            label="Description"
+            maxRows={4}
+            minRows={2}
+            placeholder="A brief description of your venue..."
             value={description}
             onValueChange={setDescription}
-            minRows={2}
-            maxRows={4}
           />
         </ModalBody>
         <ModalFooter>
@@ -424,8 +428,8 @@ export function BrandingModal({
           </Button>
           <Button
             color="primary"
-            onPress={handleSave}
             isLoading={isSaving || isLoading}
+            onPress={handleSave}
           >
             Save
           </Button>
@@ -446,50 +450,50 @@ export function VenueModalsContainer({
   activeModal: SectionKey | null;
   onClose: () => void;
   venue: VenueData;
-  onManageWhitelist: (key: 'whitelist-trading' | 'whitelist-creation') => void;
+  onManageWhitelist: (key: "whitelist-trading" | "whitelist-creation") => void;
 }) {
   return (
     <>
       <GeneralModal
-        isOpen={activeModal === 'general'}
-        onClose={onClose}
+        isOpen={activeModal === "general"}
         venue={venue}
+        onClose={onClose}
       />
       <BrandingModal
-        isOpen={activeModal === 'branding'}
-        onClose={onClose}
+        isOpen={activeModal === "branding"}
         venue={venue}
+        onClose={onClose}
       />
       <AccessControlModal
-        isOpen={activeModal === 'access-control'}
-        onClose={onClose}
+        isOpen={activeModal === "access-control"}
         venue={venue}
+        onClose={onClose}
         onManageWhitelist={onManageWhitelist}
       />
       <FeesModal
-        isOpen={activeModal === 'fees'}
-        onClose={onClose}
+        isOpen={activeModal === "fees"}
         venue={venue}
+        onClose={onClose}
       />
       <OracleModal
-        isOpen={activeModal === 'oracle'}
-        onClose={onClose}
+        isOpen={activeModal === "oracle"}
         venue={venue}
+        onClose={onClose}
       />
       {venue.tradingAccessControl !== ZERO_ADDRESS && (
         <WhitelistManagementModal
-          isOpen={activeModal === 'whitelist-trading'}
-          onClose={onClose}
           acContract={venue.tradingAccessControl as `0x${string}`}
+          isOpen={activeModal === "whitelist-trading"}
           title="Trading Whitelist"
+          onClose={onClose}
         />
       )}
       {venue.creationAccessControl !== ZERO_ADDRESS && (
         <WhitelistManagementModal
-          isOpen={activeModal === 'whitelist-creation'}
-          onClose={onClose}
           acContract={venue.creationAccessControl as `0x${string}`}
+          isOpen={activeModal === "whitelist-creation"}
           title="Creation Whitelist"
+          onClose={onClose}
         />
       )}
     </>

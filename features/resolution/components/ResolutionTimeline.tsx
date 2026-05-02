@@ -1,7 +1,8 @@
-'use client';
+"use client";
 
-import { CheckCircleIcon, CircleIcon } from '@/components/icons';
-import type { ResolutionPhase } from '../hooks/useMarketStatus';
+import type { ResolutionPhase } from "../hooks/useMarketStatus";
+
+import { CheckCircleIcon, CircleIcon } from "@/components/icons";
 
 interface ResolutionTimelineProps {
   phase: ResolutionPhase;
@@ -10,7 +11,7 @@ interface ResolutionTimelineProps {
   winningOutcome: string | null;
 }
 
-type StepStatus = 'completed' | 'current' | 'pending';
+type StepStatus = "completed" | "current" | "pending";
 
 interface TimelineStep {
   label: string;
@@ -23,9 +24,9 @@ function deriveSteps(
   isDisputed: boolean,
   winningOutcome: string | null,
 ): TimelineStep[] {
-  if (phase === 'ACTIVE_NO_ASSERTION') return [];
+  if (phase === "ACTIVE_NO_ASSERTION") return [];
 
-  const outcomeLabel = `Outcome proposed: ${assertedOutcome || '?'}`;
+  const outcomeLabel = `Outcome proposed: ${assertedOutcome || "?"}`;
 
   let disputeLabel: string;
   let disputeStatus: StepStatus;
@@ -33,56 +34,57 @@ function deriveSteps(
   let finalStatus: StepStatus;
 
   switch (phase) {
-    case 'ASSERTION_PENDING':
-      disputeLabel = isDisputed ? 'Disputed' : 'Dispute window';
-      disputeStatus = 'current';
-      finalLabel = 'Final';
-      finalStatus = 'pending';
+    case "ASSERTION_PENDING":
+      disputeLabel = isDisputed ? "Disputed" : "Dispute window";
+      disputeStatus = "current";
+      finalLabel = "Final";
+      finalStatus = "pending";
       break;
-    case 'ASSERTION_EXPIRED':
-    case 'SETTLED_NOT_REPORTED':
-      disputeLabel = 'No dispute';
-      disputeStatus = 'completed';
-      finalLabel = 'Final';
-      finalStatus = 'pending';
+    case "ASSERTION_EXPIRED":
+    case "SETTLED_NOT_REPORTED":
+      disputeLabel = "No dispute";
+      disputeStatus = "completed";
+      finalLabel = "Final";
+      finalStatus = "pending";
       break;
-    case 'RESOLVED':
-      disputeLabel = 'No dispute';
-      disputeStatus = 'completed';
-      finalLabel = `Final outcome: ${winningOutcome || '?'}`;
-      finalStatus = 'completed';
+    case "RESOLVED":
+      disputeLabel = "No dispute";
+      disputeStatus = "completed";
+      finalLabel = `Final outcome: ${winningOutcome || "?"}`;
+      finalStatus = "completed";
       break;
     default:
       return [];
   }
 
   return [
-    { label: outcomeLabel, status: 'completed' },
+    { label: outcomeLabel, status: "completed" },
     { label: disputeLabel, status: disputeStatus },
     { label: finalLabel, status: finalStatus },
   ];
 }
 
 function StepCircle({ status }: { status: StepStatus }) {
-  if (status === 'completed') {
-    return <CheckCircleIcon size={20} className="text-primary" />;
+  if (status === "completed") {
+    return <CheckCircleIcon className="text-primary" size={20} />;
   }
+
   return (
     <CircleIcon
+      className={status === "current" ? "text-primary" : "text-default-300"}
       size={20}
-      className={status === 'current' ? 'text-primary' : 'text-default-300'}
     />
   );
 }
 
 function stepTextClass(status: StepStatus): string {
   switch (status) {
-    case 'completed':
-      return 'text-primary';
-    case 'current':
-      return 'text-foreground';
+    case "completed":
+      return "text-primary";
+    case "current":
+      return "text-foreground";
     default:
-      return 'text-default-400';
+      return "text-default-400";
   }
 }
 
@@ -104,9 +106,9 @@ export function ResolutionTimeline({
             <div className="flex ml-[9px]">
               <div
                 className={`w-0.5 h-4 ${
-                  steps[i - 1].status === 'completed'
-                    ? 'bg-primary'
-                    : 'bg-default-200'
+                  steps[i - 1].status === "completed"
+                    ? "bg-primary"
+                    : "bg-default-200"
                 }`}
               />
             </div>

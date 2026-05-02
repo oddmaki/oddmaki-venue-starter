@@ -5,8 +5,13 @@
  * `NEXT_PUBLIC_CHAIN_ID` (see `lib/oddmaki/chain.ts`).
  */
 
-import { CONTRACT_ADDRESSES } from '@oddmaki-protocol/sdk';
-import { ACTIVE_CHAIN, ACTIVE_CHAIN_ID, ACTIVE_CONTRACTS } from '@/lib/oddmaki/chain';
+import { CONTRACT_ADDRESSES } from "@oddmaki-protocol/sdk";
+
+import {
+  ACTIVE_CHAIN,
+  ACTIVE_CHAIN_ID,
+  ACTIVE_CONTRACTS,
+} from "@/lib/oddmaki/chain";
 
 // Re-export for easy access throughout the app
 export const contracts = CONTRACT_ADDRESSES;

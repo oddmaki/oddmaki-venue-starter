@@ -1,19 +1,28 @@
-'use client';
+"use client";
 
-import { useState, useMemo, useCallback } from 'react';
-import { Autocomplete, AutocompleteItem } from '@heroui/autocomplete';
-import { Input } from '@heroui/input';
-import { Tabs, Tab } from '@heroui/tabs';
-import { Chip } from '@heroui/chip';
-import { usePythFeeds, type PythFeedOption } from '../hooks/usePythFeeds';
+import { useState, useMemo, useCallback } from "react";
+import { Autocomplete, AutocompleteItem } from "@heroui/autocomplete";
+import { Input } from "@heroui/input";
+import { Tabs, Tab } from "@heroui/tabs";
+import { Chip } from "@heroui/chip";
 
-type InputMode = 'browse' | 'manual';
+import { usePythFeeds, type PythFeedOption } from "../hooks/usePythFeeds";
+
+type InputMode = "browse" | "manual";
 
 const PYTH_FEED_ID_REGEX = /^0x[0-9a-fA-F]{64}$/;
 
 const MAX_VISIBLE_ITEMS = 50;
 
-const ASSET_TYPE_ORDER = ['Crypto', 'Equity', 'FX', 'Commodities', 'Metal', 'Energy', 'Rates'];
+const ASSET_TYPE_ORDER = [
+  "Crypto",
+  "Equity",
+  "FX",
+  "Commodities",
+  "Metal",
+  "Energy",
+  "Rates",
+];
 
 interface PythFeedSelectorProps {
   feedId: string;
@@ -28,8 +37,8 @@ export function PythFeedSelector({
   onFeedSelect,
   onClearError,
 }: PythFeedSelectorProps) {
-  const [mode, setMode] = useState<InputMode>('browse');
-  const [searchValue, setSearchValue] = useState('');
+  const [mode, setMode] = useState<InputMode>("browse");
+  const [searchValue, setSearchValue] = useState("");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const { feeds, assetTypes, isLoading, isError } = usePythFeeds();
 
@@ -37,6 +46,7 @@ export function PythFeedSelector({
     return [...assetTypes].sort((a, b) => {
       const ia = ASSET_TYPE_ORDER.indexOf(a);
       const ib = ASSET_TYPE_ORDER.indexOf(b);
+
       return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
     });
   }, [assetTypes]);
@@ -50,6 +60,7 @@ export function PythFeedSelector({
 
     if (searchValue.trim()) {
       const query = searchValue.trim().toLowerCase();
+
       result = result.filter(
         (f) =>
           f.displaySymbol.toLowerCase().includes(query) ||
@@ -67,6 +78,7 @@ export function PythFeedSelector({
     (key: React.Key | null) => {
       if (!key) return;
       const selected = feeds.find((f) => f.feedId === key);
+
       if (selected) {
         onFeedIdChange(selected.feedId);
         onFeedSelect?.(selected);
@@ -81,24 +93,24 @@ export function PythFeedSelector({
     <div className="flex flex-col gap-2">
       <Tabs
         aria-label="Feed input mode"
-        variant="underlined"
-        size="sm"
+        classNames={{ tabList: "gap-4" }}
         selectedKey={mode}
+        size="sm"
+        variant="underlined"
         onSelectionChange={(key) => setMode(key as InputMode)}
-        classNames={{ tabList: 'gap-4' }}
       >
         <Tab key="browse" title="Browse Feeds" />
         <Tab key="manual" title="Manual Input" />
       </Tabs>
 
-      {mode === 'browse' ? (
+      {mode === "browse" ? (
         <div className="flex flex-col gap-2">
           <div className="flex gap-1.5 flex-wrap">
             <Chip
-              size="sm"
-              variant={activeCategory === null ? 'solid' : 'bordered'}
-              color={activeCategory === null ? 'primary' : 'default'}
               className="cursor-pointer"
+              color={activeCategory === null ? "primary" : "default"}
+              size="sm"
+              variant={activeCategory === null ? "solid" : "bordered"}
               onClick={() => setActiveCategory(null)}
             >
               All
@@ -106,10 +118,10 @@ export function PythFeedSelector({
             {sortedAssetTypes.map((type) => (
               <Chip
                 key={type}
-                size="sm"
-                variant={activeCategory === type ? 'solid' : 'bordered'}
-                color={activeCategory === type ? 'primary' : 'default'}
                 className="cursor-pointer"
+                color={activeCategory === type ? "primary" : "default"}
+                size="sm"
+                variant={activeCategory === type ? "solid" : "bordered"}
                 onClick={() =>
                   setActiveCategory(activeCategory === type ? null : type)
                 }
@@ -120,23 +132,23 @@ export function PythFeedSelector({
           </div>
 
           <Autocomplete
-            label="Pyth Price Feed"
-            placeholder="Search feeds (e.g. ETH, BTC, AAPL)..."
-            isLoading={isLoading}
-            items={filteredFeeds}
-            inputValue={searchValue}
-            onInputChange={setSearchValue}
-            onSelectionChange={handleAutocompleteSelect}
-            selectedKey={feedId || undefined}
-            isRequired
-            menuTrigger="input"
             allowsCustomValue
-            listboxProps={{ emptyContent: 'No feeds found.' }}
+            isRequired
             description={
               feedId
                 ? `Feed ID: ${feedId.slice(0, 10)}...${feedId.slice(-6)}`
                 : undefined
             }
+            inputValue={searchValue}
+            isLoading={isLoading}
+            items={filteredFeeds}
+            label="Pyth Price Feed"
+            listboxProps={{ emptyContent: "No feeds found." }}
+            menuTrigger="input"
+            placeholder="Search feeds (e.g. ETH, BTC, AAPL)..."
+            selectedKey={feedId || undefined}
+            onInputChange={setSearchValue}
+            onSelectionChange={handleAutocompleteSelect}
           >
             {(feed) => (
               <AutocompleteItem
@@ -152,7 +164,7 @@ export function PythFeedSelector({
                       {feed.description}
                     </span>
                   </div>
-                  <Chip size="sm" variant="flat" className="text-tiny shrink-0">
+                  <Chip className="text-tiny shrink-0" size="sm" variant="flat">
                     {feed.assetType}
                   </Chip>
                 </div>
@@ -168,6 +180,26 @@ export function PythFeedSelector({
         </div>
       ) : (
         <Input
+          isRequired
+          description={
+            <span>
+              Find feed IDs at{" "}
+              <a
+                className="text-primary underline"
+                href="https://pyth.network/developers/price-feed-ids"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                pyth.network/developers/price-feed-ids
+              </a>
+            </span>
+          }
+          errorMessage={
+            feedId.trim() && !isValidFeedId
+              ? "Must be a 0x-prefixed 64-character hex string"
+              : undefined
+          }
+          isInvalid={!!feedId.trim() && !isValidFeedId}
           label="Pyth Feed ID"
           placeholder="0xff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace"
           value={feedId}
@@ -175,26 +207,6 @@ export function PythFeedSelector({
             onFeedIdChange(v);
             onClearError?.();
           }}
-          isRequired
-          isInvalid={!!feedId.trim() && !isValidFeedId}
-          errorMessage={
-            feedId.trim() && !isValidFeedId
-              ? 'Must be a 0x-prefixed 64-character hex string'
-              : undefined
-          }
-          description={
-            <span>
-              Find feed IDs at{' '}
-              <a
-                href="https://pyth.network/developers/price-feed-ids"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary underline"
-              >
-                pyth.network/developers/price-feed-ids
-              </a>
-            </span>
-          }
         />
       )}
     </div>

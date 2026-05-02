@@ -1,9 +1,16 @@
-'use client';
+"use client";
 
-import { useState, useRef } from 'react';
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@heroui/modal';
-import { Button } from '@heroui/button';
-import { useUpdateMarketMetadata } from '../hooks/useUpdateMarketMetadata';
+import { useState, useRef } from "react";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+} from "@heroui/modal";
+import { Button } from "@heroui/button";
+
+import { useUpdateMarketMetadata } from "../hooks/useUpdateMarketMetadata";
 
 interface MetadataModalProps {
   isOpen: boolean;
@@ -11,7 +18,11 @@ interface MetadataModalProps {
   marketId: string;
 }
 
-export function MetadataModal({ isOpen, onClose, marketId }: MetadataModalProps) {
+export function MetadataModal({
+  isOpen,
+  onClose,
+  marketId,
+}: MetadataModalProps) {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -19,6 +30,7 @@ export function MetadataModal({ isOpen, onClose, marketId }: MetadataModalProps)
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+
     if (!file) return;
     setImageFile(file);
     setPreview(URL.createObjectURL(file));
@@ -27,6 +39,7 @@ export function MetadataModal({ isOpen, onClose, marketId }: MetadataModalProps)
   const handleSubmit = async () => {
     if (!imageFile) return;
     const hash = await updateMetadata(imageFile);
+
     if (hash) {
       onClose();
       setImageFile(null);
@@ -46,23 +59,24 @@ export function MetadataModal({ isOpen, onClose, marketId }: MetadataModalProps)
         <ModalHeader>Update Market Image</ModalHeader>
         <ModalBody>
           <p className="text-sm text-default-500 mb-3">
-            Upload a new image for this market. The image will be stored on IPFS.
+            Upload a new image for this market. The image will be stored on
+            IPFS.
           </p>
 
           <input
             ref={fileInputRef}
-            type="file"
             accept="image/*"
             className="hidden"
+            type="file"
             onChange={handleFileChange}
           />
 
           {preview ? (
             <div className="flex flex-col items-center gap-3">
               <img
-                src={preview}
                 alt="Preview"
                 className="w-32 h-32 object-cover rounded-lg"
+                src={preview}
               />
               <Button
                 size="sm"
@@ -74,8 +88,8 @@ export function MetadataModal({ isOpen, onClose, marketId }: MetadataModalProps)
             </div>
           ) : (
             <Button
-              variant="bordered"
               className="w-full"
+              variant="bordered"
               onPress={() => fileInputRef.current?.click()}
             >
               Select Image
@@ -88,9 +102,9 @@ export function MetadataModal({ isOpen, onClose, marketId }: MetadataModalProps)
           </Button>
           <Button
             color="primary"
-            onPress={handleSubmit}
-            isLoading={isLoading}
             isDisabled={!imageFile}
+            isLoading={isLoading}
+            onPress={handleSubmit}
           >
             Upload & Update
           </Button>

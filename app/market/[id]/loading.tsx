@@ -1,4 +1,4 @@
-import { MarketDetailSkeleton } from '@/features/market-detail/components/MarketDetailSkeleton';
+import { MarketDetailSkeleton } from "@/features/market-detail/components/MarketDetailSkeleton";
 
 export default function MarketDetailLoading() {
   return (

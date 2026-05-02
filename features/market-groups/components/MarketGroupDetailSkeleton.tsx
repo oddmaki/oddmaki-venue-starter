@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { Skeleton } from '@heroui/skeleton';
-import { Card, CardHeader, CardBody } from '@heroui/card';
+import { Skeleton } from "@heroui/skeleton";
+import { Card, CardHeader, CardBody } from "@heroui/card";
 
 export function MarketGroupDetailSkeleton() {
   return (

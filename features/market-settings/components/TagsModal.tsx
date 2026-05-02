@@ -1,11 +1,18 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@heroui/modal';
-import { Button } from '@heroui/button';
-import { Input } from '@heroui/input';
-import { Chip } from '@heroui/chip';
-import { useUpdateMarketTags } from '../hooks/useUpdateMarketTags';
+import { useState } from "react";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+} from "@heroui/modal";
+import { Button } from "@heroui/button";
+import { Input } from "@heroui/input";
+import { Chip } from "@heroui/chip";
+
+import { useUpdateMarketTags } from "../hooks/useUpdateMarketTags";
 
 interface TagsModalProps {
   isOpen: boolean;
@@ -17,14 +24,15 @@ const MAX_TAGS = 5;
 
 export function TagsModal({ isOpen, onClose, marketId }: TagsModalProps) {
   const [tags, setTags] = useState<string[]>([]);
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState("");
   const { updateTags, isLoading } = useUpdateMarketTags(marketId);
 
   const addTag = () => {
     const tag = input.trim().toLowerCase();
+
     if (!tag || tags.length >= MAX_TAGS || tags.includes(tag)) return;
     setTags([...tags, tag]);
-    setInput('');
+    setInput("");
   };
 
   const removeTag = (tag: string) => {
@@ -32,7 +40,7 @@ export function TagsModal({ isOpen, onClose, marketId }: TagsModalProps) {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       e.preventDefault();
       addTag();
     }
@@ -40,10 +48,11 @@ export function TagsModal({ isOpen, onClose, marketId }: TagsModalProps) {
 
   const handleSubmit = async () => {
     const hash = await updateTags(tags);
+
     if (hash) {
       onClose();
       setTags([]);
-      setInput('');
+      setInput("");
     }
   };
 
@@ -53,23 +62,24 @@ export function TagsModal({ isOpen, onClose, marketId }: TagsModalProps) {
         <ModalHeader>Update Market Tags</ModalHeader>
         <ModalBody>
           <p className="text-sm text-default-500 mb-2">
-            Tags help categorize your market. Max {MAX_TAGS} tags. This replaces all existing tags.
+            Tags help categorize your market. Max {MAX_TAGS} tags. This replaces
+            all existing tags.
           </p>
 
           <div className="flex gap-2">
             <Input
-              size="sm"
-              placeholder="Add a tag..."
-              value={input}
-              onValueChange={setInput}
-              onKeyDown={handleKeyDown}
               isDisabled={tags.length >= MAX_TAGS}
+              placeholder="Add a tag..."
+              size="sm"
+              value={input}
+              onKeyDown={handleKeyDown}
+              onValueChange={setInput}
             />
             <Button
+              isDisabled={!input.trim() || tags.length >= MAX_TAGS}
               size="sm"
               variant="flat"
               onPress={addTag}
-              isDisabled={!input.trim() || tags.length >= MAX_TAGS}
             >
               Add
             </Button>
@@ -96,9 +106,9 @@ export function TagsModal({ isOpen, onClose, marketId }: TagsModalProps) {
           </Button>
           <Button
             color="primary"
-            onPress={handleSubmit}
-            isLoading={isLoading}
             isDisabled={tags.length === 0}
+            isLoading={isLoading}
+            onPress={handleSubmit}
           >
             Update Tags
           </Button>

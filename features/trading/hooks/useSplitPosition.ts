@@ -1,16 +1,21 @@
-'use client';
+"use client";
 
-import { useCallback } from 'react';
-import { useConnection, usePublicClient } from 'wagmi';
-import { useOddMakiClient } from '@/lib/oddmaki/hooks';
-import { queryKeys } from '@/lib/oddmaki/queryKeys';
+import type { FlowStep } from "@/lib/oddmaki/useTransactionFlow";
+
+import { useCallback } from "react";
+import { useConnection, usePublicClient } from "wagmi";
+
+import { useOddMakiClient } from "@/lib/oddmaki/hooks";
+import { queryKeys } from "@/lib/oddmaki/queryKeys";
 import {
   USDC_ADDRESS,
   DIAMOND_ADDRESS,
   USDC_DECIMALS,
-} from '@/lib/oddmaki/constants';
-import { useTransactionFlow, waitForAllowance } from '@/lib/oddmaki/useTransactionFlow';
-import type { FlowStep } from '@/lib/oddmaki/useTransactionFlow';
+} from "@/lib/oddmaki/constants";
+import {
+  useTransactionFlow,
+  waitForAllowance,
+} from "@/lib/oddmaki/useTransactionFlow";
 
 interface SplitPositionParams {
   marketId: string;
@@ -42,7 +47,7 @@ export function useSplitPosition() {
 
       const steps: FlowStep[] = [
         {
-          id: 'usdc-approval',
+          id: "usdc-approval",
           label: `USDC Approval ($${params.amount})`,
           shouldSkip: async () => {
             const allowance = (await client.token.getAllowance(
@@ -50,6 +55,7 @@ export function useSplitPosition() {
               address,
               DIAMOND_ADDRESS,
             )) as bigint;
+
             return allowance >= usdcAmount;
           },
           execute: async () => {
@@ -58,6 +64,7 @@ export function useSplitPosition() {
               DIAMOND_ADDRESS,
               usdcAmount,
             );
+
             await publicClient.waitForTransactionReceipt({ hash });
             await waitForAllowance(
               publicClient,
@@ -69,13 +76,14 @@ export function useSplitPosition() {
           },
         },
         {
-          id: 'split-position',
-          label: 'Split Position',
+          id: "split-position",
+          label: "Split Position",
           execute: async () => {
             const hash = await client.trade.splitPosition(
               marketIdBig,
               usdcAmount,
             );
+
             await publicClient.waitForTransactionReceipt({ hash });
           },
         },

@@ -1,11 +1,14 @@
-'use client';
+"use client";
 
-import { useQuery } from '@tanstack/react-query';
-import { useOddMakiClient } from '@/lib/oddmaki/hooks';
-import { getVenueId } from '@/config/venue.config';
-import { parseAncillaryData } from '@oddmaki-protocol/sdk';
-import type { Market, FormattedMarket } from '../types';
-import { calculateMarketPrices, formatVolume } from '../utils/formatting';
+import type { Market, FormattedMarket } from "../types";
+
+import { useQuery } from "@tanstack/react-query";
+import { parseAncillaryData } from "@oddmaki-protocol/sdk";
+
+import { calculateMarketPrices, formatVolume } from "../utils/formatting";
+
+import { useOddMakiClient } from "@/lib/oddmaki/hooks";
+import { getVenueId } from "@/config/venue.config";
 
 /**
  * Transform raw market data to formatted market
@@ -21,7 +24,7 @@ function formatMarket(market: Market): FormattedMarket {
     question: title, // Override with just the title
     yesPrice,
     noPrice,
-    volumeFormatted: formatVolume(market.totalVolume || '0', 6), // USDC has 6 decimals
+    volumeFormatted: formatVolume(market.totalVolume || "0", 6), // USDC has 6 decimals
   };
 }
 
@@ -30,15 +33,16 @@ export function useMarkets() {
   const venueId = getVenueId();
 
   return useQuery({
-    queryKey: ['markets', venueId?.toString()],
+    queryKey: ["markets", venueId?.toString()],
     queryFn: async () => {
-      const result = await client.public.getMarketsWithPricing({
+      const result = (await client.public.getMarketsWithPricing({
         venueId,
         first: 100,
         skip: 0,
-      }) as any;
+      })) as any;
 
       const markets = result.markets || [];
+
       return markets.map(formatMarket);
     },
     enabled: !!client && venueId !== undefined,

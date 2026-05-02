@@ -6,13 +6,12 @@ import * as React from "react";
 import { HeroUIProvider } from "@heroui/system";
 import { useRouter } from "next/navigation";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
+import { Toaster } from "sonner";
 
-import { Toaster } from 'sonner';
-
-import { AuthProvider } from '@/features/auth';
-import { RealtimeProvider } from '@/features/realtime';
-import { ThemeOverrideProvider } from '@/features/theme-editor/components/ThemeOverrideProvider';
-import { FilterToggleProvider } from '@/features/markets/hooks/useFilterToggle';
+import { AuthProvider } from "@/features/auth";
+import { RealtimeProvider } from "@/features/realtime";
+import { ThemeOverrideProvider } from "@/features/theme-editor/components/ThemeOverrideProvider";
+import { FilterToggleProvider } from "@/features/markets/hooks/useFilterToggle";
 
 export interface ProvidersProps {
   children: React.ReactNode;
@@ -38,7 +37,7 @@ export function Providers({ children, themeProps }: ProvidersProps) {
             <ThemeOverrideProvider>
               <FilterToggleProvider>
                 {children}
-                <Toaster richColors closeButton position="bottom-right" />
+                <Toaster closeButton richColors position="bottom-right" />
               </FilterToggleProvider>
             </ThemeOverrideProvider>
           </NextThemesProvider>

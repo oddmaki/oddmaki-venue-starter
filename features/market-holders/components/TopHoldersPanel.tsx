@@ -1,10 +1,12 @@
-'use client';
+"use client";
 
-import NextLink from 'next/link';
-import { Card, CardBody } from '@heroui/card';
-import { Skeleton } from '@heroui/skeleton';
-import { AddressAvatar, generatePseudonym } from '@/lib/identity';
-import { useMarketTopHolders } from '../hooks/useMarketTopHolders';
+import NextLink from "next/link";
+import { Card, CardBody } from "@heroui/card";
+import { Skeleton } from "@heroui/skeleton";
+
+import { useMarketTopHolders } from "../hooks/useMarketTopHolders";
+
+import { AddressAvatar, generatePseudonym } from "@/lib/identity";
 
 interface TopHoldersPanelProps {
   marketId: string;
@@ -13,8 +15,10 @@ interface TopHoldersPanelProps {
 
 function formatQty(value: string, decimals: number = 6): string {
   const num = parseFloat(value) / Math.pow(10, decimals);
+
   if (num >= 1_000_000) return `${(num / 1_000_000).toFixed(1)}M`;
   if (num >= 1_000) return `${(num / 1_000).toFixed(0)}K`;
+
   return num.toFixed(0);
 }
 
@@ -27,13 +31,17 @@ function HolderRow({ pos, rank }: HolderRowProps) {
   return (
     <div className="flex items-center justify-between py-2 border-b border-default-100 last:border-0">
       <div className="flex items-center gap-2 min-w-0">
-        <span className="text-xs text-default-400 w-4 shrink-0 text-right">{rank}</span>
+        <span className="text-xs text-default-400 w-4 shrink-0 text-right">
+          {rank}
+        </span>
         <NextLink
-          href={`/trader/${pos.trader.id}`}
           className="flex items-center gap-2 hover:text-primary transition-colors min-w-0"
+          href={`/trader/${pos.trader.id}`}
         >
           <AddressAvatar address={pos.trader.id} size={22} />
-          <span className="text-sm font-medium truncate">{generatePseudonym(pos.trader.id)}</span>
+          <span className="text-sm font-medium truncate">
+            {generatePseudonym(pos.trader.id)}
+          </span>
         </NextLink>
       </div>
       <span className="text-sm font-medium text-default-700 shrink-0 ml-2 tabular-nums">
@@ -54,12 +62,16 @@ function OutcomeColumn({ label, holders, colorClass }: OutcomeColumnProps) {
     <div className="flex-1 min-w-0">
       <div className="flex items-center justify-between mb-2 px-1">
         <span className={`text-sm font-semibold ${colorClass}`}>{label}</span>
-        <span className="text-xs text-default-400 font-medium uppercase tracking-wide">Shares</span>
+        <span className="text-xs text-default-400 font-medium uppercase tracking-wide">
+          Shares
+        </span>
       </div>
       {holders.length === 0 ? (
         <p className="text-xs text-default-400 py-2 px-1">No positions</p>
       ) : (
-        holders.map((pos, i) => <HolderRow key={pos.id} pos={pos} rank={i + 1} />)
+        holders.map((pos, i) => (
+          <HolderRow key={pos.id} pos={pos} rank={i + 1} />
+        ))
       )}
     </div>
   );
@@ -69,7 +81,7 @@ export function TopHoldersPanel({ marketId, outcomes }: TopHoldersPanelProps) {
   const { data: holders = [], isLoading } = useMarketTopHolders(marketId);
 
   const outcomeLabel = (index: number) =>
-    outcomes?.[index] ?? (index === 0 ? 'Yes' : 'No');
+    outcomes?.[index] ?? (index === 0 ? "Yes" : "No");
 
   if (isLoading) {
     return (
@@ -102,8 +114,10 @@ export function TopHoldersPanel({ marketId, outcomes }: TopHoldersPanelProps) {
 
   // Split by outcome index; keep existing sort order (quantity desc from query)
   const byOutcome: Record<number, any[]> = {};
+
   for (const pos of holders) {
     const idx = parseInt(pos.outcome);
+
     if (!byOutcome[idx]) byOutcome[idx] = [];
     byOutcome[idx].push(pos);
   }
@@ -112,7 +126,7 @@ export function TopHoldersPanel({ marketId, outcomes }: TopHoldersPanelProps) {
     .map(Number)
     .sort((a, b) => a - b);
 
-  const colorClasses = ['text-success', 'text-danger'];
+  const colorClasses = ["text-success", "text-danger"];
 
   return (
     <Card>
@@ -121,9 +135,9 @@ export function TopHoldersPanel({ marketId, outcomes }: TopHoldersPanelProps) {
           {outcomeIndices.map((idx) => (
             <OutcomeColumn
               key={idx}
-              label={`${outcomeLabel(idx)} holders`}
+              colorClass={colorClasses[idx] ?? "text-default-700"}
               holders={byOutcome[idx]}
-              colorClass={colorClasses[idx] ?? 'text-default-700'}
+              label={`${outcomeLabel(idx)} holders`}
             />
           ))}
         </div>

@@ -1,14 +1,16 @@
-'use client';
+"use client";
 
-import { useQuery } from '@tanstack/react-query';
-import { useOddMakiClient } from '@/lib/oddmaki/hooks';
-import { queryKeys } from '@/lib/oddmaki/queryKeys';
-import { formatVolume } from '@/features/markets/utils/formatting';
 import type {
   FormattedMarketGroup,
   FormattedGroupOutcome,
   MarketGroupStatus,
-} from '../types';
+} from "../types";
+
+import { useQuery } from "@tanstack/react-query";
+
+import { useOddMakiClient } from "@/lib/oddmaki/hooks";
+import { queryKeys } from "@/lib/oddmaki/queryKeys";
+import { formatVolume } from "@/features/markets/utils/formatting";
 
 export function useMarketGroupDetail(groupId: string) {
   const client = useOddMakiClient();
@@ -17,31 +19,29 @@ export function useMarketGroupDetail(groupId: string) {
     queryKey: queryKeys.marketGroups.detail(groupId),
     queryFn: async () => {
       const group = await client.public.getMarketGroup(BigInt(groupId));
+
       if (!group) return null;
 
       const formatted = client.public.formatMarketGroupForDisplay(group);
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const outcomes: FormattedGroupOutcome[] = (formatted.outcomes || []).map(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (o: any) => ({
           marketId: o.marketId,
           name: o.name,
-          question: o.question || '',
+          question: o.question || "",
           probability: o.probability ? parseFloat(o.probability) * 100 : 0,
           status: o.status,
-          totalVolume: o.totalVolume || '0',
-          volumeFormatted: formatVolume(o.totalVolume || '0', 6),
+          totalVolume: o.totalVolume || "0",
+          volumeFormatted: formatVolume(o.totalVolume || "0", 6),
           isPlaceholder: false,
         }),
       );
 
       // Sum volume across all child markets
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       const totalVolume = (group.markets || [])
         .reduce(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (sum: number, m: any) => sum + parseFloat(m.totalVolume || '0'),
+          (sum: number, m: any) => sum + parseFloat(m.totalVolume || "0"),
           0,
         )
         .toString();
@@ -50,14 +50,14 @@ export function useMarketGroupDetail(groupId: string) {
         groupId: formatted.groupId,
         marketQuestion: formatted.marketQuestion,
         status: formatted.status as MarketGroupStatus,
-        totalMarkets: formatted.totalMarkets || '0',
-        activeMarketCount: formatted.activeMarketCount || '0',
-        resolvedMarketId: formatted.resolvedMarketId || '0',
+        totalMarkets: formatted.totalMarkets || "0",
+        activeMarketCount: formatted.activeMarketCount || "0",
+        resolvedMarketId: formatted.resolvedMarketId || "0",
         tags: group.tags || [],
-        createdAt: formatted.createdAt || '0',
+        createdAt: formatted.createdAt || "0",
         activatedAt: group.activatedAt || null,
         resolvedAt: group.resolvedAt || null,
-        creator: group.creator?.address || '',
+        creator: group.creator?.address || "",
         outcomes,
         totalVolume,
         volumeFormatted: formatVolume(totalVolume, 6),

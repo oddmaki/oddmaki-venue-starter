@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { TagsModal } from './TagsModal';
-import { TradingAccessModal } from './TradingAccessModal';
-import { PauseMarketModal } from './PauseMarketModal';
-import { MetadataModal } from './MetadataModal';
+import { TagsModal } from "./TagsModal";
+import { TradingAccessModal } from "./TradingAccessModal";
+import { PauseMarketModal } from "./PauseMarketModal";
+import { MetadataModal } from "./MetadataModal";
 
-export type SettingsAction = 'tags' | 'trading-access' | 'pause' | 'metadata';
+export type SettingsAction = "tags" | "trading-access" | "pause" | "metadata";
 
 interface MarketSettingsModalsProps {
   activeModal: SettingsAction | null;
@@ -13,28 +13,32 @@ interface MarketSettingsModalsProps {
   marketId: string;
 }
 
-export function MarketSettingsModals({ activeModal, onClose, marketId }: MarketSettingsModalsProps) {
+export function MarketSettingsModals({
+  activeModal,
+  onClose,
+  marketId,
+}: MarketSettingsModalsProps) {
   return (
     <>
       <TagsModal
-        isOpen={activeModal === 'tags'}
-        onClose={onClose}
+        isOpen={activeModal === "tags"}
         marketId={marketId}
+        onClose={onClose}
       />
       <TradingAccessModal
-        isOpen={activeModal === 'trading-access'}
-        onClose={onClose}
+        isOpen={activeModal === "trading-access"}
         marketId={marketId}
+        onClose={onClose}
       />
       <PauseMarketModal
-        isOpen={activeModal === 'pause'}
-        onClose={onClose}
+        isOpen={activeModal === "pause"}
         marketId={marketId}
+        onClose={onClose}
       />
       <MetadataModal
-        isOpen={activeModal === 'metadata'}
-        onClose={onClose}
+        isOpen={activeModal === "metadata"}
         marketId={marketId}
+        onClose={onClose}
       />
     </>
   );

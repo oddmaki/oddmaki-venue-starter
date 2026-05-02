@@ -1,13 +1,15 @@
-'use client';
+"use client";
 
-import { Card, CardHeader, CardBody } from '@heroui/card';
-import { Button } from '@heroui/button';
-import { Chip } from '@heroui/chip';
-import { Skeleton } from '@heroui/skeleton';
-import { useConnection } from 'wagmi';
-import { useUserPositions } from '@/features/market-detail/hooks/useUserPositions';
-import { useRedeemWinnings } from '../hooks/useRedeemWinnings';
-import { useMarketStatus } from '../hooks/useMarketStatus';
+import { Card, CardHeader, CardBody } from "@heroui/card";
+import { Button } from "@heroui/button";
+import { Chip } from "@heroui/chip";
+import { Skeleton } from "@heroui/skeleton";
+import { useConnection } from "wagmi";
+
+import { useRedeemWinnings } from "../hooks/useRedeemWinnings";
+import { useMarketStatus } from "../hooks/useMarketStatus";
+
+import { useUserPositions } from "@/features/market-detail/hooks/useUserPositions";
 
 interface RedeemPanelProps {
   marketId: string;
@@ -27,7 +29,8 @@ export function RedeemPanel({
   const { redeemWinnings, isLoading } = useRedeemWinnings(marketId);
   const { data: status, isLoading: statusLoading } = useMarketStatus(marketId);
 
-  const winningOutcome = winningOutcomeProp ?? status?.resolution.winningOutcome ?? null;
+  const winningOutcome =
+    winningOutcomeProp ?? status?.resolution.winningOutcome ?? null;
 
   if (standalone && !winningOutcomeProp && statusLoading) {
     return (
@@ -47,16 +50,19 @@ export function RedeemPanel({
 
   if (!winningOutcome) return null;
 
-  const winningIndex = winningOutcome === 'YES' ? 0 : winningOutcome === 'NO' ? 1 : -1;
+  const winningIndex =
+    winningOutcome === "YES" ? 0 : winningOutcome === "NO" ? 1 : -1;
   const winningLabel =
-    winningIndex >= 0 ? outcomes[winningIndex] || winningOutcome : winningOutcome;
+    winningIndex >= 0
+      ? outcomes[winningIndex] || winningOutcome
+      : winningOutcome;
 
   const winningBalance =
-    winningOutcome === 'YES'
-      ? positions?.YES || '0'
-      : winningOutcome === 'NO'
-      ? positions?.NO || '0'
-      : '0';
+    winningOutcome === "YES"
+      ? positions?.YES || "0"
+      : winningOutcome === "NO"
+        ? positions?.NO || "0"
+        : "0";
 
   const hasWinnings = parseFloat(winningBalance) > 0;
 
@@ -65,8 +71,14 @@ export function RedeemPanel({
       <div className="flex items-center gap-2">
         <span className="text-sm text-default-500">Winning outcome:</span>
         <Chip
+          color={
+            winningOutcome === "YES"
+              ? "primary"
+              : winningOutcome === "NO"
+                ? "secondary"
+                : "warning"
+          }
           size="sm"
-          color={winningOutcome === 'YES' ? 'primary' : winningOutcome === 'NO' ? 'secondary' : 'warning'}
           variant="flat"
         >
           {winningLabel}
@@ -76,17 +88,17 @@ export function RedeemPanel({
       {hasWinnings ? (
         <>
           <p className="text-sm text-default-500">
-            You hold <span className="font-semibold">{winningBalance}</span>{' '}
+            You hold <span className="font-semibold">{winningBalance}</span>{" "}
             winning tokens redeemable for USDC.
           </p>
           <Button
+            className="w-full"
             color="primary"
             isDisabled={!isConnected}
             isLoading={isLoading}
             onPress={redeemWinnings}
-            className="w-full"
           >
-            {!isConnected ? 'Connect Wallet' : 'Redeem Winnings'}
+            {!isConnected ? "Connect Wallet" : "Redeem Winnings"}
           </Button>
         </>
       ) : (

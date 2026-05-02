@@ -1,15 +1,18 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Card, CardHeader, CardBody } from '@heroui/card';
-import { Button } from '@heroui/button';
-import { Divider } from '@heroui/divider';
-import { useThemeOverride } from '../hooks/useThemeOverride';
-import { ColorPicker } from './ColorPicker';
-import { ThemePreviewPanel } from './ThemePreviewPanel';
-import { ExportButton } from './ExportButton';
-import type { ThemeConfig } from '@/lib/theme';
-import themeConfig from '../../../theme.config.json';
+import type { ThemeConfig } from "@/lib/theme";
+
+import { useState, useEffect } from "react";
+import { Card, CardHeader, CardBody } from "@heroui/card";
+import { Button } from "@heroui/button";
+import { Divider } from "@heroui/divider";
+
+import { useThemeOverride } from "../hooks/useThemeOverride";
+import themeConfig from "../../../theme.config.json";
+
+import { ColorPicker } from "./ColorPicker";
+import { ThemePreviewPanel } from "./ThemePreviewPanel";
+import { ExportButton } from "./ExportButton";
 
 /** Build a full ThemeConfig from the editor's state */
 function buildConfig(state: EditorState): ThemeConfig {
@@ -20,15 +23,19 @@ function buildConfig(state: EditorState): ThemeConfig {
     },
   };
 
-  if (state.background !== '#06060F') {
+  if (state.background !== "#06060F") {
     config.surfaces = { background: state.background };
   }
 
-  if (state.success !== '#00E68C' || state.warning !== '#FFB800' || state.danger !== '#FF6B6B') {
+  if (
+    state.success !== "#00E68C" ||
+    state.warning !== "#FFB800" ||
+    state.danger !== "#FF6B6B"
+  ) {
     config.semantic = {};
-    if (state.success !== '#00E68C') config.semantic.success = state.success;
-    if (state.warning !== '#FFB800') config.semantic.warning = state.warning;
-    if (state.danger !== '#FF6B6B') config.semantic.danger = state.danger;
+    if (state.success !== "#00E68C") config.semantic.success = state.success;
+    if (state.warning !== "#FFB800") config.semantic.warning = state.warning;
+    if (state.danger !== "#FF6B6B") config.semantic.danger = state.danger;
   }
 
   return config;
@@ -46,10 +53,10 @@ interface EditorState {
 const DEFAULTS: EditorState = {
   primary: themeConfig.brand.primary,
   secondary: themeConfig.brand.secondary,
-  background: '#06060F',
-  success: '#00E68C',
-  warning: '#FFB800',
-  danger: '#FF6B6B',
+  background: "#06060F",
+  success: "#00E68C",
+  warning: "#FFB800",
+  danger: "#FF6B6B",
 };
 
 export function ThemeEditorPage() {
@@ -60,6 +67,7 @@ export function ThemeEditorPage() {
   // Apply overrides as the user edits
   useEffect(() => {
     const config = buildConfig(state);
+
     setOverrides(config);
 
     return () => {
@@ -99,12 +107,12 @@ export function ThemeEditorPage() {
             <ColorPicker
               label="Primary"
               value={state.primary}
-              onChange={update('primary')}
+              onChange={update("primary")}
             />
             <ColorPicker
               label="Secondary"
               value={state.secondary}
-              onChange={update('secondary')}
+              onChange={update("secondary")}
             />
 
             <Divider />
@@ -116,17 +124,17 @@ export function ThemeEditorPage() {
             <ColorPicker
               label="Background"
               value={state.background}
-              onChange={update('background')}
+              onChange={update("background")}
             />
 
             {/* Advanced toggle */}
             <Button
-              variant="light"
-              size="sm"
-              onPress={() => setShowAdvanced(!showAdvanced)}
               className="self-start"
+              size="sm"
+              variant="light"
+              onPress={() => setShowAdvanced(!showAdvanced)}
             >
-              {showAdvanced ? 'Hide' : 'Show'} semantic colors
+              {showAdvanced ? "Hide" : "Show"} semantic colors
             </Button>
 
             {showAdvanced && (
@@ -138,17 +146,17 @@ export function ThemeEditorPage() {
                 <ColorPicker
                   label="Success"
                   value={state.success}
-                  onChange={update('success')}
+                  onChange={update("success")}
                 />
                 <ColorPicker
                   label="Warning"
                   value={state.warning}
-                  onChange={update('warning')}
+                  onChange={update("warning")}
                 />
                 <ColorPicker
                   label="Danger"
                   value={state.danger}
-                  onChange={update('danger')}
+                  onChange={update("danger")}
                 />
               </>
             )}
@@ -159,9 +167,9 @@ export function ThemeEditorPage() {
             <div className="flex gap-2">
               <ExportButton config={buildConfig(state)} />
               <Button
+                className="flex-shrink-0"
                 variant="flat"
                 onPress={handleReset}
-                className="flex-shrink-0"
               >
                 Reset
               </Button>

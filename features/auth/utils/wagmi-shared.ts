@@ -5,8 +5,9 @@
  * Each adapter imports these to build its own wagmi config.
  */
 
-import { http } from 'wagmi';
-import { ACTIVE_CHAIN } from '@/lib/oddmaki/chain';
+import { http } from "wagmi";
+
+import { ACTIVE_CHAIN } from "@/lib/oddmaki/chain";
 
 export const supportedChains = [ACTIVE_CHAIN] as const;
 

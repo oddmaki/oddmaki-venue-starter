@@ -5,7 +5,7 @@
  * Extracted from providers.tsx so each adapter doesn't create its own.
  */
 
-import { QueryClient } from '@tanstack/react-query';
+import { QueryClient } from "@tanstack/react-query";
 
 export const queryClient = new QueryClient({
   defaultOptions: {

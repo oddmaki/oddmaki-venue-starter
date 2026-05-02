@@ -1,16 +1,17 @@
-'use client';
+"use client";
 
-import { Select, SelectItem } from '@heroui/select';
-import { Input } from '@heroui/input';
-import type { AccessControlType } from '../hooks/useDeployAccessControl';
+import type { AccessControlType } from "../hooks/useDeployAccessControl";
+
+import { Select, SelectItem } from "@heroui/select";
+import { Input } from "@heroui/input";
 
 const AC_TYPE_OPTIONS = [
-  { key: 'public', label: 'Public (no restrictions)' },
-  { key: 'whitelist', label: 'Whitelist' },
-  { key: 'nft-erc721', label: 'NFT Gated (ERC-721)' },
-  { key: 'nft-erc1155', label: 'NFT Gated (ERC-1155)' },
-  { key: 'token', label: 'Token Gated (ERC-20)' },
-  { key: 'custom', label: 'Custom Contract Address' },
+  { key: "public", label: "Public (no restrictions)" },
+  { key: "whitelist", label: "Whitelist" },
+  { key: "nft-erc721", label: "NFT Gated (ERC-721)" },
+  { key: "nft-erc1155", label: "NFT Gated (ERC-1155)" },
+  { key: "token", label: "Token Gated (ERC-20)" },
+  { key: "custom", label: "Custom Contract Address" },
 ];
 
 interface AccessControlTypeSelectorProps {
@@ -33,15 +34,15 @@ export function AccessControlTypeSelector({
   label,
   value,
   onChange,
-  customAddress = '',
+  customAddress = "",
   onCustomAddressChange,
-  nftContract = '',
+  nftContract = "",
   onNftContractChange,
-  nftTokenId = '0',
+  nftTokenId = "0",
   onNftTokenIdChange,
-  tokenContract = '',
+  tokenContract = "",
   onTokenContractChange,
-  tokenMinBalance = '',
+  tokenMinBalance = "",
   onTokenMinBalanceChange,
 }: AccessControlTypeSelectorProps) {
   return (
@@ -49,66 +50,67 @@ export function AccessControlTypeSelector({
       <Select
         label={label}
         selectedKeys={[value]}
+        size="sm"
         onSelectionChange={(keys) => {
           const selected = Array.from(keys)[0] as string;
+
           if (selected) onChange(selected as AccessControlType);
         }}
-        size="sm"
       >
         {AC_TYPE_OPTIONS.map((opt) => (
           <SelectItem key={opt.key}>{opt.label}</SelectItem>
         ))}
       </Select>
 
-      {(value === 'nft-erc721' || value === 'nft-erc1155') && (
+      {(value === "nft-erc721" || value === "nft-erc1155") && (
         <>
           <Input
             label="NFT Contract Address"
             placeholder="0x..."
+            size="sm"
             value={nftContract}
             onValueChange={onNftContractChange}
-            size="sm"
           />
-          {value === 'nft-erc1155' && (
+          {value === "nft-erc1155" && (
             <Input
               label="Token ID"
               placeholder="0"
+              size="sm"
               type="number"
               value={nftTokenId}
               onValueChange={onNftTokenIdChange}
-              size="sm"
             />
           )}
         </>
       )}
 
-      {value === 'token' && (
+      {value === "token" && (
         <>
           <Input
             label="Token Contract Address"
             placeholder="0x..."
+            size="sm"
             value={tokenContract}
             onValueChange={onTokenContractChange}
-            size="sm"
           />
           <Input
             label="Minimum Balance"
             placeholder="1000"
+            size="sm"
             type="number"
             value={tokenMinBalance}
             onValueChange={onTokenMinBalanceChange}
-            size="sm"
           />
         </>
       )}
 
-      {value === 'custom' && (
+      {value === "custom" && (
         <Input
           label="Access Control Contract Address"
           placeholder="0x..."
+          size="sm"
           value={customAddress}
           onValueChange={onCustomAddressChange}
-          size="sm"
         />
       )}
     </div>

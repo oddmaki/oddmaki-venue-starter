@@ -1,12 +1,15 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Popover, PopoverTrigger, PopoverContent } from '@heroui/popover';
-import { Button } from '@heroui/button';
-import { useConnection } from 'wagmi';
-import { IS_TESTNET } from '@/lib/oddmaki/chain';
-import { useTokenBalance } from '../hooks/useTokenBalance';
-import { FundWalletButton } from './FundWalletButton';
+import { useState, useEffect } from "react";
+import { Popover, PopoverTrigger, PopoverContent } from "@heroui/popover";
+import { Button } from "@heroui/button";
+import { useConnection } from "wagmi";
+
+import { useTokenBalance } from "../hooks/useTokenBalance";
+
+import { FundWalletButton } from "./FundWalletButton";
+
+import { IS_TESTNET } from "@/lib/oddmaki/chain";
 
 export function WalletPanel() {
   const [mounted, setMounted] = useState(false);
@@ -19,7 +22,9 @@ export function WalletPanel() {
 
   if (!mounted || !isConnected) return null;
 
-  const balanceLabel = isLoading ? '...' : (
+  const balanceLabel = isLoading ? (
+    "..."
+  ) : (
     <>
       <span className="sm:hidden">${formatted}</span>
       <span className="hidden sm:inline">${formatted} USDC</span>
@@ -31,10 +36,10 @@ export function WalletPanel() {
   if (!IS_TESTNET) {
     return (
       <Button
-        variant="flat"
-        size="sm"
-        className="sm:h-10 sm:text-sm px-2 sm:px-4 min-w-0 pointer-events-none"
         disableRipple
+        className="sm:h-10 sm:text-sm px-2 sm:px-4 min-w-0 pointer-events-none"
+        size="sm"
+        variant="flat"
       >
         {balanceLabel}
       </Button>
@@ -44,7 +49,11 @@ export function WalletPanel() {
   return (
     <Popover placement="bottom-end">
       <PopoverTrigger>
-        <Button variant="flat" size="sm" className="sm:h-10 sm:text-sm px-2 sm:px-4 min-w-0">
+        <Button
+          className="sm:h-10 sm:text-sm px-2 sm:px-4 min-w-0"
+          size="sm"
+          variant="flat"
+        >
           {balanceLabel}
         </Button>
       </PopoverTrigger>
@@ -55,9 +64,7 @@ export function WalletPanel() {
             <p className="text-xs text-default-500 font-semibold uppercase tracking-wider">
               USDC Balance
             </p>
-            <p className="text-2xl font-bold mt-1">
-              ${formatted}
-            </p>
+            <p className="text-2xl font-bold mt-1">${formatted}</p>
           </div>
 
           {/* Mint (testnet) */}

@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
-import { useQuery } from '@tanstack/react-query';
-import { useOddMakiClient } from '@/lib/oddmaki/hooks';
-import { queryKeys } from '@/lib/oddmaki/queryKeys';
+import { useQuery } from "@tanstack/react-query";
+
+import { useOddMakiClient } from "@/lib/oddmaki/hooks";
+import { queryKeys } from "@/lib/oddmaki/queryKeys";
 
 /**
  * MatchPreview from the canMatchOrders view function.
@@ -35,6 +36,7 @@ export function useCanMatchOrders(marketId: string) {
     queryKey: queryKeys.orderbook.matchPreview(marketId),
     queryFn: async () => {
       const result = await client.trade.canMatchOrders(BigInt(marketId));
+
       return result as MatchPreview;
     },
     enabled: !!marketId,

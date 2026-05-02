@@ -1,15 +1,24 @@
-'use client';
+"use client";
 
-import { useCallback } from 'react';
-import { useConnection, usePublicClient } from 'wagmi';
-import { parseEther } from 'viem';
-import { VenueFacetABI } from '@oddmaki-protocol/sdk';
-import { useOddMakiClient } from '@/lib/oddmaki/hooks';
-import { queryKeys } from '@/lib/oddmaki/queryKeys';
-import { USDC_ADDRESS, DIAMOND_ADDRESS, USDC_DECIMALS } from '@/lib/oddmaki/constants';
-import { useTransactionFlow, waitForAllowance } from '@/lib/oddmaki/useTransactionFlow';
-import type { FlowStep } from '@/lib/oddmaki/useTransactionFlow';
-import { getVenueId } from '@/config/venue.config';
+import type { FlowStep } from "@/lib/oddmaki/useTransactionFlow";
+
+import { useCallback } from "react";
+import { useConnection, usePublicClient } from "wagmi";
+import { parseEther } from "viem";
+import { VenueFacetABI } from "@oddmaki-protocol/sdk";
+
+import { useOddMakiClient } from "@/lib/oddmaki/hooks";
+import { queryKeys } from "@/lib/oddmaki/queryKeys";
+import {
+  USDC_ADDRESS,
+  DIAMOND_ADDRESS,
+  USDC_DECIMALS,
+} from "@/lib/oddmaki/constants";
+import {
+  useTransactionFlow,
+  waitForAllowance,
+} from "@/lib/oddmaki/useTransactionFlow";
+import { getVenueId } from "@/config/venue.config";
 
 /** Wait for RPC nodes to propagate state after a confirmed transaction. */
 const waitForRPCSync = (ms = 2000) =>
@@ -17,7 +26,7 @@ const waitForRPCSync = (ms = 2000) =>
 
 // keccak256("MarketGroupCreated(uint256,uint256,address,string,uint256,bytes32[])")
 const MARKET_GROUP_CREATED_TOPIC =
-  '0xbef3dbd08d88fb28eed9867db23e817b75def4129bdddc48afda5704907a39b7';
+  "0xbef3dbd08d88fb28eed9867db23e817b75def4129bdddc48afda5704907a39b7";
 
 interface MarketOutcome {
   name: string; // Short label: "Warriors", "$78k-$80k"
@@ -50,14 +59,15 @@ export function useCreateMarketGroup() {
   const startCreateMarketGroup = useCallback(
     async (params: CreateMarketGroupParams) => {
       const venueId = getVenueId();
+
       if (!address || venueId === undefined || !publicClient) return;
 
       // Read the market creation fee from the venue config on-chain
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       const venue = (await publicClient.readContract({
         address: DIAMOND_ADDRESS,
         abi: VenueFacetABI,
-        functionName: 'getVenue',
+        functionName: "getVenue",
         args: [venueId],
       })) as any;
       const creationFee = BigInt(venue.marketCreationFee);
@@ -70,7 +80,7 @@ export function useCreateMarketGroup() {
       const steps: FlowStep[] = [
         // Step 1: USDC Approval (creation fee + UMA reward)
         {
-          id: 'usdc-approval',
+          id: "usdc-approval",
           label: `USDC Approval ($${(Number(totalApproval) / Math.pow(10, USDC_DECIMALS)).toFixed(2)})`,
           shouldSkip: async () => {
             const allowance = (await client.token.getAllowance(
@@ -78,6 +88,7 @@ export function useCreateMarketGroup() {
               address,
               DIAMOND_ADDRESS,
             )) as bigint;
+
             return allowance >= totalApproval;
           },
           execute: async () => {
@@ -86,6 +97,7 @@ export function useCreateMarketGroup() {
               DIAMOND_ADDRESS,
               totalApproval,
             );
+
             await publicClient.waitForTransactionReceipt({ hash });
             await waitForAllowance(
               publicClient,
@@ -98,8 +110,8 @@ export function useCreateMarketGroup() {
         },
         // Step 2: Create Market Group
         {
-          id: 'create-group',
-          label: 'Create Market Group',
+          id: "create-group",
+          label: "Create Market Group",
           execute: async () => {
             await waitForRPCSync();
             const hash = await client.market.createMarketGroup({
@@ -107,7 +119,7 @@ export function useCreateMarketGroup() {
               question: params.title,
               description: params.description,
               collateralToken: USDC_ADDRESS,
-              tickSize: parseEther(params.tickSize || '0.01'),
+              tickSize: parseEther(params.tickSize || "0.01"),
               additionalReward: BigInt(0),
               tags: params.tags,
             });
@@ -119,8 +131,9 @@ export function useCreateMarketGroup() {
             const log = receipt.logs.find(
               (l) => l.topics[0] === MARKET_GROUP_CREATED_TOPIC,
             );
+
             if (!log || !log.topics[1])
-              throw new Error('MarketGroupCreated event not found in receipt');
+              throw new Error("MarketGroupCreated event not found in receipt");
             createdGroupId = BigInt(log.topics[1]);
           },
         },
@@ -132,14 +145,14 @@ export function useCreateMarketGroup() {
           id: `add-market-${i}`,
           label: `Add Market: ${market.name}`,
           execute: async () => {
-            if (!createdGroupId)
-              throw new Error('Group ID not available');
+            if (!createdGroupId) throw new Error("Group ID not available");
             await waitForRPCSync();
             const hash = await client.market.addMarketToGroup({
               marketGroupId: createdGroupId,
               marketName: market.name,
               marketQuestion: market.question,
             });
+
             await publicClient.waitForTransactionReceipt({ hash });
           },
         });
@@ -148,16 +161,16 @@ export function useCreateMarketGroup() {
       // Step: Add placeholders (optional)
       if (params.placeholderCount && params.placeholderCount > 0) {
         steps.push({
-          id: 'add-placeholders',
-          label: `Add ${params.placeholderCount} Placeholder${params.placeholderCount > 1 ? 's' : ''}`,
+          id: "add-placeholders",
+          label: `Add ${params.placeholderCount} Placeholder${params.placeholderCount > 1 ? "s" : ""}`,
           execute: async () => {
-            if (!createdGroupId)
-              throw new Error('Group ID not available');
+            if (!createdGroupId) throw new Error("Group ID not available");
             await waitForRPCSync();
             const hash = await client.market.addPlaceholderMarkets({
               marketGroupId: createdGroupId,
               count: BigInt(params.placeholderCount!),
             });
+
             await publicClient.waitForTransactionReceipt({ hash });
           },
         });
@@ -166,15 +179,15 @@ export function useCreateMarketGroup() {
       // Step: Activate Group (optional)
       if (activateImmediately) {
         steps.push({
-          id: 'activate-group',
-          label: 'Activate Market Group',
+          id: "activate-group",
+          label: "Activate Market Group",
           execute: async () => {
-            if (!createdGroupId)
-              throw new Error('Group ID not available');
+            if (!createdGroupId) throw new Error("Group ID not available");
             await waitForRPCSync();
             const hash = await client.market.activateMarketGroup({
               marketGroupId: createdGroupId,
             });
+
             await publicClient.waitForTransactionReceipt({ hash });
           },
         });

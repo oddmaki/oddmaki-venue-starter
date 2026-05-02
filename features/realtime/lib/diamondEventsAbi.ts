@@ -20,7 +20,7 @@ import {
   ProtocolFacetABI,
   AccessControlFacetABI,
   TagsFacetABI,
-} from '@oddmaki-protocol/sdk';
+} from "@oddmaki-protocol/sdk";
 
 type AbiItem = { type: string; name?: string; [key: string]: unknown };
 
@@ -42,12 +42,15 @@ const ALL_FACET_ABIS: AbiItem[][] = [
 
 // Extract only event entries and deduplicate by name
 const seen = new Set<string>();
+
 export const diamondEventsAbi = ALL_FACET_ABIS.flatMap((abi) =>
   abi.filter((item) => {
-    if (item.type !== 'event') return false;
+    if (item.type !== "event") return false;
     const name = item.name as string;
+
     if (seen.has(name)) return false;
     seen.add(name);
+
     return true;
   }),
 );

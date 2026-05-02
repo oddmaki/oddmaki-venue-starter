@@ -1,14 +1,15 @@
-'use client';
+"use client";
 
-import { useState, useCallback } from 'react';
-import { useConnection, usePublicClient } from 'wagmi';
-import { parseUnits, parseEther } from 'viem';
-import { useOddMakiClient } from '@/lib/oddmaki/hooks';
-import { useTransaction } from '@/lib/oddmaki/useTransaction';
-import { queryKeys } from '@/lib/oddmaki/queryKeys';
-import { DIAMOND_ADDRESS } from '@/lib/oddmaki/constants';
-import { getVenueId } from '@/config/venue.config';
-import { VenueFacetABI } from '@oddmaki-protocol/sdk';
+import { useState, useCallback } from "react";
+import { useConnection, usePublicClient } from "wagmi";
+import { parseUnits, parseEther } from "viem";
+import { VenueFacetABI } from "@oddmaki-protocol/sdk";
+
+import { useOddMakiClient } from "@/lib/oddmaki/hooks";
+import { useTransaction } from "@/lib/oddmaki/useTransaction";
+import { queryKeys } from "@/lib/oddmaki/queryKeys";
+import { DIAMOND_ADDRESS } from "@/lib/oddmaki/constants";
+import { getVenueId } from "@/config/venue.config";
 
 /**
  * Hook for venue setup — provides venueId from env var and
@@ -23,10 +24,14 @@ export function useVenueSetup() {
 
   const [isSettingUp, setIsSettingUp] = useState(false);
 
-  const { execute, isLoading: isCreating, error: createError } = useTransaction({
-    pendingMessage: 'Creating venue...',
-    successMessage: 'Venue created!',
-    errorMessage: 'Failed to create venue',
+  const {
+    execute,
+    isLoading: isCreating,
+    error: createError,
+  } = useTransaction({
+    pendingMessage: "Creating venue...",
+    successMessage: "Venue created!",
+    errorMessage: "Failed to create venue",
     invalidateKeys: [queryKeys.venue.all, queryKeys.venue.list()],
   });
 
@@ -52,22 +57,26 @@ export function useVenueSetup() {
         const nextIdBefore = (await publicClient.readContract({
           address: DIAMOND_ADDRESS,
           abi: VenueFacetABI,
-          functionName: 'getNextVenueId',
+          functionName: "getNextVenueId",
         })) as bigint;
 
         const hash = await execute(() =>
           client.venue.createVenue({
             name: params.name,
-            metadata: params.metadata || '',
-            tradingAccessControl: params.tradingAccessControl ?? '0x0000000000000000000000000000000000000000',
-            creationAccessControl: params.creationAccessControl ?? '0x0000000000000000000000000000000000000000',
+            metadata: params.metadata || "",
+            tradingAccessControl:
+              params.tradingAccessControl ??
+              "0x0000000000000000000000000000000000000000",
+            creationAccessControl:
+              params.creationAccessControl ??
+              "0x0000000000000000000000000000000000000000",
             feeRecipient: address,
             venueFeeBps: params.venueFeeBps ?? 50, // 0.5% default
             creatorFeeBps: params.creatorFeeBps ?? 0,
-            defaultTickSize: parseEther(params.defaultTickSize || '0.01'),
-            marketCreationFee: parseUnits('5', 6), // 5 USDC minimum
-            umaRewardAmount: parseUnits('5', 6),   // 5 USDC reward for asserters
-            umaMinBond: parseUnits('750', 6),     // 750 USDC bond (Polymarket standard)
+            defaultTickSize: parseEther(params.defaultTickSize || "0.01"),
+            marketCreationFee: parseUnits("5", 6), // 5 USDC minimum
+            umaRewardAmount: parseUnits("5", 6), // 5 USDC reward for asserters
+            umaMinBond: parseUnits("750", 6), // 750 USDC bond (Polymarket standard)
           }),
         );
 

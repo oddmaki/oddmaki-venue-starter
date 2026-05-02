@@ -1,25 +1,33 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 import {
   Dropdown,
   DropdownTrigger,
   DropdownMenu,
   DropdownItem,
   DropdownSection,
-} from '@heroui/dropdown';
-import { Button } from '@heroui/button';
-import { useConnection } from 'wagmi';
-import { useVenueData } from '@/features/venue/hooks/useVenueData';
-import { SettingsIcon } from '@/components/icons';
-import { MarketSettingsModals, type SettingsAction } from './MarketSettingsModals';
+} from "@heroui/dropdown";
+import { Button } from "@heroui/button";
+import { useConnection } from "wagmi";
+
+import {
+  MarketSettingsModals,
+  type SettingsAction,
+} from "./MarketSettingsModals";
+
+import { useVenueData } from "@/features/venue/hooks/useVenueData";
+import { SettingsIcon } from "@/components/icons";
 
 interface MarketSettingsButtonProps {
   marketId: string;
   marketCreator: string;
 }
 
-export function MarketSettingsButton({ marketId, marketCreator }: MarketSettingsButtonProps) {
+export function MarketSettingsButton({
+  marketId,
+  marketCreator,
+}: MarketSettingsButtonProps) {
   const { address } = useConnection();
   const { isOperator } = useVenueData();
   const [activeModal, setActiveModal] = useState<SettingsAction | null>(null);
@@ -36,15 +44,15 @@ export function MarketSettingsButton({ marketId, marketCreator }: MarketSettings
 
   if (isOperator) {
     operatorItems.push(
-      { key: 'trading-access', label: 'Trading Access' },
-      { key: 'pause', label: 'Pause / Resume' },
+      { key: "trading-access", label: "Trading Access" },
+      { key: "pause", label: "Pause / Resume" },
     );
   }
 
   if (isCreator) {
     creatorItems.push(
-      { key: 'tags', label: 'Tags' },
-      { key: 'metadata', label: 'Market Image' },
+      { key: "tags", label: "Tags" },
+      { key: "metadata", label: "Market Image" },
     );
   }
 
@@ -54,9 +62,9 @@ export function MarketSettingsButton({ marketId, marketCreator }: MarketSettings
         <DropdownTrigger>
           <Button
             isIconOnly
-            variant="light"
-            size="sm"
             aria-label="Market settings"
+            size="sm"
+            variant="light"
           >
             <SettingsIcon size={18} />
           </Button>
@@ -66,7 +74,10 @@ export function MarketSettingsButton({ marketId, marketCreator }: MarketSettings
           onAction={(key) => setActiveModal(key as SettingsAction)}
         >
           {operatorItems.length > 0 ? (
-            <DropdownSection title="Operator" showDivider={creatorItems.length > 0}>
+            <DropdownSection
+              showDivider={creatorItems.length > 0}
+              title="Operator"
+            >
               {operatorItems.map((item) => (
                 <DropdownItem key={item.key}>{item.label}</DropdownItem>
               ))}
@@ -88,8 +99,8 @@ export function MarketSettingsButton({ marketId, marketCreator }: MarketSettings
 
       <MarketSettingsModals
         activeModal={activeModal}
-        onClose={() => setActiveModal(null)}
         marketId={marketId}
+        onClose={() => setActiveModal(null)}
       />
     </>
   );

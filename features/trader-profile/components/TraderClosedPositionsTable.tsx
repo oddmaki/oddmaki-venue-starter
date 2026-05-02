@@ -1,33 +1,43 @@
-'use client';
+"use client";
 
-import NextLink from 'next/link';
-import { Card, CardHeader, CardBody } from '@heroui/card';
-import { Chip } from '@heroui/chip';
-import { Skeleton } from '@heroui/skeleton';
-import { parseAncillaryData } from '@oddmaki-protocol/sdk';
+import NextLink from "next/link";
+import { Card, CardHeader, CardBody } from "@heroui/card";
+import { Chip } from "@heroui/chip";
+import { Skeleton } from "@heroui/skeleton";
+import { parseAncillaryData } from "@oddmaki-protocol/sdk";
 
 interface TraderClosedPositionsTableProps {
   positions: any[];
   isLoading: boolean;
 }
 
-function getResult(market: any, outcomeIndex: number): { label: string; color: 'success' | 'danger' | 'default' } {
-  if (market.status === 'Resolved' && market.resolvedOutcome != null) {
+function getResult(
+  market: any,
+  outcomeIndex: number,
+): { label: string; color: "success" | "danger" | "default" } {
+  if (market.status === "Resolved" && market.resolvedOutcome != null) {
     return parseInt(market.resolvedOutcome) === outcomeIndex
-      ? { label: 'Won', color: 'success' }
-      : { label: 'Lost', color: 'danger' };
+      ? { label: "Won", color: "success" }
+      : { label: "Lost", color: "danger" };
   }
-  return { label: 'Sold', color: 'default' };
+
+  return { label: "Sold", color: "default" };
 }
 
 function formatPnL(value: number): string {
-  const sign = value >= 0 ? '+' : '';
-  if (Math.abs(value) >= 1_000_000) return `${sign}$${(value / 1_000_000).toFixed(2)}M`;
+  const sign = value >= 0 ? "+" : "";
+
+  if (Math.abs(value) >= 1_000_000)
+    return `${sign}$${(value / 1_000_000).toFixed(2)}M`;
   if (Math.abs(value) >= 1_000) return `${sign}$${(value / 1_000).toFixed(2)}K`;
+
   return `${sign}$${value.toFixed(2)}`;
 }
 
-export function TraderClosedPositionsTable({ positions, isLoading }: TraderClosedPositionsTableProps) {
+export function TraderClosedPositionsTable({
+  positions,
+  isLoading,
+}: TraderClosedPositionsTableProps) {
   if (isLoading) {
     return (
       <Card>
@@ -59,7 +69,9 @@ export function TraderClosedPositionsTable({ positions, isLoading }: TraderClose
   return (
     <Card>
       <CardHeader className="px-4 pt-4 pb-0">
-        <h2 className="text-lg font-semibold">Closed Positions ({positions.length})</h2>
+        <h2 className="text-lg font-semibold">
+          Closed Positions ({positions.length})
+        </h2>
       </CardHeader>
       <CardBody className="p-4">
         <div className="overflow-x-auto hidden sm:block">
@@ -77,31 +89,41 @@ export function TraderClosedPositionsTable({ positions, isLoading }: TraderClose
                 const market = pos.market;
                 const decimals = market.collateralDecimals || 6;
                 const outcomeIndex = parseInt(pos.outcome);
-                const outcomeName = market.outcomes?.[outcomeIndex] || (outcomeIndex === 0 ? 'Yes' : 'No');
+                const outcomeName =
+                  market.outcomes?.[outcomeIndex] ||
+                  (outcomeIndex === 0 ? "Yes" : "No");
 
                 const result = getResult(market, outcomeIndex);
 
                 // Total traded = totalCollateralIn (what they put in)
-                const totalTraded = parseFloat(pos.totalCollateralIn || '0') / Math.pow(10, decimals);
+                const totalTraded =
+                  parseFloat(pos.totalCollateralIn || "0") /
+                  Math.pow(10, decimals);
 
                 // Realized P&L
-                const realizedPnL = parseFloat(pos.realizedPnL || '0') / Math.pow(10, decimals);
-                const pnlColor = realizedPnL >= 0 ? 'text-success' : 'text-danger';
-                const pnlPercent = totalTraded > 0
-                  ? ((realizedPnL / totalTraded) * 100).toFixed(0)
-                  : '0';
+                const realizedPnL =
+                  parseFloat(pos.realizedPnL || "0") / Math.pow(10, decimals);
+                const pnlColor =
+                  realizedPnL >= 0 ? "text-success" : "text-danger";
+                const pnlPercent =
+                  totalTraded > 0
+                    ? ((realizedPnL / totalTraded) * 100).toFixed(0)
+                    : "0";
 
                 return (
-                  <tr key={pos.id} className="border-b border-default-100 last:border-0">
+                  <tr
+                    key={pos.id}
+                    className="border-b border-default-100 last:border-0"
+                  >
                     <td className="py-3">
-                      <Chip size="sm" variant="flat" color={result.color}>
+                      <Chip color={result.color} size="sm" variant="flat">
                         {result.label}
                       </Chip>
                     </td>
                     <td className="py-3">
                       <NextLink
-                        href={`/market/${market.marketId}`}
                         className="hover:text-primary transition-colors"
+                        href={`/market/${market.marketId}`}
                       >
                         <div className="flex flex-col gap-0.5">
                           <span className="text-sm font-medium line-clamp-1">
@@ -118,7 +140,9 @@ export function TraderClosedPositionsTable({ positions, isLoading }: TraderClose
                     </td>
                     <td className="py-3 text-right">
                       <div className="flex flex-col items-end">
-                        <span className={pnlColor}>{formatPnL(realizedPnL)}</span>
+                        <span className={pnlColor}>
+                          {formatPnL(realizedPnL)}
+                        </span>
                         <span className={`text-xs ${pnlColor}`}>
                           ({pnlPercent}%)
                         </span>
@@ -137,24 +161,29 @@ export function TraderClosedPositionsTable({ positions, isLoading }: TraderClose
             const market = pos.market;
             const decimals = market.collateralDecimals || 6;
             const outcomeIndex = parseInt(pos.outcome);
-            const outcomeName = market.outcomes?.[outcomeIndex] || (outcomeIndex === 0 ? 'Yes' : 'No');
+            const outcomeName =
+              market.outcomes?.[outcomeIndex] ||
+              (outcomeIndex === 0 ? "Yes" : "No");
 
             const result = getResult(market, outcomeIndex);
-            const totalTraded = parseFloat(pos.totalCollateralIn || '0') / Math.pow(10, decimals);
-            const realizedPnL = parseFloat(pos.realizedPnL || '0') / Math.pow(10, decimals);
-            const pnlColor = realizedPnL >= 0 ? 'text-success' : 'text-danger';
-            const pnlPercent = totalTraded > 0
-              ? ((realizedPnL / totalTraded) * 100).toFixed(0)
-              : '0';
+            const totalTraded =
+              parseFloat(pos.totalCollateralIn || "0") / Math.pow(10, decimals);
+            const realizedPnL =
+              parseFloat(pos.realizedPnL || "0") / Math.pow(10, decimals);
+            const pnlColor = realizedPnL >= 0 ? "text-success" : "text-danger";
+            const pnlPercent =
+              totalTraded > 0
+                ? ((realizedPnL / totalTraded) * 100).toFixed(0)
+                : "0";
 
             return (
               <NextLink
                 key={pos.id}
-                href={`/market/${market.marketId}`}
                 className="flex flex-col gap-2 p-3 rounded-lg border border-default-100 hover:border-default-200 hover:bg-default-50 transition-colors"
+                href={`/market/${market.marketId}`}
               >
                 <div className="flex items-center gap-2 justify-between">
-                  <Chip size="sm" variant="flat" color={result.color}>
+                  <Chip color={result.color} size="sm" variant="flat">
                     {result.label}
                   </Chip>
                   <span className={`text-sm font-semibold ${pnlColor}`}>

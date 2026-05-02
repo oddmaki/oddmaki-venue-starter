@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { Skeleton } from '@heroui/skeleton';
-import { Card, CardHeader, CardBody } from '@heroui/card';
+import { Skeleton } from "@heroui/skeleton";
+import { Card, CardHeader, CardBody } from "@heroui/card";
 
 export function MarketDetailSkeleton() {
   return (
@@ -56,13 +56,19 @@ export function MarketDetailSkeleton() {
             <CardBody className="px-0 pb-2">
               <div className="flex flex-col gap-1 px-2 py-2">
                 {Array.from({ length: 5 }).map((_, i) => (
-                  <Skeleton key={`ask-${i}`} className="w-full h-7 rounded-md" />
+                  <Skeleton
+                    key={`ask-${i}`}
+                    className="w-full h-7 rounded-md"
+                  />
                 ))}
                 <div className="h-7 flex items-center px-2">
                   <Skeleton className="h-4 w-full rounded" />
                 </div>
                 {Array.from({ length: 5 }).map((_, i) => (
-                  <Skeleton key={`bid-${i}`} className="w-full h-7 rounded-md" />
+                  <Skeleton
+                    key={`bid-${i}`}
+                    className="w-full h-7 rounded-md"
+                  />
                 ))}
               </div>
             </CardBody>

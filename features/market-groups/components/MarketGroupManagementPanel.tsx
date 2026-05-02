@@ -1,20 +1,23 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Card, CardHeader, CardBody } from '@heroui/card';
-import { Button } from '@heroui/button';
-import { Input } from '@heroui/input';
-import { Divider } from '@heroui/divider';
-import { useConnection } from 'wagmi';
+import type { FormattedMarketGroup } from "../types";
+
+import { useState } from "react";
+import { Card, CardHeader, CardBody } from "@heroui/card";
+import { Button } from "@heroui/button";
+import { Input } from "@heroui/input";
+import { Divider } from "@heroui/divider";
+import { useConnection } from "wagmi";
+
 import {
   useAddMarketToGroup,
   useAddPlaceholders,
   useActivateMarketGroup,
   useActivatePlaceholder,
-} from '../hooks/useManageMarketGroup';
-import { useGroupMarkets } from '../hooks/useGroupMarkets';
-import { TransactionFlowModal } from '@/lib/oddmaki/TransactionFlowModal';
-import type { FormattedMarketGroup } from '../types';
+} from "../hooks/useManageMarketGroup";
+import { useGroupMarkets } from "../hooks/useGroupMarkets";
+
+import { TransactionFlowModal } from "@/lib/oddmaki/TransactionFlowModal";
 
 interface MarketGroupManagementPanelProps {
   groupId: string;
@@ -34,15 +37,14 @@ export function MarketGroupManagementPanel({
 
   if (!isCreator) return null;
 
-  const isDraft = group.status === 'Draft';
-  const isActive = group.status === 'Active';
-  const placeholders =
-    markets?.filter((m) => m.isPlaceholder) || [];
+  const isDraft = group.status === "Draft";
+  const isActive = group.status === "Active";
+  const placeholders = markets?.filter((m) => m.isPlaceholder) || [];
   const hasPlaceholders = placeholders.length > 0;
 
   // Nothing to manage for active groups without placeholders, or resolved groups
   if (isActive && !hasPlaceholders) return null;
-  if (group.status === 'Resolved') return null;
+  if (group.status === "Resolved") return null;
 
   return (
     <Card>
@@ -67,71 +69,73 @@ function DraftManagement({ groupId }: { groupId: string }) {
   const addPlaceholdersHook = useAddPlaceholders(groupId);
   const activateGroup = useActivateMarketGroup(groupId);
 
-  const [marketName, setMarketName] = useState('');
-  const [marketQuestion, setMarketQuestion] = useState('');
-  const [placeholderCount, setPlaceholderCount] = useState('1');
+  const [marketName, setMarketName] = useState("");
+  const [marketQuestion, setMarketQuestion] = useState("");
+  const [placeholderCount, setPlaceholderCount] = useState("1");
 
   // Track which flow modal to show
   const [activeFlow, setActiveFlow] = useState<
-    'addMarket' | 'addPlaceholders' | 'activate' | null
+    "addMarket" | "addPlaceholders" | "activate" | null
   >(null);
 
   const handleAddMarket = async () => {
     if (!marketName.trim() || !marketQuestion.trim()) return;
-    setActiveFlow('addMarket');
+    setActiveFlow("addMarket");
     await addMarket.execute(marketName.trim(), marketQuestion.trim());
     if (addMarket.flow.isComplete) {
-      setMarketName('');
-      setMarketQuestion('');
+      setMarketName("");
+      setMarketQuestion("");
     }
   };
 
   const handleAddPlaceholders = async () => {
     const count = parseInt(placeholderCount);
+
     if (count < 1) return;
-    setActiveFlow('addPlaceholders');
+    setActiveFlow("addPlaceholders");
     await addPlaceholdersHook.execute(count);
   };
 
   const handleActivate = async () => {
-    setActiveFlow('activate');
+    setActiveFlow("activate");
     await activateGroup.execute();
   };
 
   const handleFlowClose = () => {
     const flow =
-      activeFlow === 'addMarket'
+      activeFlow === "addMarket"
         ? addMarket.flow
-        : activeFlow === 'addPlaceholders'
+        : activeFlow === "addPlaceholders"
           ? addPlaceholdersHook.flow
           : activateGroup.flow;
+
     flow.reset();
     setActiveFlow(null);
   };
 
   const currentFlow =
-    activeFlow === 'addMarket'
+    activeFlow === "addMarket"
       ? addMarket.flow
-      : activeFlow === 'addPlaceholders'
+      : activeFlow === "addPlaceholders"
         ? addPlaceholdersHook.flow
         : activateGroup.flow;
 
   if (activeFlow) {
     return (
       <TransactionFlowModal
-        isOpen={true}
-        onClose={handleFlowClose}
-        title={
-          activeFlow === 'addMarket'
-            ? 'Adding Market'
-            : activeFlow === 'addPlaceholders'
-              ? 'Adding Placeholders'
-              : 'Activating Group'
-        }
-        stepStates={currentFlow.stepStates}
-        isRunning={currentFlow.isRunning}
-        isComplete={currentFlow.isComplete}
         hasError={currentFlow.hasError}
+        isComplete={currentFlow.isComplete}
+        isOpen={true}
+        isRunning={currentFlow.isRunning}
+        stepStates={currentFlow.stepStates}
+        title={
+          activeFlow === "addMarket"
+            ? "Adding Market"
+            : activeFlow === "addPlaceholders"
+              ? "Adding Placeholders"
+              : "Activating Group"
+        }
+        onClose={handleFlowClose}
         onRetry={currentFlow.retry}
       />
     );
@@ -143,25 +147,25 @@ function DraftManagement({ groupId }: { groupId: string }) {
       <div className="flex flex-col gap-2">
         <p className="text-sm font-medium">Add Market</p>
         <Input
-          size="sm"
           label="Name"
           placeholder="e.g., February 27"
+          size="sm"
           value={marketName}
           onValueChange={setMarketName}
         />
         <Input
-          size="sm"
           label="Question"
           placeholder="e.g., Will the US strike Iran on February 27?"
+          size="sm"
           value={marketQuestion}
           onValueChange={setMarketQuestion}
         />
         <Button
-          size="sm"
           color="primary"
+          isDisabled={!marketName.trim() || !marketQuestion.trim()}
+          size="sm"
           variant="flat"
           onPress={handleAddMarket}
-          isDisabled={!marketName.trim() || !marketQuestion.trim()}
         >
           Add Market
         </Button>
@@ -174,21 +178,21 @@ function DraftManagement({ groupId }: { groupId: string }) {
         <p className="text-sm font-medium">Add Placeholders</p>
         <div className="flex gap-2">
           <Input
+            className="w-24"
+            label="Count"
+            max={50}
+            min={1}
             size="sm"
             type="number"
-            label="Count"
-            min={1}
-            max={50}
             value={placeholderCount}
             onValueChange={setPlaceholderCount}
-            className="w-24"
           />
           <Button
-            size="sm"
+            className="self-end"
             color="secondary"
+            size="sm"
             variant="flat"
             onPress={handleAddPlaceholders}
-            className="self-end"
           >
             Add
           </Button>
@@ -219,8 +223,8 @@ function PlaceholderManagement({
   const activatePlaceholder = useActivatePlaceholder(groupId);
 
   const [activatingId, setActivatingId] = useState<string | null>(null);
-  const [name, setName] = useState('');
-  const [question, setQuestion] = useState('');
+  const [name, setName] = useState("");
+  const [question, setQuestion] = useState("");
   const [flowActive, setFlowActive] = useState(false);
 
   const handleActivate = async (marketId: string) => {
@@ -229,8 +233,8 @@ function PlaceholderManagement({
     await activatePlaceholder.execute(marketId, name.trim(), question.trim());
     if (activatePlaceholder.flow.isComplete) {
       setActivatingId(null);
-      setName('');
-      setQuestion('');
+      setName("");
+      setQuestion("");
     }
   };
 
@@ -242,13 +246,13 @@ function PlaceholderManagement({
   if (flowActive) {
     return (
       <TransactionFlowModal
-        isOpen={true}
-        onClose={handleFlowClose}
-        title="Activating Placeholder"
-        stepStates={activatePlaceholder.flow.stepStates}
-        isRunning={activatePlaceholder.flow.isRunning}
-        isComplete={activatePlaceholder.flow.isComplete}
         hasError={activatePlaceholder.flow.hasError}
+        isComplete={activatePlaceholder.flow.isComplete}
+        isOpen={true}
+        isRunning={activatePlaceholder.flow.isRunning}
+        stepStates={activatePlaceholder.flow.stepStates}
+        title="Activating Placeholder"
+        onClose={handleFlowClose}
         onRetry={activatePlaceholder.flow.retry}
       />
     );
@@ -270,8 +274,8 @@ function PlaceholderManagement({
             </span>
             {activatingId !== p.marketId ? (
               <Button
-                size="sm"
                 color="primary"
+                size="sm"
                 variant="flat"
                 onPress={() => setActivatingId(p.marketId)}
               >
@@ -290,24 +294,24 @@ function PlaceholderManagement({
           {activatingId === p.marketId && (
             <>
               <Input
-                size="sm"
                 label="Name"
                 placeholder="e.g., March 15"
+                size="sm"
                 value={name}
                 onValueChange={setName}
               />
               <Input
-                size="sm"
                 label="Question"
                 placeholder="e.g., Will the US strike Iran by March 15?"
+                size="sm"
                 value={question}
                 onValueChange={setQuestion}
               />
               <Button
-                size="sm"
                 color="primary"
-                onPress={() => handleActivate(p.marketId)}
                 isDisabled={!name.trim() || !question.trim()}
+                size="sm"
+                onPress={() => handleActivate(p.marketId)}
               >
                 Confirm Activation
               </Button>

@@ -1,13 +1,16 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Card, CardHeader, CardBody } from '@heroui/card';
-import { Button } from '@heroui/button';
-import { Skeleton } from '@heroui/skeleton';
-import { PriceChart } from './PriceChart';
-import { usePriceChartData } from '../hooks/usePriceChartData';
-import { TIMEFRAMES, DEFAULT_TIMEFRAME } from '../lib/timeframes';
-import type { Timeframe } from '../lib/timeframes';
+import type { Timeframe } from "../lib/timeframes";
+
+import { useState } from "react";
+import { Card, CardHeader, CardBody } from "@heroui/card";
+import { Button } from "@heroui/button";
+import { Skeleton } from "@heroui/skeleton";
+
+import { usePriceChartData } from "../hooks/usePriceChartData";
+import { TIMEFRAMES, DEFAULT_TIMEFRAME } from "../lib/timeframes";
+
+import { PriceChart } from "./PriceChart";
 
 interface PriceChartPanelProps {
   marketId: string;
@@ -28,7 +31,9 @@ export function PriceChartPanel({
     if (!lastPriceTick || !tickSize) return undefined;
     const tickSizeNum = parseFloat(tickSize);
     const tickNum = parseFloat(lastPriceTick);
+
     if (tickSizeNum === 0 || tickNum === 0) return undefined;
+
     return (tickNum * tickSizeNum) / 1e18;
   })();
 
@@ -50,11 +55,11 @@ export function PriceChartPanel({
           {TIMEFRAMES.map((tf) => (
             <Button
               key={tf.key}
-              size="sm"
-              variant={timeframe.key === tf.key ? 'solid' : 'flat'}
-              color={timeframe.key === tf.key ? 'primary' : 'default'}
-              onPress={() => setTimeframe(tf)}
               className="min-w-0 px-2"
+              color={timeframe.key === tf.key ? "primary" : "default"}
+              size="sm"
+              variant={timeframe.key === tf.key ? "solid" : "flat"}
+              onPress={() => setTimeframe(tf)}
             >
               {tf.label}
             </Button>
@@ -71,12 +76,12 @@ export function PriceChartPanel({
           </div>
         ) : (
           <PriceChart
+            currentPrice={chartResult!.currentPrice}
             data={chartResult!.data}
+            height={300}
+            outcomeLabel={outcomes[0] || "Yes"}
             timeWindow={chartResult!.timeWindow}
             timeframeKey={timeframe.key}
-            currentPrice={chartResult!.currentPrice}
-            outcomeLabel={outcomes[0] || 'Yes'}
-            height={300}
           />
         )}
       </CardBody>

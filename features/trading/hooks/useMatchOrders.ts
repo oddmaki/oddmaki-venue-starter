@@ -1,11 +1,13 @@
-'use client';
+"use client";
 
-import { useCallback } from 'react';
-import { usePublicClient } from 'wagmi';
-import { useOddMakiClient } from '@/lib/oddmaki/hooks';
-import { queryKeys } from '@/lib/oddmaki/queryKeys';
-import { useTransactionFlow } from '@/lib/oddmaki/useTransactionFlow';
-import type { FlowStep } from '@/lib/oddmaki/useTransactionFlow';
+import type { FlowStep } from "@/lib/oddmaki/useTransactionFlow";
+
+import { useCallback } from "react";
+import { usePublicClient } from "wagmi";
+
+import { useOddMakiClient } from "@/lib/oddmaki/hooks";
+import { queryKeys } from "@/lib/oddmaki/queryKeys";
+import { useTransactionFlow } from "@/lib/oddmaki/useTransactionFlow";
 
 interface MatchOrdersParams {
   marketId: string;
@@ -35,13 +37,14 @@ export function useMatchOrders() {
 
       const steps: FlowStep[] = [
         {
-          id: 'match-orders',
-          label: 'Match Orders',
+          id: "match-orders",
+          label: "Match Orders",
           execute: async () => {
             const hash = await client.trade.matchOrders({
               marketId: marketIdBig,
               maxSteps,
             });
+
             await publicClient.waitForTransactionReceipt({ hash });
           },
         },

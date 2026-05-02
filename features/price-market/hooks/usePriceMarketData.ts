@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
-import { useQuery } from '@tanstack/react-query';
-import { useOddMakiClient } from '@/lib/oddmaki/hooks';
-import { queryKeys } from '@/lib/oddmaki/queryKeys';
+import { useQuery } from "@tanstack/react-query";
+
+import { useOddMakiClient } from "@/lib/oddmaki/hooks";
+import { queryKeys } from "@/lib/oddmaki/queryKeys";
 
 /**
  * Fetch price market data for a given market.
@@ -15,6 +16,7 @@ export function usePriceMarketData(marketId: bigint) {
     queryKey: queryKeys.priceMarket.detail(marketId),
     queryFn: async () => {
       const isPM = await client.priceMarket.isPriceMarket(marketId);
+
       if (!isPM) {
         return { isPriceMarket: false as const, data: null, canResolve: false };
       }

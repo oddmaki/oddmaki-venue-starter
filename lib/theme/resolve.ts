@@ -1,17 +1,18 @@
-import type { ThemeConfig, ResolvedTheme } from './types';
+import type { ThemeConfig, ResolvedTheme } from "./types";
+
 import {
   generateColorScale,
   generateDefaultScale,
   autoForeground,
   lighten,
-} from './color-utils';
+} from "./color-utils";
 
 const DEFAULTS = {
-  background: '#06060F',
-  foreground: '#FFFFFF',
-  success: '#00E68C',
-  warning: '#FFB800',
-  danger: '#FF6B6B',
+  background: "#06060F",
+  foreground: "#FFFFFF",
+  success: "#00E68C",
+  warning: "#FFB800",
+  danger: "#FF6B6B",
 } as const;
 
 /** Resolve a minimal ThemeConfig into a full ResolvedTheme with shade scales */
@@ -19,7 +20,7 @@ export function resolveTheme(config: ThemeConfig): ResolvedTheme {
   const bg = config.surfaces?.background ?? DEFAULTS.background;
   const fg =
     config.surfaces?.foreground ??
-    autoForeground(bg, '#000000', DEFAULTS.foreground);
+    autoForeground(bg, "#000000", DEFAULTS.foreground);
   const card = config.surfaces?.card ?? lighten(bg, 0.03);
 
   return {
@@ -37,10 +38,7 @@ export function resolveTheme(config: ThemeConfig): ResolvedTheme {
         fg,
       ),
     },
-    danger: generateColorScale(
-      config.semantic?.danger ?? DEFAULTS.danger,
-      bg,
-    ),
+    danger: generateColorScale(config.semantic?.danger ?? DEFAULTS.danger, bg),
     default: generateDefaultScale(card, fg),
     background: bg,
     foreground: fg,

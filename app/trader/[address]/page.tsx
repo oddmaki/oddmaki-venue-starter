@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
-import { use, useState } from 'react';
-import { Tabs, Tab } from '@heroui/tabs';
-import { getOutcomePrice } from '@oddmaki-protocol/sdk';
+import { use, useState } from "react";
+import { Tabs, Tab } from "@heroui/tabs";
+import { getOutcomePrice } from "@oddmaki-protocol/sdk";
+
 import {
   useTraderProfile,
   useTraderPositions,
@@ -13,7 +14,7 @@ import {
   TraderPositionsTable,
   TraderClosedPositionsTable,
   TraderActivityFeed,
-} from '@/features/trader-profile';
+} from "@/features/trader-profile";
 
 export default function TraderProfilePage({
   params,
@@ -22,11 +23,13 @@ export default function TraderProfilePage({
 }) {
   const { address } = use(params);
   const addr = address.toLowerCase();
-  const [positionTab, setPositionTab] = useState<string>('active');
+  const [positionTab, setPositionTab] = useState<string>("active");
 
   const { data: user, isLoading: profileLoading } = useTraderProfile(addr);
-  const { data: positions = [], isLoading: positionsLoading } = useTraderPositions(addr);
-  const { data: closedPositions = [], isLoading: closedLoading } = useTraderClosedPositions(addr);
+  const { data: positions = [], isLoading: positionsLoading } =
+    useTraderPositions(addr);
+  const { data: closedPositions = [], isLoading: closedLoading } =
+    useTraderClosedPositions(addr);
   const { data: trades = [], isLoading: tradesLoading } = useTraderTrades(addr);
 
   // Calculate current market value of open positions
@@ -36,6 +39,7 @@ export default function TraderProfilePage({
     const outcomeIndex = parseInt(pos.outcome);
     const currentPercent = getOutcomePrice(market, outcomeIndex);
     const qty = parseFloat(pos.quantity) / Math.pow(10, decimals);
+
     return sum + qty * (currentPercent / 100);
   }, 0);
   const positionsValueRaw = Math.round(positionsValue * 1e6).toString();
@@ -44,49 +48,50 @@ export default function TraderProfilePage({
     <section className="flex flex-col gap-6 pt-4 pb-8 md:pt-6 md:pb-10 max-w-4xl mx-auto w-full">
       <TraderProfileHeader
         address={addr}
-        user={user ?? null}
         isLoading={profileLoading}
+        user={user ?? null}
       />
 
       <TraderStatsCards
-        user={user ?? null}
-        positionsValue={positionsValueRaw}
         isLoading={profileLoading}
+        positionsValue={positionsValueRaw}
+        user={user ?? null}
       />
 
-      <Tabs aria-label="Trader sections" variant="underlined" classNames={{ tabList: 'gap-6' }}>
+      <Tabs
+        aria-label="Trader sections"
+        classNames={{ tabList: "gap-6" }}
+        variant="underlined"
+      >
         <Tab key="positions" title={`Positions (${positions.length})`}>
           <div className="flex flex-col gap-4">
             <Tabs
               aria-label="Position status"
-              variant="light"
-              size="sm"
+              classNames={{ tabList: "gap-2" }}
               selectedKey={positionTab}
+              size="sm"
+              variant="light"
               onSelectionChange={(key) => setPositionTab(key as string)}
-              classNames={{ tabList: 'gap-2' }}
             >
               <Tab key="active" title="Active" />
               <Tab key="closed" title="Closed" />
             </Tabs>
 
-            {positionTab === 'active' ? (
+            {positionTab === "active" ? (
               <TraderPositionsTable
-                positions={positions}
                 isLoading={positionsLoading}
+                positions={positions}
               />
             ) : (
               <TraderClosedPositionsTable
-                positions={closedPositions}
                 isLoading={closedLoading}
+                positions={closedPositions}
               />
             )}
           </div>
         </Tab>
         <Tab key="activity" title="Activity">
-          <TraderActivityFeed
-            trades={trades}
-            isLoading={tradesLoading}
-          />
+          <TraderActivityFeed isLoading={tradesLoading} trades={trades} />
         </Tab>
       </Tabs>
     </section>

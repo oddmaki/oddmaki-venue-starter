@@ -1,16 +1,24 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { Popover, PopoverTrigger, PopoverContent } from '@heroui/popover';
-import { Divider } from '@heroui/divider';
-import { Switch } from '@heroui/switch';
-import { useTheme } from 'next-themes';
-import NextLink from 'next/link';
-import { AddressAvatar } from '@/lib/identity/avatar';
-import { generatePseudonym, shortenAddress } from '@/lib/identity/pseudonym';
-import { useVenueData } from '@/features/venue';
-import { VenueModalsContainer, type SectionKey } from '@/features/venue/components/VenueModals';
-import { SunFilledIcon, MoonFilledIcon, ChevronDownIcon } from '@/components/icons';
+import { useState, useEffect, useRef, useCallback } from "react";
+import { Popover, PopoverTrigger, PopoverContent } from "@heroui/popover";
+import { Divider } from "@heroui/divider";
+import { Switch } from "@heroui/switch";
+import { useTheme } from "next-themes";
+import NextLink from "next/link";
+
+import { AddressAvatar } from "@/lib/identity/avatar";
+import { generatePseudonym, shortenAddress } from "@/lib/identity/pseudonym";
+import { useVenueData } from "@/features/venue";
+import {
+  VenueModalsContainer,
+  type SectionKey,
+} from "@/features/venue/components/VenueModals";
+import {
+  SunFilledIcon,
+  MoonFilledIcon,
+  ChevronDownIcon,
+} from "@/components/icons";
 
 export interface UserSettingsProps {
   address: string;
@@ -19,21 +27,27 @@ export interface UserSettingsProps {
 }
 
 const VENUE_ITEMS: { key: SectionKey; label: string }[] = [
-  { key: 'general', label: 'General' },
-  { key: 'branding', label: 'Branding' },
-  { key: 'access-control', label: 'Access Control' },
-  { key: 'fees', label: 'Fees' },
-  { key: 'oracle', label: 'Oracle' },
+  { key: "general", label: "General" },
+  { key: "branding", label: "Branding" },
+  { key: "access-control", label: "Access Control" },
+  { key: "fees", label: "Fees" },
+  { key: "oracle", label: "Oracle" },
 ];
 
-export function UserSettings({ address, switchNetwork, disconnect }: UserSettingsProps) {
+export function UserSettings({
+  address,
+  switchNetwork,
+  disconnect,
+}: UserSettingsProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [showVenueSub, setShowVenueSub] = useState(false);
   const [copied, setCopied] = useState(false);
   const [mounted, setMounted] = useState(false);
   const { theme, setTheme } = useTheme();
   const { venue, isOperator } = useVenueData();
-  const [activeVenueModal, setActiveVenueModal] = useState<SectionKey | null>(null);
+  const [activeVenueModal, setActiveVenueModal] = useState<SectionKey | null>(
+    null,
+  );
 
   const containerRef = useRef<HTMLDivElement>(null);
   const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
@@ -51,7 +65,7 @@ export function UserSettings({ address, switchNetwork, disconnect }: UserSetting
 
   const pseudonym = generatePseudonym(address);
   const short = shortenAddress(address);
-  const isDark = mounted ? theme === 'dark' : true;
+  const isDark = mounted ? theme === "dark" : true;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(address);
@@ -101,20 +115,20 @@ export function UserSettings({ address, switchNetwork, disconnect }: UserSetting
         onMouseLeave={closeOnLeave}
       >
         <Popover
-          placement="bottom-end"
           isOpen={isOpen}
-          onOpenChange={setIsOpen}
+          placement="bottom-end"
           triggerScaleOnOpen={false}
+          onOpenChange={setIsOpen}
         >
           <PopoverTrigger>
             <button
-              className="flex items-center gap-1.5 cursor-pointer rounded-full transition-opacity hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               aria-label="User settings"
+              className="flex items-center gap-1.5 cursor-pointer rounded-full transition-opacity hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               <AddressAvatar address={address} size={32} />
               <ChevronDownIcon
+                className={`text-default-500 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
                 size={14}
-                className={`text-default-500 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
               />
             </button>
           </PopoverTrigger>
@@ -129,13 +143,17 @@ export function UserSettings({ address, switchNetwork, disconnect }: UserSetting
               <div className="flex items-center gap-3 p-4">
                 <AddressAvatar address={address} size={40} />
                 <div className="flex flex-col min-w-0">
-                  <span className="text-sm font-semibold truncate">{pseudonym}</span>
+                  <span className="text-sm font-semibold truncate">
+                    {pseudonym}
+                  </span>
                   <button
                     className="flex items-center gap-1 text-xs text-default-500 hover:text-default-700 transition-colors cursor-pointer"
                     onClick={handleCopy}
                   >
                     <span className="font-mono">{short}</span>
-                    <span className="text-[10px]">{copied ? 'Copied!' : ''}</span>
+                    <span className="text-[10px]">
+                      {copied ? "Copied!" : ""}
+                    </span>
                   </button>
                 </div>
               </div>
@@ -145,16 +163,16 @@ export function UserSettings({ address, switchNetwork, disconnect }: UserSetting
               {/* Navigation */}
               <div className="flex flex-col py-1">
                 <NextLink
-                  href={`/trader/${address}`}
                   className="flex items-center px-4 py-2.5 text-sm hover:bg-default-100 transition-colors"
+                  href={`/trader/${address}`}
                   onClick={() => setIsOpen(false)}
                 >
                   My Profile
                 </NextLink>
 
                 <NextLink
-                  href="/leaderboard"
                   className="flex items-center px-4 py-2.5 text-sm hover:bg-default-100 transition-colors"
+                  href="/leaderboard"
                   onClick={() => setIsOpen(false)}
                 >
                   Leaderboard
@@ -164,16 +182,16 @@ export function UserSettings({ address, switchNetwork, disconnect }: UserSetting
                   <div className="relative">
                     <button
                       ref={venueItemRef}
+                      aria-expanded={showVenueSub}
                       className="flex items-center justify-between px-4 py-2.5 text-sm hover:bg-default-100 transition-colors cursor-pointer w-full text-left"
+                      onClick={() => setShowVenueSub((v) => !v)}
                       onMouseEnter={openVenueSub}
                       onMouseLeave={closeVenueSub}
-                      onClick={() => setShowVenueSub((v) => !v)}
-                      aria-expanded={showVenueSub}
                     >
                       <span>Venue</span>
                       <ChevronDownIcon
+                        className={`text-default-500 transition-transform sm:-rotate-90 ${showVenueSub ? "rotate-180 sm:-rotate-90" : ""}`}
                         size={14}
-                        className={`text-default-500 transition-transform sm:-rotate-90 ${showVenueSub ? 'rotate-180 sm:-rotate-90' : ''}`}
                       />
                     </button>
 
@@ -206,14 +224,18 @@ export function UserSettings({ address, switchNetwork, disconnect }: UserSetting
               <div className="flex flex-col py-1">
                 <div className="flex items-center justify-between px-4 py-2.5 text-sm">
                   <div className="flex items-center gap-2">
-                    {isDark ? <MoonFilledIcon size={16} /> : <SunFilledIcon size={16} />}
+                    {isDark ? (
+                      <MoonFilledIcon size={16} />
+                    ) : (
+                      <SunFilledIcon size={16} />
+                    )}
                     <span>Dark Mode</span>
                   </div>
                   <Switch
-                    size="sm"
-                    isSelected={isDark}
-                    onValueChange={(val) => setTheme(val ? 'dark' : 'light')}
                     aria-label="Toggle dark mode"
+                    isSelected={isDark}
+                    size="sm"
+                    onValueChange={(val) => setTheme(val ? "dark" : "light")}
                   />
                 </div>
 
@@ -248,8 +270,8 @@ export function UserSettings({ address, switchNetwork, disconnect }: UserSetting
       {venue && (
         <VenueModalsContainer
           activeModal={activeVenueModal}
-          onClose={closeVenueModal}
           venue={venue}
+          onClose={closeVenueModal}
           onManageWhitelist={(key) => setActiveVenueModal(key)}
         />
       )}

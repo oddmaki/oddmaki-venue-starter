@@ -1,16 +1,18 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import {
   Dropdown,
   DropdownTrigger,
   DropdownMenu,
   DropdownItem,
-} from '@heroui/dropdown';
-import { Button } from '@heroui/button';
-import { useConnection } from 'wagmi';
-import { useVenueData } from '../hooks/useVenueData';
-import { VenueModalsContainer, type SectionKey } from './VenueModals';
+} from "@heroui/dropdown";
+import { Button } from "@heroui/button";
+import { useConnection } from "wagmi";
+
+import { useVenueData } from "../hooks/useVenueData";
+
+import { VenueModalsContainer, type SectionKey } from "./VenueModals";
 
 export function VenueManagementButton() {
   const [mounted, setMounted] = useState(false);
@@ -32,7 +34,7 @@ export function VenueManagementButton() {
     <>
       <Dropdown placement="bottom-end">
         <DropdownTrigger>
-          <Button variant="flat" size="md">
+          <Button size="md" variant="flat">
             Manage Venue
           </Button>
         </DropdownTrigger>
@@ -41,18 +43,28 @@ export function VenueManagementButton() {
           className="text-right"
           onAction={(key) => setActiveModal(key as SectionKey)}
         >
-          <DropdownItem key="general" className="text-right">General</DropdownItem>
-          <DropdownItem key="branding" className="text-right">Branding</DropdownItem>
-          <DropdownItem key="access-control" className="text-right">Access Control</DropdownItem>
-          <DropdownItem key="fees" className="text-right">Fees</DropdownItem>
-          <DropdownItem key="oracle" className="text-right">Oracle</DropdownItem>
+          <DropdownItem key="general" className="text-right">
+            General
+          </DropdownItem>
+          <DropdownItem key="branding" className="text-right">
+            Branding
+          </DropdownItem>
+          <DropdownItem key="access-control" className="text-right">
+            Access Control
+          </DropdownItem>
+          <DropdownItem key="fees" className="text-right">
+            Fees
+          </DropdownItem>
+          <DropdownItem key="oracle" className="text-right">
+            Oracle
+          </DropdownItem>
         </DropdownMenu>
       </Dropdown>
 
       <VenueModalsContainer
         activeModal={activeModal}
-        onClose={closeModal}
         venue={venue}
+        onClose={closeModal}
         onManageWhitelist={(key) => setActiveModal(key)}
       />
     </>

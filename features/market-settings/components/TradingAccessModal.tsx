@@ -1,17 +1,29 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@heroui/modal';
-import { Button } from '@heroui/button';
-import { Input } from '@heroui/input';
-import { Chip } from '@heroui/chip';
-import { Divider } from '@heroui/divider';
-import { isAddress } from 'viem';
-import { useVenueData } from '@/features/venue/hooks/useVenueData';
-import { useMarketTradingAC, useWhitelistOwner, WhitelistManagementModal } from '@/features/access-control';
-import { useSetMarketTradingAC } from '../hooks/useSetMarketTradingAC';
+import { useState } from "react";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+} from "@heroui/modal";
+import { Button } from "@heroui/button";
+import { Input } from "@heroui/input";
+import { Chip } from "@heroui/chip";
+import { Divider } from "@heroui/divider";
+import { isAddress } from "viem";
 
-const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+import { useSetMarketTradingAC } from "../hooks/useSetMarketTradingAC";
+
+import { useVenueData } from "@/features/venue/hooks/useVenueData";
+import {
+  useMarketTradingAC,
+  useWhitelistOwner,
+  WhitelistManagementModal,
+} from "@/features/access-control";
+
+const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
 function truncateAddress(addr: string) {
   return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
@@ -23,16 +35,23 @@ interface TradingAccessModalProps {
   marketId: string;
 }
 
-export function TradingAccessModal({ isOpen, onClose, marketId }: TradingAccessModalProps) {
+export function TradingAccessModal({
+  isOpen,
+  onClose,
+  marketId,
+}: TradingAccessModalProps) {
   const { venue } = useVenueData();
   const { data: marketAC } = useMarketTradingAC(BigInt(marketId));
-  const { setMarketTradingAC, removeMarketTradingAC, isLoading } = useSetMarketTradingAC(marketId);
-  const [acInput, setAcInput] = useState('');
+  const { setMarketTradingAC, removeMarketTradingAC, isLoading } =
+    useSetMarketTradingAC(marketId);
+  const [acInput, setAcInput] = useState("");
   const [whitelistOpen, setWhitelistOpen] = useState(false);
 
   // Determine effective AC
   const hasMarketOverride = !!marketAC && marketAC !== ZERO_ADDRESS;
-  const effectiveAC = hasMarketOverride ? marketAC : venue?.tradingAccessControl;
+  const effectiveAC = hasMarketOverride
+    ? marketAC
+    : venue?.tradingAccessControl;
   const isPublic = !effectiveAC || effectiveAC === ZERO_ADDRESS;
 
   // Check if effective AC is a whitelist
@@ -44,17 +63,19 @@ export function TradingAccessModal({ isOpen, onClose, marketId }: TradingAccessM
   const handleSetAC = async () => {
     if (!isAddress(acInput)) return;
     const hash = await setMarketTradingAC(acInput as `0x${string}`);
-    if (hash) setAcInput('');
+
+    if (hash) setAcInput("");
   };
 
   const handleRemoveOverride = async () => {
     const hash = await removeMarketTradingAC();
-    if (hash) setAcInput('');
+
+    if (hash) setAcInput("");
   };
 
   return (
     <>
-      <Modal isOpen={isOpen} onClose={onClose} size="lg">
+      <Modal isOpen={isOpen} size="lg" onClose={onClose}>
         <ModalContent>
           <ModalHeader>Trading Access Control</ModalHeader>
           <ModalBody>
@@ -62,17 +83,17 @@ export function TradingAccessModal({ isOpen, onClose, marketId }: TradingAccessM
             <div className="flex items-center justify-between">
               <span className="text-sm text-default-500">Current Status</span>
               {isPublic ? (
-                <Chip size="sm" variant="flat" color="primary">
+                <Chip color="primary" size="sm" variant="flat">
                   Public
                 </Chip>
               ) : (
                 <div className="flex items-center gap-2">
                   <Chip
+                    color={hasMarketOverride ? "secondary" : "default"}
                     size="sm"
                     variant="flat"
-                    color={hasMarketOverride ? 'secondary' : 'default'}
                   >
-                    {hasMarketOverride ? 'Market Override' : 'Venue Level'}
+                    {hasMarketOverride ? "Market Override" : "Venue Level"}
                   </Chip>
                   <span className="font-mono text-xs">
                     {truncateAddress(effectiveAC!)}
@@ -84,8 +105,8 @@ export function TradingAccessModal({ isOpen, onClose, marketId }: TradingAccessM
             {/* Whitelist management */}
             {isWhitelist && (
               <Button
-                variant="flat"
                 size="sm"
+                variant="flat"
                 onPress={() => setWhitelistOpen(true)}
               >
                 Manage Whitelist
@@ -96,25 +117,32 @@ export function TradingAccessModal({ isOpen, onClose, marketId }: TradingAccessM
 
             {/* Set market-level AC override */}
             <div className="flex flex-col gap-2">
-              <span className="text-sm font-medium">Set Market-Level Override</span>
+              <span className="text-sm font-medium">
+                Set Market-Level Override
+              </span>
               <p className="text-xs text-default-400">
-                Override the venue-level trading access with a market-specific contract.
+                Override the venue-level trading access with a market-specific
+                contract.
               </p>
               <div className="flex gap-2">
                 <Input
-                  size="sm"
+                  errorMessage={
+                    acInput.length > 0 && !isAddress(acInput)
+                      ? "Invalid address"
+                      : undefined
+                  }
+                  isInvalid={acInput.length > 0 && !isAddress(acInput)}
                   placeholder="0x... access control contract"
+                  size="sm"
                   value={acInput}
                   onValueChange={setAcInput}
-                  isInvalid={acInput.length > 0 && !isAddress(acInput)}
-                  errorMessage={acInput.length > 0 && !isAddress(acInput) ? 'Invalid address' : undefined}
                 />
                 <Button
-                  size="sm"
                   color="primary"
-                  onPress={handleSetAC}
-                  isLoading={isLoading}
                   isDisabled={!isAddress(acInput)}
+                  isLoading={isLoading}
+                  size="sm"
+                  onPress={handleSetAC}
                 >
                   Set
                 </Button>
@@ -126,16 +154,19 @@ export function TradingAccessModal({ isOpen, onClose, marketId }: TradingAccessM
               <>
                 <Divider />
                 <div className="flex flex-col gap-2">
-                  <span className="text-sm font-medium">Remove Market Override</span>
+                  <span className="text-sm font-medium">
+                    Remove Market Override
+                  </span>
                   <p className="text-xs text-default-400">
-                    Remove the market-level override to fall back to venue-level access control.
+                    Remove the market-level override to fall back to venue-level
+                    access control.
                   </p>
                   <Button
+                    color="danger"
+                    isLoading={isLoading}
                     size="sm"
                     variant="flat"
-                    color="danger"
                     onPress={handleRemoveOverride}
-                    isLoading={isLoading}
                   >
                     Remove Override
                   </Button>
@@ -153,14 +184,14 @@ export function TradingAccessModal({ isOpen, onClose, marketId }: TradingAccessM
 
       {isWhitelist && effectiveAC && (
         <WhitelistManagementModal
-          isOpen={whitelistOpen}
-          onClose={() => setWhitelistOpen(false)}
           acContract={effectiveAC as `0x${string}`}
+          isOpen={whitelistOpen}
           title={
             hasMarketOverride
-              ? 'Market Trading Whitelist'
-              : 'Venue Trading Whitelist'
+              ? "Market Trading Whitelist"
+              : "Venue Trading Whitelist"
           }
+          onClose={() => setWhitelistOpen(false)}
         />
       )}
     </>

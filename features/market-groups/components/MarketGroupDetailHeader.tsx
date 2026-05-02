@@ -1,11 +1,13 @@
-'use client';
+"use client";
 
-import { Button } from '@heroui/button';
-import { Chip } from '@heroui/chip';
-import { useRouter } from 'next/navigation';
-import { ArrowBackIcon } from '@/components/icons';
-import { MarketSettingsButton } from '@/features/market-settings';
-import type { FormattedMarketGroup } from '../types';
+import type { FormattedMarketGroup } from "../types";
+
+import { Button } from "@heroui/button";
+import { Chip } from "@heroui/chip";
+import { useRouter } from "next/navigation";
+
+import { ArrowBackIcon } from "@/components/icons";
+import { MarketSettingsButton } from "@/features/market-settings";
 
 interface MarketGroupDetailHeaderProps {
   group: FormattedMarketGroup;
@@ -14,11 +16,11 @@ interface MarketGroupDetailHeaderProps {
 
 const STATUS_COLOR: Record<
   string,
-  'warning' | 'primary' | 'default' | 'danger'
+  "warning" | "primary" | "default" | "danger"
 > = {
-  Draft: 'warning',
-  Active: 'primary',
-  Resolved: 'default',
+  Draft: "warning",
+  Active: "primary",
+  Resolved: "default",
 };
 
 export function MarketGroupDetailHeader({
@@ -34,11 +36,11 @@ export function MarketGroupDetailHeader({
         <div className="flex items-start gap-2 flex-1">
           <Button
             isIconOnly
-            variant="light"
-            size="sm"
             aria-label="Back to markets"
-            onPress={() => router.push('/')}
             className="mt-0.5"
+            size="sm"
+            variant="light"
+            onPress={() => router.push("/")}
           >
             <ArrowBackIcon size={20} />
           </Button>
@@ -46,16 +48,16 @@ export function MarketGroupDetailHeader({
         </div>
         <div className="flex items-center gap-2">
           <Chip
-            color={STATUS_COLOR[group.status] || 'default'}
-            variant="flat"
+            color={STATUS_COLOR[group.status] || "default"}
             size="sm"
+            variant="flat"
           >
             {group.status}
           </Chip>
           {selectedMarketId && (
             <MarketSettingsButton
-              marketId={selectedMarketId}
               marketCreator={group.creator}
+              marketId={selectedMarketId}
             />
           )}
         </div>
@@ -74,12 +76,10 @@ export function MarketGroupDetailHeader({
 
         <div className="flex flex-col">
           <span className="text-xs text-default-400 uppercase">Volume</span>
-          <span className="text-lg font-semibold">
-            {group.volumeFormatted}
-          </span>
+          <span className="text-lg font-semibold">{group.volumeFormatted}</span>
         </div>
 
-        {group.resolvedMarketId !== '0' && (
+        {group.resolvedMarketId !== "0" && (
           <div className="flex flex-col">
             <span className="text-xs text-default-400 uppercase">Winner</span>
             <span className="text-lg font-semibold text-primary">

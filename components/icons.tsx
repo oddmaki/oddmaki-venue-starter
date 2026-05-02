@@ -4,16 +4,12 @@ import Image from "next/image";
 import { IconSvgProps } from "@/types";
 import { venueConfig } from "@/config/venue.config";
 
-export const Logo: React.FC<IconSvgProps> = ({
-  size = 36,
-  width,
-  height,
-}) => (
+export const Logo: React.FC<IconSvgProps> = ({ size = 36, width, height }) => (
   <Image
-    src={venueConfig.branding.logo}
     alt={venueConfig.branding.name}
-    width={Number(width || size)}
     height={Number(height || size)}
+    src={venueConfig.branding.logo}
+    width={Number(width || size)}
   />
 );
 
@@ -187,21 +183,28 @@ export const CheckCircleIcon = ({
 }: IconSvgProps) => (
   <svg
     aria-hidden="true"
+    fill="none"
     focusable="false"
     height={size || height}
     viewBox="0 0 24 24"
     width={size || width}
-    fill="none"
     {...props}
   >
-    <circle cx="12" cy="12" r="10" fill="currentColor" opacity="0.15" />
-    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" fill="none" />
+    <circle cx="12" cy="12" fill="currentColor" opacity="0.15" r="10" />
+    <circle
+      cx="12"
+      cy="12"
+      fill="none"
+      r="10"
+      stroke="currentColor"
+      strokeWidth="1.5"
+    />
     <path
       d="M8 12.5l2.5 2.5 5.5-5.5"
       stroke="currentColor"
-      strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
+      strokeWidth="2"
     />
   </svg>
 );
@@ -214,19 +217,26 @@ export const SpinnerIcon = ({
 }: IconSvgProps) => (
   <svg
     aria-hidden="true"
+    fill="none"
     focusable="false"
     height={size || height}
     viewBox="0 0 24 24"
     width={size || width}
-    fill="none"
     {...props}
   >
-    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" opacity="0.2" />
+    <circle
+      cx="12"
+      cy="12"
+      opacity="0.2"
+      r="10"
+      stroke="currentColor"
+      strokeWidth="2"
+    />
     <path
       d="M12 2a10 10 0 0 1 10 10"
       stroke="currentColor"
-      strokeWidth="2"
       strokeLinecap="round"
+      strokeWidth="2"
     />
   </svg>
 );
@@ -239,16 +249,28 @@ export const ErrorCircleIcon = ({
 }: IconSvgProps) => (
   <svg
     aria-hidden="true"
+    fill="none"
     focusable="false"
     height={size || height}
     viewBox="0 0 24 24"
     width={size || width}
-    fill="none"
     {...props}
   >
-    <circle cx="12" cy="12" r="10" fill="currentColor" opacity="0.15" />
-    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" fill="none" />
-    <path d="M15 9l-6 6M9 9l6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    <circle cx="12" cy="12" fill="currentColor" opacity="0.15" r="10" />
+    <circle
+      cx="12"
+      cy="12"
+      fill="none"
+      r="10"
+      stroke="currentColor"
+      strokeWidth="1.5"
+    />
+    <path
+      d="M15 9l-6 6M9 9l6 6"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeWidth="2"
+    />
   </svg>
 );
 
@@ -260,11 +282,11 @@ export const CircleIcon = ({
 }: IconSvgProps) => (
   <svg
     aria-hidden="true"
+    fill="none"
     focusable="false"
     height={size || height}
     viewBox="0 0 24 24"
     width={size || width}
-    fill="none"
     {...props}
   >
     <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" />
@@ -279,15 +301,15 @@ export const ChevronDownIcon = ({
 }: IconSvgProps) => (
   <svg
     aria-hidden="true"
+    fill="none"
     focusable="false"
     height={size || height}
-    viewBox="0 0 24 24"
-    width={size || width}
-    fill="none"
     stroke="currentColor"
-    strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
+    strokeWidth="2"
+    viewBox="0 0 24 24"
+    width={size || width}
     {...props}
   >
     <path d="m6 9 6 6 6-6" />
@@ -306,15 +328,15 @@ export const ArrowBackIcon = ({
 }: IconSvgProps) => (
   <svg
     aria-hidden="true"
+    fill="none"
     focusable="false"
     height={size || height}
-    viewBox="0 0 24 24"
-    width={size || width}
-    fill="none"
     stroke="currentColor"
-    strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
+    strokeWidth="2"
+    viewBox="0 0 24 24"
+    width={size || width}
     {...props}
   >
     <path d="M19 12H5" />
@@ -330,11 +352,11 @@ export const FilterIcon = ({
 }: IconSvgProps) => (
   <svg
     aria-hidden="true"
+    fill="currentColor"
     focusable="false"
     height={size || height}
     viewBox="0 0 24 24"
     width={size || width}
-    fill="currentColor"
     {...props}
   >
     <path d="M0 0h24v24H0V0z" fill="none" />
@@ -350,15 +372,15 @@ export const SettingsIcon = ({
 }: IconSvgProps) => (
   <svg
     aria-hidden="true"
+    fill="none"
     focusable="false"
     height={size || height}
-    viewBox="0 0 24 24"
-    width={size || width}
-    fill="none"
     stroke="currentColor"
-    strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
+    strokeWidth="2"
+    viewBox="0 0 24 24"
+    width={size || width}
     {...props}
   >
     <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
@@ -383,21 +405,21 @@ export const SemiCircularProgress = (props: SemiCircularProgressProps) => {
       {/* Background arc */}
       <path
         d="M 8 42 A 32 32 0 0 1 72 42"
-        stroke="currentColor"
-        strokeWidth="6"
         fill="none"
-        strokeLinecap="round"
         opacity="0.2"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeWidth="6"
       />
       {/* Progress arc */}
       <path
         d="M 8 42 A 32 32 0 0 1 72 42"
-        stroke="currentColor"
-        strokeWidth="6"
         fill="none"
+        stroke="currentColor"
         strokeDasharray={circumference}
         strokeDashoffset={offset}
         strokeLinecap="round"
+        strokeWidth="6"
       />
     </svg>
   );

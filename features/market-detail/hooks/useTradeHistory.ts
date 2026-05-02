@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
-import { useQuery } from '@tanstack/react-query';
-import { useOddMakiClient } from '@/lib/oddmaki/hooks';
-import { queryKeys } from '@/lib/oddmaki/queryKeys';
+import { useQuery } from "@tanstack/react-query";
+
+import { useOddMakiClient } from "@/lib/oddmaki/hooks";
+import { queryKeys } from "@/lib/oddmaki/queryKeys";
 
 export interface Trade {
   id: string;
@@ -33,6 +34,7 @@ export function useTradeHistory(marketId: string) {
         marketId: BigInt(marketId),
         first: 50,
       })) as any;
+
       return result.trades || [];
     },
     enabled: !!marketId,

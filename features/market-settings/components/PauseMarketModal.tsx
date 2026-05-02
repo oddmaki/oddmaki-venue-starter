@@ -1,8 +1,15 @@
-'use client';
+"use client";
 
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@heroui/modal';
-import { Button } from '@heroui/button';
-import { useToggleMarketPause } from '../hooks/useToggleMarketPause';
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+} from "@heroui/modal";
+import { Button } from "@heroui/button";
+
+import { useToggleMarketPause } from "../hooks/useToggleMarketPause";
 
 interface PauseMarketModalProps {
   isOpen: boolean;
@@ -10,16 +17,23 @@ interface PauseMarketModalProps {
   marketId: string;
 }
 
-export function PauseMarketModal({ isOpen, onClose, marketId }: PauseMarketModalProps) {
-  const { pauseMarket, unpauseMarket, isLoading } = useToggleMarketPause(marketId);
+export function PauseMarketModal({
+  isOpen,
+  onClose,
+  marketId,
+}: PauseMarketModalProps) {
+  const { pauseMarket, unpauseMarket, isLoading } =
+    useToggleMarketPause(marketId);
 
   const handlePause = async () => {
     const hash = await pauseMarket();
+
     if (hash) onClose();
   };
 
   const handleUnpause = async () => {
     const hash = await unpauseMarket();
+
     if (hash) onClose();
   };
 
@@ -29,24 +43,24 @@ export function PauseMarketModal({ isOpen, onClose, marketId }: PauseMarketModal
         <ModalHeader>Market Trading Status</ModalHeader>
         <ModalBody>
           <p className="text-sm text-default-500">
-            Pausing a market blocks all new trades and order matching. Existing orders can still be
-            cancelled. Resuming re-enables trading.
+            Pausing a market blocks all new trades and order matching. Existing
+            orders can still be cancelled. Resuming re-enables trading.
           </p>
 
           <div className="flex flex-col gap-3 mt-2">
             <Button
               color="warning"
+              isLoading={isLoading}
               variant="flat"
               onPress={handlePause}
-              isLoading={isLoading}
             >
               Pause Trading
             </Button>
             <Button
               color="success"
+              isLoading={isLoading}
               variant="flat"
               onPress={handleUnpause}
-              isLoading={isLoading}
             >
               Resume Trading
             </Button>

@@ -1,7 +1,7 @@
 export enum MarketGroupStatus {
-  DRAFT = 'Draft',
-  ACTIVE = 'Active',
-  RESOLVED = 'Resolved',
+  DRAFT = "Draft",
+  ACTIVE = "Active",
+  RESOLVED = "Resolved",
 }
 
 /** Formatted child market/outcome for display */

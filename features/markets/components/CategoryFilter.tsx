@@ -1,14 +1,17 @@
-'use client';
+"use client";
 
-import { useCallback } from 'react';
-import { Button } from '@heroui/button';
-import { Popover, PopoverTrigger, PopoverContent } from '@heroui/popover';
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import { CATEGORIES, SORT_MODES } from '@/config/tags.config';
-import type { SortMode } from '@/config/tags.config';
-import { FilterIcon } from '@/components/icons';
-import { useCategoryOverflow } from '../hooks/useCategoryOverflow';
-import { useFilterToggle } from '../hooks/useFilterToggle';
+import type { SortMode } from "@/config/tags.config";
+
+import { useCallback } from "react";
+import { Button } from "@heroui/button";
+import { Popover, PopoverTrigger, PopoverContent } from "@heroui/popover";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
+
+import { useCategoryOverflow } from "../hooks/useCategoryOverflow";
+import { useFilterToggle } from "../hooks/useFilterToggle";
+
+import { CATEGORIES, SORT_MODES } from "@/config/tags.config";
+import { FilterIcon } from "@/components/icons";
 
 export function CategoryFilter() {
   const router = useRouter();
@@ -16,13 +19,12 @@ export function CategoryFilter() {
   const searchParams = useSearchParams();
   const { showFilters, toggleFilters } = useFilterToggle();
 
-  const isHomePage = pathname === '/';
-  const currentSort = searchParams.get('sort');
-  const currentCategory = isHomePage ? searchParams.get('category') : null;
+  const isHomePage = pathname === "/";
+  const currentSort = searchParams.get("sort");
+  const currentCategory = isHomePage ? searchParams.get("category") : null;
 
   // Determine active sort mode (trending is default when no sort param and no category)
-  const activeSortMode: SortMode =
-    currentSort === 'new' ? 'new' : 'trending';
+  const activeSortMode: SortMode = currentSort === "new" ? "new" : "trending";
 
   // Overflow detection for categories
   const { containerRef, setItemRef, visibleCount } = useCategoryOverflow(
@@ -33,10 +35,10 @@ export function CategoryFilter() {
 
   const handleSortClick = useCallback(
     (sortId: SortMode) => {
-      if (sortId === 'trending') {
-        router.push('/');
+      if (sortId === "trending") {
+        router.push("/");
       } else {
-        router.push('/?sort=new');
+        router.push("/?sort=new");
       }
     },
     [router],
@@ -45,7 +47,7 @@ export function CategoryFilter() {
   const handleCategoryClick = useCallback(
     (categoryId: string) => {
       if (currentCategory === categoryId) {
-        router.push('/');
+        router.push("/");
       } else {
         router.push(`/?category=${categoryId}`);
       }
@@ -65,12 +67,12 @@ export function CategoryFilter() {
       {SORT_MODES.map((mode) => (
         <Button
           key={mode.id}
+          className={`flex-shrink-0 text-sm font-medium ${
+            isSortActive(mode.id) ? "" : "text-default-600"
+          }`}
+          color={isSortActive(mode.id) ? "primary" : "default"}
           size="sm"
           variant="light"
-          color={isSortActive(mode.id) ? 'primary' : 'default'}
-          className={`flex-shrink-0 text-sm font-medium ${
-            isSortActive(mode.id) ? '' : 'text-default-600'
-          }`}
           onPress={() => handleSortClick(mode.id)}
         >
           {mode.label}
@@ -89,15 +91,15 @@ export function CategoryFilter() {
           <div
             key={category.id}
             ref={setItemRef(index)}
-            className={`flex-shrink-0 ${index >= visibleCount ? 'invisible' : ''}`}
+            className={`flex-shrink-0 ${index >= visibleCount ? "invisible" : ""}`}
           >
             <Button
+              className={`font-medium text-sm ${
+                isCategoryActive(category.id) ? "" : "text-default-600"
+              }`}
+              color={isCategoryActive(category.id) ? "primary" : "default"}
               size="sm"
               variant="light"
-              color={isCategoryActive(category.id) ? 'primary' : 'default'}
-              className={`font-medium text-sm ${
-                isCategoryActive(category.id) ? '' : 'text-default-600'
-              }`}
               onPress={() => handleCategoryClick(category.id)}
             >
               {category.label}
@@ -111,8 +113,6 @@ export function CategoryFilter() {
         <Popover placement="bottom-end">
           <PopoverTrigger>
             <Button
-              size="sm"
-              variant="light"
               className="flex-shrink-0 text-default-500 font-medium"
               endContent={
                 <svg
@@ -122,13 +122,15 @@ export function CategoryFilter() {
                   viewBox="0 0 24 24"
                 >
                   <path
+                    d="M19 9l-7 7-7-7"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
                   />
                 </svg>
               }
+              size="sm"
+              variant="light"
             >
               More
             </Button>
@@ -138,12 +140,10 @@ export function CategoryFilter() {
               {overflowCategories.map((category) => (
                 <Button
                   key={category.id}
-                  size="sm"
-                  variant={isCategoryActive(category.id) ? 'solid' : 'light'}
-                  color={
-                    isCategoryActive(category.id) ? 'primary' : 'default'
-                  }
                   className="justify-start"
+                  color={isCategoryActive(category.id) ? "primary" : "default"}
+                  size="sm"
+                  variant={isCategoryActive(category.id) ? "solid" : "light"}
                   onPress={() => handleCategoryClick(category.id)}
                 >
                   {category.label}
@@ -157,11 +157,11 @@ export function CategoryFilter() {
       {/* Filter toggle */}
       <Button
         isIconOnly
+        aria-label="Toggle filters"
+        className={`flex-shrink-0 ${showFilters ? "text-primary" : "text-default-600"}`}
         size="md"
         variant="light"
-        className={`flex-shrink-0 ${showFilters ? 'text-primary' : 'text-default-600'}`}
         onPress={toggleFilters}
-        aria-label="Toggle filters"
       >
         <FilterIcon size={24} />
       </Button>

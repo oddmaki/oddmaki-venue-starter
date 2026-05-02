@@ -1,14 +1,14 @@
-import '@/styles/globals.css';
-import { Metadata, Viewport } from 'next';
-import clsx from 'clsx';
+import "@/styles/globals.css";
+import { Metadata, Viewport } from "next";
+import clsx from "clsx";
 
-import { Providers } from './providers';
+import { Providers } from "./providers";
 
-import { venueConfig } from '@/config/venue.config';
-import { fontSans } from '@/config/fonts';
-import { Navbar } from '@/components/navbar';
-import { CategoryNav } from '@/components/category-nav';
-import { NavigationProgress } from '@/components/navigation-progress';
+import { venueConfig } from "@/config/venue.config";
+import { fontSans } from "@/config/fonts";
+import { Navbar } from "@/components/navbar";
+import { CategoryNav } from "@/components/category-nav";
+import { NavigationProgress } from "@/components/navigation-progress";
 
 export const metadata: Metadata = {
   title: {
@@ -23,8 +23,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: 'white' },
-    { media: '(prefers-color-scheme: dark)', color: 'black' },
+    { media: "(prefers-color-scheme: light)", color: "white" },
+    { media: "(prefers-color-scheme: dark)", color: "black" },
   ],
 };
 
@@ -38,11 +38,11 @@ export default function RootLayout({
       <head />
       <body
         className={clsx(
-          'min-h-screen text-foreground bg-background font-sans antialiased',
-          fontSans.variable
+          "min-h-screen text-foreground bg-background font-sans antialiased",
+          fontSans.variable,
         )}
       >
-        <Providers themeProps={{ attribute: 'class', defaultTheme: 'dark' }}>
+        <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
           <NavigationProgress />
           <div className="relative flex flex-col h-screen">
             <Navbar />

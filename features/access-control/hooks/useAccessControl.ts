@@ -1,9 +1,10 @@
-'use client';
+"use client";
 
-import { useQuery } from '@tanstack/react-query';
-import { useConnection } from 'wagmi';
-import { useOddMakiClient } from '@/lib/oddmaki/hooks';
-import { queryKeys } from '@/lib/oddmaki/queryKeys';
+import { useQuery } from "@tanstack/react-query";
+import { useConnection } from "wagmi";
+
+import { useOddMakiClient } from "@/lib/oddmaki/hooks";
+import { queryKeys } from "@/lib/oddmaki/queryKeys";
 
 /**
  * Check if the current user can trade on a specific market.
@@ -15,11 +16,12 @@ export function useCanTradeOnMarket(marketId: bigint | undefined) {
 
   return useQuery({
     queryKey: queryKeys.accessControl.canTrade(
-      marketId?.toString() ?? '',
-      address ?? '0x',
+      marketId?.toString() ?? "",
+      address ?? "0x",
     ),
     queryFn: async () => {
       if (!address || marketId === undefined) return true;
+
       return client.accessControl.canTradeOnMarket({
         user: address,
         marketId,
@@ -40,11 +42,12 @@ export function useCanCreateMarket(venueId: bigint | undefined) {
 
   return useQuery({
     queryKey: queryKeys.accessControl.canCreate(
-      venueId?.toString() ?? '',
-      address ?? '0x',
+      venueId?.toString() ?? "",
+      address ?? "0x",
     ),
     queryFn: async () => {
       if (!address || venueId === undefined) return true;
+
       return client.venue.canCreateMarket(address, venueId);
     },
     enabled: !!address && venueId !== undefined,

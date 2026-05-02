@@ -1,13 +1,17 @@
-'use client';
+"use client";
 
-import { useQuery } from '@tanstack/react-query';
-import { useOddMakiClient } from '@/lib/oddmaki/hooks';
-import { queryKeys } from '@/lib/oddmaki/queryKeys';
+import { useQuery } from "@tanstack/react-query";
 
-export type LeaderboardSortField = 'totalVolume' | 'totalRealizedPnL' | 'totalTradeCount';
+import { useOddMakiClient } from "@/lib/oddmaki/hooks";
+import { queryKeys } from "@/lib/oddmaki/queryKeys";
+
+export type LeaderboardSortField =
+  | "totalVolume"
+  | "totalRealizedPnL"
+  | "totalTradeCount";
 
 export function useLeaderboard(
-  orderBy: LeaderboardSortField = 'totalVolume',
+  orderBy: LeaderboardSortField = "totalVolume",
   first: number = 50,
 ) {
   const client = useOddMakiClient();
@@ -17,9 +21,10 @@ export function useLeaderboard(
     queryFn: async () => {
       const result = await client.public.getLeaderboard({
         orderBy,
-        orderDirection: 'desc',
+        orderDirection: "desc",
         first,
       });
+
       return result.users ?? [];
     },
     staleTime: 30_000,

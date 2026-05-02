@@ -1,18 +1,18 @@
-'use client';
+"use client";
 
 import {
   Dropdown,
   DropdownTrigger,
   DropdownMenu,
   DropdownItem,
-} from '@heroui/dropdown';
-import { Button } from '@heroui/button';
+} from "@heroui/dropdown";
+import { Button } from "@heroui/button";
 
-export type StatusFilter = 'Active' | 'Resolved';
+export type StatusFilter = "Active" | "Resolved";
 
 const STATUS_OPTIONS: { key: StatusFilter; label: string }[] = [
-  { key: 'Active', label: 'Active' },
-  { key: 'Resolved', label: 'Resolved' },
+  { key: "Active", label: "Active" },
+  { key: "Resolved", label: "Resolved" },
 ];
 
 interface MarketStatusFilterProps {
@@ -20,13 +20,14 @@ interface MarketStatusFilterProps {
   onChange: (status: StatusFilter) => void;
 }
 
-export function MarketStatusFilter({ value, onChange }: MarketStatusFilterProps) {
+export function MarketStatusFilter({
+  value,
+  onChange,
+}: MarketStatusFilterProps) {
   return (
     <Dropdown placement="bottom-start">
       <DropdownTrigger>
         <Button
-          size="sm"
-          variant="bordered"
           endContent={
             <svg
               className="w-3 h-3"
@@ -35,23 +36,26 @@ export function MarketStatusFilter({ value, onChange }: MarketStatusFilterProps)
               viewBox="0 0 24 24"
             >
               <path
+                d="M19 9l-7 7-7-7"
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth={2}
-                d="M19 9l-7 7-7-7"
               />
             </svg>
           }
+          size="sm"
+          variant="bordered"
         >
           {value}
         </Button>
       </DropdownTrigger>
       <DropdownMenu
         aria-label="Filter by market status"
-        selectionMode="single"
         selectedKeys={new Set([value])}
+        selectionMode="single"
         onSelectionChange={(keys) => {
           const selected = Array.from(keys)[0] as StatusFilter;
+
           if (selected) onChange(selected);
         }}
       >

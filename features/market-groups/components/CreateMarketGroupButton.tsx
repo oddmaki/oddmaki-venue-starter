@@ -1,11 +1,13 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Button } from '@heroui/button';
-import { useConnection } from 'wagmi';
-import { CreateMarketGroupModal } from './CreateMarketGroupModal';
-import { useCanCreateMarket } from '@/features/access-control';
-import { getVenueId } from '@/config/venue.config';
+import { useState, useEffect } from "react";
+import { Button } from "@heroui/button";
+import { useConnection } from "wagmi";
+
+import { CreateMarketGroupModal } from "./CreateMarketGroupModal";
+
+import { useCanCreateMarket } from "@/features/access-control";
+import { getVenueId } from "@/config/venue.config";
 
 export function CreateMarketGroupButton() {
   const [mounted, setMounted] = useState(false);
@@ -24,11 +26,11 @@ export function CreateMarketGroupButton() {
     <>
       <Button
         color="secondary"
+        isDisabled={!canCreate}
         variant="bordered"
         onPress={() => setIsOpen(true)}
-        isDisabled={!canCreate}
       >
-        {canCreate ? 'Create Group' : 'Creation Restricted'}
+        {canCreate ? "Create Group" : "Creation Restricted"}
       </Button>
       <CreateMarketGroupModal
         isOpen={isOpen}

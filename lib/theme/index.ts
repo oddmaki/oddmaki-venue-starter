@@ -1,5 +1,5 @@
-export type { ThemeConfig, ColorScale, ResolvedTheme } from './types';
-export { resolveTheme, toHeroThemeColors } from './resolve';
+export type { ThemeConfig, ColorScale, ResolvedTheme } from "./types";
+export { resolveTheme, toHeroThemeColors } from "./resolve";
 export {
   hexToHsl,
   hslToHex,
@@ -9,4 +9,4 @@ export {
   generateColorScale,
   generateDefaultScale,
   lighten,
-} from './color-utils';
+} from "./color-utils";

@@ -6,16 +6,17 @@
  * running on the server or when NEXT_PUBLIC_WS_RPC_URL is not configured.
  */
 
-import { createPublicClient, webSocket } from 'viem';
-import { ACTIVE_CHAIN } from '@/lib/oddmaki/chain';
+import { createPublicClient, webSocket } from "viem";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+import { ACTIVE_CHAIN } from "@/lib/oddmaki/chain";
+
 let wsClient: any = null;
 
 export function getWsPublicClient() {
-  if (typeof window === 'undefined') return null;
+  if (typeof window === "undefined") return null;
 
   const wsUrl = process.env.NEXT_PUBLIC_WS_RPC_URL;
+
   if (!wsUrl) return null;
 
   if (wsClient) return wsClient;
@@ -41,5 +42,5 @@ export function destroyWsPublicClient() {
 }
 
 export function isWsConfigured(): boolean {
-  return typeof window !== 'undefined' && !!process.env.NEXT_PUBLIC_WS_RPC_URL;
+  return typeof window !== "undefined" && !!process.env.NEXT_PUBLIC_WS_RPC_URL;
 }

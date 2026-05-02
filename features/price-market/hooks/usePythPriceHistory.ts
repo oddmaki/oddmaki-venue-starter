@@ -1,8 +1,10 @@
-'use client';
+"use client";
 
-import { useRef, useMemo } from 'react';
-import type { ChartDataPoint } from '@/features/price-chart/lib/aggregation';
-import { usePythLivePrice } from './usePythLivePrice';
+import type { ChartDataPoint } from "@/features/price-chart/lib/aggregation";
+
+import { useRef, useMemo } from "react";
+
+import { usePythLivePrice } from "./usePythLivePrice";
 
 const MAX_BUFFER_SIZE = 500;
 
@@ -35,7 +37,7 @@ export function usePythPriceHistory(feedId: string | undefined) {
   const data = useMemo(
     () => [...bufferRef.current],
     // Re-derive when a new point is added (tracked via publishTime)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
     [livePrice?.publishTime],
   );
 

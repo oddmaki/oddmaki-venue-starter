@@ -1,1 +1,1 @@
-export { TopHoldersPanel } from './TopHoldersPanel';
+export { TopHoldersPanel } from "./TopHoldersPanel";

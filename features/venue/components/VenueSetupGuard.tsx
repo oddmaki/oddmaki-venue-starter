@@ -1,8 +1,10 @@
-'use client';
+"use client";
 
-import type { ReactNode } from 'react';
-import { getVenueId } from '@/config/venue.config';
-import { VenueSetupModal } from './VenueSetupModal';
+import type { ReactNode } from "react";
+
+import { VenueSetupModal } from "./VenueSetupModal";
+
+import { getVenueId } from "@/config/venue.config";
 
 interface VenueSetupGuardProps {
   children: ReactNode;

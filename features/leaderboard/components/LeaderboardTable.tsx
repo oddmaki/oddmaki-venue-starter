@@ -1,10 +1,15 @@
-'use client';
+"use client";
 
-import NextLink from 'next/link';
-import { Card, CardBody } from '@heroui/card';
-import { Skeleton } from '@heroui/skeleton';
-import { AddressAvatar, generatePseudonym, shortenAddress } from '@/lib/identity';
-import { formatVolume } from '@/features/markets/utils/formatting';
+import NextLink from "next/link";
+import { Card, CardBody } from "@heroui/card";
+import { Skeleton } from "@heroui/skeleton";
+
+import {
+  AddressAvatar,
+  generatePseudonym,
+  shortenAddress,
+} from "@/lib/identity";
+import { formatVolume } from "@/features/markets/utils/formatting";
 
 interface LeaderboardTableProps {
   users: any[];
@@ -13,9 +18,12 @@ interface LeaderboardTableProps {
 
 function formatPnL(value: string, decimals: number = 6): string {
   const num = parseFloat(value) / Math.pow(10, decimals);
-  const sign = num >= 0 ? '+' : '';
-  if (Math.abs(num) >= 1_000_000) return `${sign}$${(num / 1_000_000).toFixed(2)}M`;
+  const sign = num >= 0 ? "+" : "";
+
+  if (Math.abs(num) >= 1_000_000)
+    return `${sign}$${(num / 1_000_000).toFixed(2)}M`;
   if (Math.abs(num) >= 1_000) return `${sign}$${(num / 1_000).toFixed(2)}K`;
+
   return `${sign}$${num.toFixed(2)}`;
 }
 
@@ -60,19 +68,26 @@ export function LeaderboardTable({ users, isLoading }: LeaderboardTableProps) {
             </thead>
             <tbody>
               {users.map((user: any, index: number) => {
-                const pnlValue = parseFloat(user.totalRealizedPnL || '0');
-                const pnlColor = pnlValue > 0 ? 'text-success' : pnlValue < 0 ? 'text-danger' : '';
+                const pnlValue = parseFloat(user.totalRealizedPnL || "0");
+                const pnlColor =
+                  pnlValue > 0
+                    ? "text-success"
+                    : pnlValue < 0
+                      ? "text-danger"
+                      : "";
 
                 return (
                   <tr
                     key={user.id}
                     className="border-b border-default-100 last:border-0 hover:bg-default-50 transition-colors"
                   >
-                    <td className="p-4 text-default-500 font-medium">{index + 1}</td>
+                    <td className="p-4 text-default-500 font-medium">
+                      {index + 1}
+                    </td>
                     <td className="p-4">
                       <NextLink
-                        href={`/trader/${user.id}`}
                         className="flex items-center gap-3 hover:text-primary transition-colors"
+                        href={`/trader/${user.id}`}
                       >
                         <AddressAvatar address={user.id} size={32} />
                         <div className="flex flex-col">
@@ -86,16 +101,16 @@ export function LeaderboardTable({ users, isLoading }: LeaderboardTableProps) {
                       </NextLink>
                     </td>
                     <td className="p-4 text-right font-medium">
-                      {formatVolume(user.totalVolume || '0')}
+                      {formatVolume(user.totalVolume || "0")}
                     </td>
                     <td className={`p-4 text-right font-medium ${pnlColor}`}>
-                      {formatPnL(user.totalRealizedPnL || '0')}
+                      {formatPnL(user.totalRealizedPnL || "0")}
                     </td>
                     <td className="p-4 text-right text-default-500">
-                      {user.totalTradeCount || '0'}
+                      {user.totalTradeCount || "0"}
                     </td>
                     <td className="p-4 text-right text-default-500">
-                      {user.totalMarketsTraded || '0'}
+                      {user.totalMarketsTraded || "0"}
                     </td>
                   </tr>
                 );
@@ -107,14 +122,15 @@ export function LeaderboardTable({ users, isLoading }: LeaderboardTableProps) {
         {/* Mobile: card list */}
         <div className="sm:hidden flex flex-col">
           {users.map((user: any, index: number) => {
-            const pnlValue = parseFloat(user.totalRealizedPnL || '0');
-            const pnlColor = pnlValue > 0 ? 'text-success' : pnlValue < 0 ? 'text-danger' : '';
+            const pnlValue = parseFloat(user.totalRealizedPnL || "0");
+            const pnlColor =
+              pnlValue > 0 ? "text-success" : pnlValue < 0 ? "text-danger" : "";
 
             return (
               <NextLink
                 key={user.id}
-                href={`/trader/${user.id}`}
                 className="flex flex-col gap-2 p-3 border-b border-default-100 last:border-0 hover:bg-default-50 transition-colors"
+                href={`/trader/${user.id}`}
               >
                 <div className="flex items-center gap-3">
                   <span className="text-default-500 font-medium w-6 text-center">
@@ -130,13 +146,13 @@ export function LeaderboardTable({ users, isLoading }: LeaderboardTableProps) {
                     </span>
                   </div>
                   <div className={`text-right font-semibold ${pnlColor}`}>
-                    {formatPnL(user.totalRealizedPnL || '0')}
+                    {formatPnL(user.totalRealizedPnL || "0")}
                   </div>
                 </div>
                 <div className="flex items-center justify-between text-xs text-default-500 pl-9">
-                  <span>Vol {formatVolume(user.totalVolume || '0')}</span>
-                  <span>{user.totalTradeCount || '0'} trades</span>
-                  <span>{user.totalMarketsTraded || '0'} markets</span>
+                  <span>Vol {formatVolume(user.totalVolume || "0")}</span>
+                  <span>{user.totalTradeCount || "0"} trades</span>
+                  <span>{user.totalMarketsTraded || "0"} markets</span>
                 </div>
               </NextLink>
             );

@@ -1,31 +1,38 @@
-'use client';
+"use client";
 
-import { Chip } from '@heroui/chip';
-import type { OrderbookLevel } from '../hooks/useOrderbookLevels';
+import type { OrderbookLevel } from "../hooks/useOrderbookLevels";
+
+import { Chip } from "@heroui/chip";
 
 interface OrderbookRowProps {
   level: OrderbookLevel;
-  side: 'bid' | 'ask';
+  side: "bid" | "ask";
   /** 0-1 ratio for depth bar width */
   depthRatio: number;
   /** Optional chip label shown in the depth-bar area */
-  label?: { text: string; color: 'primary' | 'secondary' };
+  label?: { text: string; color: "primary" | "secondary" };
   onPriceClick?: (price: string, tick: bigint) => void;
 }
 
-export function OrderbookRow({ level, side, depthRatio, label, onPriceClick }: OrderbookRowProps) {
-  const isBid = side === 'bid';
-  const barColor = isBid ? 'bg-primary/15' : 'bg-secondary/10';
-  const priceColor = isBid ? 'text-primary' : 'text-secondary';
+export function OrderbookRow({
+  level,
+  side,
+  depthRatio,
+  label,
+  onPriceClick,
+}: OrderbookRowProps) {
+  const isBid = side === "bid";
+  const barColor = isBid ? "bg-primary/15" : "bg-secondary/10";
+  const priceColor = isBid ? "text-primary" : "text-secondary";
 
   return (
     <div
+      className="relative flex items-center h-7 px-2 cursor-pointer hover:bg-default-100 transition-colors text-xs font-mono"
       role="button"
       tabIndex={0}
-      className="relative flex items-center h-7 px-2 cursor-pointer hover:bg-default-100 transition-colors text-xs font-mono"
       onClick={() => onPriceClick?.(level.price, level.tick)}
       onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
+        if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
           onPriceClick?.(level.price, level.tick);
         }
@@ -41,7 +48,9 @@ export function OrderbookRow({ level, side, depthRatio, label, onPriceClick }: O
       <div className="relative z-10 flex w-full items-center">
         <span className="w-[25%] sm:w-[40%] flex items-center">
           {label && (
-            <Chip size="sm" color={label.color} variant="flat">{label.text}</Chip>
+            <Chip color={label.color} size="sm" variant="flat">
+              {label.text}
+            </Chip>
           )}
         </span>
         <span className={`${priceColor} font-semibold flex-1 text-center`}>

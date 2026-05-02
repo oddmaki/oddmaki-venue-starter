@@ -1,6 +1,8 @@
-'use client';
+"use client";
 
-import { useEffect, useRef, useState, useCallback, memo } from 'react';
+import type { ChartDataPoint } from "../lib/aggregation";
+
+import { useEffect, useRef, useState, useCallback, memo } from "react";
 import {
   createChart,
   createSeriesMarkers,
@@ -11,9 +13,9 @@ import {
   type ISeriesApi,
   type ISeriesMarkersPluginApi,
   type MouseEventParams,
-} from 'lightweight-charts';
-import { colors, alpha } from '@/lib/tokens';
-import type { ChartDataPoint } from '../lib/aggregation';
+} from "lightweight-charts";
+
+import { colors, alpha } from "@/lib/tokens";
 
 interface AssetPriceChartProps {
   data: ChartDataPoint[];
@@ -26,15 +28,16 @@ interface AssetPriceChartProps {
 }
 
 function formatDollar(price: number): string {
-  return `$${price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  return `$${price.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 function formatTimeLabel(unixSeconds: number): string {
   const date = new Date(unixSeconds * 1000);
-  return date.toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: '2-digit',
-    second: '2-digit',
+
+  return date.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit",
     hour12: true,
   });
 }
@@ -43,14 +46,14 @@ export const AssetPriceChart = memo(function AssetPriceChart({
   data,
   currentPrice,
   strikePrice,
-  feedSymbol = '',
+  feedSymbol = "",
   height = 300,
 }: AssetPriceChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   const seriesRef = useRef<ISeriesApi<any> | null>(null);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   const markersRef = useRef<ISeriesMarkersPluginApi<any> | null>(null);
   const [tooltip, setTooltip] = useState<{
     visible: boolean;
@@ -59,34 +62,30 @@ export const AssetPriceChart = memo(function AssetPriceChart({
     price: number;
   }>({ visible: false, x: 0, y: 0, price: 0 });
 
-  const handleCrosshairMove = useCallback(
-    (param: MouseEventParams) => {
-      if (!param.point || !seriesRef.current) {
-        setTooltip((prev) =>
-          prev.visible ? { ...prev, visible: false } : prev,
-        );
-        return;
-      }
+  const handleCrosshairMove = useCallback((param: MouseEventParams) => {
+    if (!param.point || !seriesRef.current) {
+      setTooltip((prev) => (prev.visible ? { ...prev, visible: false } : prev));
 
-      const seriesData = param.seriesData?.get(seriesRef.current);
-      if (!seriesData || !('value' in seriesData)) {
-        setTooltip((prev) =>
-          prev.visible ? { ...prev, visible: false } : prev,
-        );
-        return;
-      }
+      return;
+    }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const value = (seriesData as any).value as number;
-      setTooltip({
-        visible: true,
-        x: param.point.x,
-        y: param.point.y,
-        price: value,
-      });
-    },
-    [],
-  );
+    const seriesData = param.seriesData?.get(seriesRef.current);
+
+    if (!seriesData || !("value" in seriesData)) {
+      setTooltip((prev) => (prev.visible ? { ...prev, visible: false } : prev));
+
+      return;
+    }
+
+    const value = (seriesData as any).value as number;
+
+    setTooltip({
+      visible: true,
+      x: param.point.x,
+      y: param.point.y,
+      price: value,
+    });
+  }, []);
 
   // Initialize chart
   useEffect(() => {
@@ -94,14 +93,14 @@ export const AssetPriceChart = memo(function AssetPriceChart({
 
     const chart = createChart(containerRef.current, {
       layout: {
-        background: { type: ColorType.Solid, color: 'transparent' },
-        textColor: '#a1a1aa',
+        background: { type: ColorType.Solid, color: "transparent" },
+        textColor: "#a1a1aa",
       },
       width: containerRef.current.clientWidth,
       height,
       grid: {
-        vertLines: { color: 'rgba(255, 255, 255, 0.04)' },
-        horzLines: { color: 'rgba(255, 255, 255, 0.04)' },
+        vertLines: { color: "rgba(255, 255, 255, 0.04)" },
+        horzLines: { color: "rgba(255, 255, 255, 0.04)" },
       },
       crosshair: {
         mode: CrosshairMode.Magnet,
@@ -138,7 +137,7 @@ export const AssetPriceChart = memo(function AssetPriceChart({
       color: colors.neonCyan,
       lineWidth: 3,
       priceFormat: {
-        type: 'custom',
+        type: "custom",
         formatter: (price: number) => formatDollar(price),
         minMove: 0.01,
       },
@@ -159,19 +158,22 @@ export const AssetPriceChart = memo(function AssetPriceChart({
     const branding = containerRef.current.querySelector(
       'a[href*="tradingview"]',
     ) as HTMLElement | null;
-    if (branding) branding.style.display = 'none';
+
+    if (branding) branding.style.display = "none";
 
     chart.subscribeCrosshairMove(handleCrosshairMove);
 
     const container = containerRef.current;
     const resizeObserver = new ResizeObserver((entries) => {
       const entry = entries[0];
+
       if (entry && chartRef.current) {
         chartRef.current.applyOptions({
           width: entry.contentRect.width,
         });
       }
     });
+
     resizeObserver.observe(container);
 
     return () => {
@@ -189,7 +191,6 @@ export const AssetPriceChart = memo(function AssetPriceChart({
   useEffect(() => {
     if (!seriesRef.current || !chartRef.current) return;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     seriesRef.current.setData(
       data.map((d) => ({
         time: d.time as any,
@@ -201,11 +202,12 @@ export const AssetPriceChart = memo(function AssetPriceChart({
     if (markersRef.current) {
       if (currentPrice !== undefined && data.length > 0) {
         const lastPoint = data[data.length - 1];
+
         markersRef.current.setMarkers([
           {
             time: lastPoint.time as any,
-            position: 'inBar',
-            shape: 'circle',
+            position: "inBar",
+            shape: "circle",
             color: colors.neonCyan,
             size: 1,
           },
@@ -219,6 +221,7 @@ export const AssetPriceChart = memo(function AssetPriceChart({
     if (strikePrice !== undefined && seriesRef.current) {
       // Remove existing price lines first
       const existing = seriesRef.current.priceLines();
+
       for (const line of existing) {
         seriesRef.current.removePriceLine(line);
       }
@@ -229,7 +232,7 @@ export const AssetPriceChart = memo(function AssetPriceChart({
         lineWidth: 1,
         lineStyle: 2, // Dashed
         axisLabelVisible: true,
-        title: 'Target',
+        title: "Target",
       });
     }
 
@@ -253,7 +256,7 @@ export const AssetPriceChart = memo(function AssetPriceChart({
           style={{
             left: tooltip.x,
             top: tooltip.y - 32,
-            transform: 'translateX(-50%)',
+            transform: "translateX(-50%)",
           }}
         >
           <div
@@ -264,7 +267,7 @@ export const AssetPriceChart = memo(function AssetPriceChart({
               border: `1px solid ${alpha(colors.neonCyan, 0.3)}`,
             }}
           >
-            {feedSymbol ? `${feedSymbol} ` : ''}
+            {feedSymbol ? `${feedSymbol} ` : ""}
             {formatDollar(tooltip.price)}
           </div>
         </div>

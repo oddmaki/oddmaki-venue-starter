@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * ERC20 Approval Check Hook
@@ -7,13 +7,15 @@
  * Uses the OddMaki SDK token module.
  */
 
-import { useQuery } from '@tanstack/react-query';
-import { useConnection } from 'wagmi';
-import type { Address } from 'viem';
-import { useOddMakiClient } from './hooks';
-import { useTransaction } from './useTransaction';
-import { queryKeys } from './queryKeys';
-import { MAX_UINT256 } from './constants';
+import type { Address } from "viem";
+
+import { useQuery } from "@tanstack/react-query";
+import { useConnection } from "wagmi";
+
+import { useOddMakiClient } from "./hooks";
+import { useTransaction } from "./useTransaction";
+import { queryKeys } from "./queryKeys";
+import { MAX_UINT256 } from "./constants";
 
 interface UseApprovalCheckOptions {
   token: Address;
@@ -22,7 +24,11 @@ interface UseApprovalCheckOptions {
   requiredAmount?: bigint;
 }
 
-export function useApprovalCheck({ token, spender, requiredAmount }: UseApprovalCheckOptions) {
+export function useApprovalCheck({
+  token,
+  spender,
+  requiredAmount,
+}: UseApprovalCheckOptions) {
   const client = useOddMakiClient();
   const { address } = useConnection();
 
@@ -32,7 +38,8 @@ export function useApprovalCheck({ token, spender, requiredAmount }: UseApproval
     refetch,
   } = useQuery<bigint>({
     queryKey: queryKeys.approval.erc20(token, address!, spender),
-    queryFn: () => client.token.getAllowance(token, address!, spender) as Promise<bigint>,
+    queryFn: () =>
+      client.token.getAllowance(token, address!, spender) as Promise<bigint>,
     enabled: !!address,
   });
 
@@ -41,15 +48,18 @@ export function useApprovalCheck({ token, spender, requiredAmount }: UseApproval
     (requiredAmount ? allowance < requiredAmount : allowance === BigInt(0));
 
   const { execute, isLoading: isApproving } = useTransaction({
-    pendingMessage: 'Approving token...',
-    successMessage: 'Token approved',
-    errorMessage: 'Approval failed',
-    invalidateKeys: address ? [queryKeys.approval.erc20(token, address, spender)] : [],
+    pendingMessage: "Approving token...",
+    successMessage: "Token approved",
+    errorMessage: "Approval failed",
+    invalidateKeys: address
+      ? [queryKeys.approval.erc20(token, address, spender)]
+      : [],
   });
 
   const approve = async (amount?: bigint) => {
     if (!address) return;
     const approvalAmount = amount ?? MAX_UINT256;
+
     await execute(() => client.token.approve(token, spender, approvalAmount));
     refetch();
   };

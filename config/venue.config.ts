@@ -6,11 +6,11 @@
  * instructs the developer to set the env var and restart.
  */
 
-import { ACTIVE_CHAIN_ID } from '@/lib/oddmaki/chain';
+import { ACTIVE_CHAIN_ID } from "@/lib/oddmaki/chain";
 
 const envVenueIdRaw = process.env.NEXT_PUBLIC_VENUE_ID;
 const envVenueId =
-  envVenueIdRaw !== undefined && envVenueIdRaw !== ''
+  envVenueIdRaw !== undefined && envVenueIdRaw !== ""
     ? BigInt(envVenueIdRaw)
     : undefined;
 
@@ -28,19 +28,16 @@ export const venueConfig = {
 
   // Branding & UI
   branding: {
-    name: process.env.NEXT_PUBLIC_VENUE_NAME || 'OddMaki Markets',
-    description: 'Trade on prediction markets powered by OddMaki Protocol',
-    logo: '/logo.svg',
-    favicon: '/favicon.ico',
+    name: process.env.NEXT_PUBLIC_VENUE_NAME || "OddMaki Markets",
+    description: "Trade on prediction markets powered by OddMaki Protocol",
+    logo: "/logo.svg",
+    favicon: "/favicon.ico",
     // Note: Theme colors are configured in theme.config.json
   },
 
   // Feature flags
   features: {
-    enableMarketCreation:
-      process.env.NEXT_PUBLIC_ENABLE_MARKET_CREATION === 'true',
-    enableThemeEditor:
-      process.env.NEXT_PUBLIC_ENABLE_THEME_EDITOR === 'true',
+    enableThemeEditor: process.env.NEXT_PUBLIC_ENABLE_THEME_EDITOR === "true",
   },
 
   // Network settings — driven by NEXT_PUBLIC_CHAIN_ID (see lib/oddmaki/chain.ts)
@@ -53,7 +50,7 @@ export const venueConfig = {
   ui: {
     marketsPerPage: 12,
     enableAnimations: true,
-    defaultTheme: 'dark' as const,
+    defaultTheme: "dark" as const,
   },
 } as const;
 

@@ -1,10 +1,12 @@
-'use client';
+"use client";
 
-import { Card, CardBody } from '@heroui/card';
-import { Chip } from '@heroui/chip';
-import type { PriceMarketData } from '@oddmaki-protocol/sdk';
-import { PYTH_FEED_MAP } from '../constants/pythFeeds';
-import { formatPythPrice, formatCountdown } from '../lib/format';
+import type { PriceMarketData } from "@oddmaki-protocol/sdk";
+
+import { Card, CardBody } from "@heroui/card";
+import { Chip } from "@heroui/chip";
+
+import { PYTH_FEED_MAP } from "../constants/pythFeeds";
+import { formatPythPrice, formatCountdown } from "../lib/format";
 
 interface PriceMarketInfoProps {
   data: PriceMarketData;
@@ -13,15 +15,18 @@ interface PriceMarketInfoProps {
 
 export function PriceMarketInfo({ data, outcomes }: PriceMarketInfoProps) {
   const feed = PYTH_FEED_MAP.get(data.feedId);
-  const feedName = feed?.symbol || data.feedId.slice(0, 10) + '...';
-  const strikePriceFormatted = formatPythPrice(data.strikePrice, data.priceExpo);
+  const feedName = feed?.symbol || data.feedId.slice(0, 10) + "...";
+  const strikePriceFormatted = formatPythPrice(
+    data.strikePrice,
+    data.priceExpo,
+  );
 
   return (
     <Card className="bg-default-50">
       <CardBody className="gap-3">
         <div className="flex items-center justify-between">
           <span className="text-sm text-default-500">Price Feed</span>
-          <Chip size="sm" variant="flat" color="primary">
+          <Chip color="primary" size="sm" variant="flat">
             {feedName}
           </Chip>
         </div>
@@ -44,10 +49,14 @@ export function PriceMarketInfo({ data, outcomes }: PriceMarketInfoProps) {
             <div className="flex items-center justify-between">
               <span className="text-sm text-default-500">Outcome</span>
               <Chip
+                color={
+                  data.finalPrice >= data.strikePrice ? "primary" : "secondary"
+                }
                 size="sm"
-                color={data.finalPrice >= data.strikePrice ? 'primary' : 'secondary'}
               >
-                {data.finalPrice >= data.strikePrice ? (outcomes?.[0] ?? 'Up') : (outcomes?.[1] ?? 'Down')}
+                {data.finalPrice >= data.strikePrice
+                  ? (outcomes?.[0] ?? "Up")
+                  : (outcomes?.[1] ?? "Down")}
               </Chip>
             </div>
           </>

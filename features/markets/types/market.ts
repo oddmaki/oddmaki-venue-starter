@@ -3,10 +3,10 @@
  */
 
 export enum MarketStatus {
-  DRAFT = 'Draft',
-  ACTIVE = 'Active',
-  RESOLVED = 'Resolved',
-  INVALID = 'Invalid',
+  DRAFT = "Draft",
+  ACTIVE = "Active",
+  RESOLVED = "Resolved",
+  INVALID = "Invalid",
 }
 
 /**

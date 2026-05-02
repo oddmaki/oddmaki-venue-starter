@@ -1,18 +1,20 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 import {
   Modal,
   ModalContent,
   ModalHeader,
   ModalBody,
   ModalFooter,
-} from '@heroui/modal';
-import { Input } from '@heroui/input';
-import { Button } from '@heroui/button';
-import { useConnection } from 'wagmi';
-import { useMergePositions } from '../hooks/useMergePositions';
-import { TransactionFlowModal } from '@/lib/oddmaki/TransactionFlowModal';
+} from "@heroui/modal";
+import { Input } from "@heroui/input";
+import { Button } from "@heroui/button";
+import { useConnection } from "wagmi";
+
+import { useMergePositions } from "../hooks/useMergePositions";
+
+import { TransactionFlowModal } from "@/lib/oddmaki/TransactionFlowModal";
 
 interface MergeModalProps {
   isOpen: boolean;
@@ -29,14 +31,15 @@ export function MergeModal({
 }: MergeModalProps) {
   const { isConnected } = useConnection();
   const { startMergePositions, flow } = useMergePositions();
-  const [amount, setAmount] = useState('');
+  const [amount, setAmount] = useState("");
   const [flowOpen, setFlowOpen] = useState(false);
 
-  const yesLabel = outcomes[0] || 'Yes';
-  const noLabel = outcomes[1] || 'No';
+  const yesLabel = outcomes[0] || "Yes";
+  const noLabel = outcomes[1] || "No";
 
   const isValid = (() => {
     const a = parseFloat(amount);
+
     return !isNaN(a) && a > 0;
   })();
 
@@ -48,7 +51,7 @@ export function MergeModal({
 
   const handleFlowClose = () => {
     if (flow.isComplete) {
-      setAmount('');
+      setAmount("");
       onClose();
     }
     setFlowOpen(false);
@@ -56,13 +59,13 @@ export function MergeModal({
   };
 
   const handleClose = () => {
-    setAmount('');
+    setAmount("");
     onClose();
   };
 
   return (
     <>
-      <Modal isOpen={isOpen && !flowOpen} onClose={handleClose} size="sm">
+      <Modal isOpen={isOpen && !flowOpen} size="sm" onClose={handleClose}>
         <ModalContent>
           <ModalHeader>Merge shares</ModalHeader>
           <ModalBody>
@@ -71,40 +74,40 @@ export function MergeModal({
               do this to save cost when trying to get rid of a position.
             </p>
             <Input
-              label="Amount"
-              placeholder="Tokens to merge (each side)"
-              type="number"
-              step="1"
-              min="0"
-              value={amount}
-              onValueChange={setAmount}
               endContent={
                 <span className="text-xs text-default-400">each</span>
               }
+              label="Amount"
+              min="0"
+              placeholder="Tokens to merge (each side)"
               size="sm"
+              step="1"
+              type="number"
+              value={amount}
+              onValueChange={setAmount}
             />
           </ModalBody>
           <ModalFooter>
             <Button
-              color="primary"
               className="w-full"
+              color="primary"
               isDisabled={!isConnected || !isValid}
               onPress={handleMerge}
             >
-              {!isConnected ? 'Connect Wallet' : 'Merge Shares'}
+              {!isConnected ? "Connect Wallet" : "Merge Shares"}
             </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
 
       <TransactionFlowModal
-        isOpen={flowOpen}
-        onClose={handleFlowClose}
-        title="Merge Positions"
-        stepStates={flow.stepStates}
-        isRunning={flow.isRunning}
-        isComplete={flow.isComplete}
         hasError={flow.hasError}
+        isComplete={flow.isComplete}
+        isOpen={flowOpen}
+        isRunning={flow.isRunning}
+        stepStates={flow.stepStates}
+        title="Merge Positions"
+        onClose={handleFlowClose}
         onRetry={flow.retry}
       />
     </>

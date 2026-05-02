@@ -1,17 +1,20 @@
-'use client';
+"use client";
 
-import { useQuery } from '@tanstack/react-query';
-import { useOddMakiClient } from '@/lib/oddmaki/hooks';
-import { getVenueId } from '@/config/venue.config';
-import { parseAncillaryData } from '@oddmaki-protocol/sdk';
-import { queryKeys } from '@/lib/oddmaki/queryKeys';
-import { calculateMarketPrices, formatVolume } from '../utils/formatting';
-import type { Market, FormattedMarket, UnifiedFeedItem } from '../types';
+import type { Market, FormattedMarket, UnifiedFeedItem } from "../types";
 import type {
   FormattedMarketGroup,
   FormattedGroupOutcome,
   MarketGroupStatus,
-} from '@/features/market-groups/types';
+} from "@/features/market-groups/types";
+
+import { useQuery } from "@tanstack/react-query";
+import { parseAncillaryData } from "@oddmaki-protocol/sdk";
+
+import { calculateMarketPrices, formatVolume } from "../utils/formatting";
+
+import { useOddMakiClient } from "@/lib/oddmaki/hooks";
+import { getVenueId } from "@/config/venue.config";
+import { queryKeys } from "@/lib/oddmaki/queryKeys";
 
 /**
  * Transform raw standalone market to FormattedMarket
@@ -26,25 +29,24 @@ function formatStandaloneMarket(market: Market): FormattedMarket {
     question: title,
     yesPrice,
     noPrice,
-    volumeFormatted: formatVolume(market.totalVolume || '0', 6),
+    volumeFormatted: formatVolume(market.totalVolume || "0", 6),
   };
 }
 
 /**
  * Transform SDK-formatted group data into FormattedMarketGroup
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 function formatGroup(sdkFormatted: any, rawGroup: any): FormattedMarketGroup {
   const outcomes: FormattedGroupOutcome[] = (sdkFormatted.outcomes || []).map(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (o: any) => ({
       marketId: o.marketId,
       name: o.name,
-      question: o.question || '',
+      question: o.question || "",
       probability: o.probability ? parseFloat(o.probability) * 100 : 0,
       status: o.status,
-      totalVolume: o.totalVolume || '0',
-      volumeFormatted: formatVolume(o.totalVolume || '0', 6),
+      totalVolume: o.totalVolume || "0",
+      volumeFormatted: formatVolume(o.totalVolume || "0", 6),
       isPlaceholder: false,
     }),
   );
@@ -53,7 +55,7 @@ function formatGroup(sdkFormatted: any, rawGroup: any): FormattedMarketGroup {
   const totalVolume = (rawGroup.markets || [])
     .reduce(
       (sum: number, m: { totalVolume?: string }) =>
-        sum + parseFloat(m.totalVolume || '0'),
+        sum + parseFloat(m.totalVolume || "0"),
       0,
     )
     .toString();
@@ -62,21 +64,21 @@ function formatGroup(sdkFormatted: any, rawGroup: any): FormattedMarketGroup {
     groupId: sdkFormatted.groupId,
     marketQuestion: sdkFormatted.marketQuestion,
     status: sdkFormatted.status as MarketGroupStatus,
-    totalMarkets: sdkFormatted.totalMarkets || '0',
-    activeMarketCount: sdkFormatted.activeMarketCount || '0',
-    resolvedMarketId: sdkFormatted.resolvedMarketId || '0',
+    totalMarkets: sdkFormatted.totalMarkets || "0",
+    activeMarketCount: sdkFormatted.activeMarketCount || "0",
+    resolvedMarketId: sdkFormatted.resolvedMarketId || "0",
     tags: rawGroup.tags || [],
-    createdAt: sdkFormatted.createdAt || '0',
+    createdAt: sdkFormatted.createdAt || "0",
     activatedAt: rawGroup.activatedAt || null,
     resolvedAt: rawGroup.resolvedAt || null,
-    creator: rawGroup.creator?.address || '',
+    creator: rawGroup.creator?.address || "",
     outcomes,
     totalVolume,
     volumeFormatted: formatVolume(totalVolume, 6),
   };
 }
 
-export function useUnifiedFeed(sortBy: 'created' | 'volume' = 'created') {
+export function useUnifiedFeed(sortBy: "created" | "volume" = "created") {
   const client = useOddMakiClient();
   const venueId = getVenueId();
 
@@ -91,13 +93,13 @@ export function useUnifiedFeed(sortBy: 'created' | 'volume' = 'created') {
 
       const merged = client.public.mergeAndSortFeed(feedData, sortBy);
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return merged.map((item: any): UnifiedFeedItem => {
-        if (item.type === 'standalone') {
-          return { type: 'standalone', data: formatStandaloneMarket(item) };
+        if (item.type === "standalone") {
+          return { type: "standalone", data: formatStandaloneMarket(item) };
         } else {
           const formatted = client.public.formatMarketGroupForDisplay(item);
-          return { type: 'group', data: formatGroup(formatted, item) };
+
+          return { type: "group", data: formatGroup(formatted, item) };
         }
       });
     },

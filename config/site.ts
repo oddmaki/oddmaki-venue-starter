@@ -1,4 +1,4 @@
-import { venueConfig } from './venue.config';
+import { venueConfig } from "./venue.config";
 
 export type SiteConfig = typeof siteConfig;
 

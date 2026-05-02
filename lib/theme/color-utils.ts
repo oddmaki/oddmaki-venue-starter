@@ -1,10 +1,10 @@
-import type { ColorScale } from './types';
+import type { ColorScale } from "./types";
 
 // ─── HEX ↔ HSL CONVERSIONS ──────────────────────────────────
 
 /** Parse hex (#RRGGBB or #RGB) to [h, s, l] where h=0-360, s=0-100, l=0-100 */
 export function hexToHsl(hex: string): [number, number, number] {
-  const raw = hex.replace('#', '');
+  const raw = hex.replace("#", "");
   const full =
     raw.length === 3
       ? raw[0] + raw[0] + raw[1] + raw[1] + raw[2] + raw[2]
@@ -24,6 +24,7 @@ export function hexToHsl(hex: string): [number, number, number] {
   const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
 
   let h = 0;
+
   if (max === r) h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
   else if (max === g) h = ((b - r) / d + 2) / 6;
   else h = ((r - g) / d + 4) / 6;
@@ -43,24 +44,31 @@ export function hslToHex(h: number, s: number, l: number): string {
   let r = 0,
     g = 0,
     b = 0;
+
   if (h < 60) {
-    r = c; g = x;
+    r = c;
+    g = x;
   } else if (h < 120) {
-    r = x; g = c;
+    r = x;
+    g = c;
   } else if (h < 180) {
-    g = c; b = x;
+    g = c;
+    b = x;
   } else if (h < 240) {
-    g = x; b = c;
+    g = x;
+    b = c;
   } else if (h < 300) {
-    r = x; b = c;
+    r = x;
+    b = c;
   } else {
-    r = c; b = x;
+    r = c;
+    b = x;
   }
 
   const toHex = (n: number) =>
     Math.round((n + m) * 255)
       .toString(16)
-      .padStart(2, '0');
+      .padStart(2, "0");
 
   return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
 }
@@ -74,7 +82,7 @@ export function hslToHeroUiValue(h: number, s: number, l: number): string {
 
 /** Calculate relative luminance (0-1) for a hex color */
 export function relativeLuminance(hex: string): number {
-  const raw = hex.replace('#', '');
+  const raw = hex.replace("#", "");
   const full =
     raw.length === 3
       ? raw[0] + raw[0] + raw[1] + raw[1] + raw[2] + raw[2]
@@ -82,7 +90,10 @@ export function relativeLuminance(hex: string): number {
 
   const linearize = (c: number) => {
     const srgb = c / 255;
-    return srgb <= 0.03928 ? srgb / 12.92 : Math.pow((srgb + 0.055) / 1.055, 2.4);
+
+    return srgb <= 0.03928
+      ? srgb / 12.92
+      : Math.pow((srgb + 0.055) / 1.055, 2.4);
   };
 
   const r = linearize(parseInt(full.slice(0, 2), 16));
@@ -93,7 +104,11 @@ export function relativeLuminance(hex: string): number {
 }
 
 /** Pick foreground color for readability. Returns dark for bright colors, light for dark. */
-export function autoForeground(bgHex: string, darkFg: string, lightFg: string): string {
+export function autoForeground(
+  bgHex: string,
+  darkFg: string,
+  lightFg: string,
+): string {
   return relativeLuminance(bgHex) > 0.35 ? darkFg : lightFg;
 }
 
@@ -112,6 +127,7 @@ function clamp(v: number, min: number, max: number): number {
 /** Lighten a hex color by a 0-1 amount (in lightness space) */
 export function lighten(hex: string, amount: number): string {
   const [h, s, l] = hexToHsl(hex);
+
   return hslToHex(h, s, clamp(l + amount * 100, 0, 100));
 }
 
@@ -134,16 +150,16 @@ export function generateColorScale(hex: string, darkBg: string): ColorScale {
   const lightS = Math.round(s * 0.5);
 
   const shadeSpec: [number, number, number][] = [
-    [darkL, darkS, 0],           // 50
-    [lerp(darkL, l, 0.15), lerp(darkS, s, 0.3), 0],  // 100
-    [lerp(darkL, l, 0.35), lerp(darkS, s, 0.55), 0],  // 200
-    [lerp(darkL, l, 0.55), lerp(darkS, s, 0.75), 0],  // 300
-    [lerp(darkL, l, 0.8), lerp(darkS, s, 0.9), 0],    // 400
-    [l, s, 0],                                          // 500 = input
-    [lerp(l, lightL, 0.25), lerp(s, lightS, 0.2), 0],  // 600
-    [lerp(l, lightL, 0.5), lerp(s, lightS, 0.4), 0],   // 700
-    [lerp(l, lightL, 0.75), lerp(s, lightS, 0.65), 0],  // 800
-    [lightL, lightS, 0],                                 // 900
+    [darkL, darkS, 0], // 50
+    [lerp(darkL, l, 0.15), lerp(darkS, s, 0.3), 0], // 100
+    [lerp(darkL, l, 0.35), lerp(darkS, s, 0.55), 0], // 200
+    [lerp(darkL, l, 0.55), lerp(darkS, s, 0.75), 0], // 300
+    [lerp(darkL, l, 0.8), lerp(darkS, s, 0.9), 0], // 400
+    [l, s, 0], // 500 = input
+    [lerp(l, lightL, 0.25), lerp(s, lightS, 0.2), 0], // 600
+    [lerp(l, lightL, 0.5), lerp(s, lightS, 0.4), 0], // 700
+    [lerp(l, lightL, 0.75), lerp(s, lightS, 0.65), 0], // 800
+    [lightL, lightS, 0], // 900
   ];
 
   const shadeKeys = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900] as const;
@@ -151,11 +167,12 @@ export function generateColorScale(hex: string, darkBg: string): ColorScale {
 
   for (let i = 0; i < shadeKeys.length; i++) {
     const [sL, sS] = shadeSpec[i];
+
     scale[String(shadeKeys[i])] = hslToHex(h, Math.round(sS), Math.round(sL));
   }
 
-  scale['DEFAULT'] = hex;
-  scale['foreground'] = autoForeground(hex, darkBg, '#FFFFFF');
+  scale["DEFAULT"] = hex;
+  scale["foreground"] = autoForeground(hex, darkBg, "#FFFFFF");
 
   return scale as unknown as ColorScale;
 }
@@ -171,16 +188,16 @@ export function generateDefaultScale(
   const [h] = hexToHsl(cardHex);
   // Build a gray scale with the card's hue for subtle tinting
   const shades: Record<string, string> = {
-    '50': cardHex,
-    '100': hslToHex(h, 8, 11),
-    '200': hslToHex(h, 7, 16),
-    '300': hslToHex(h, 5, 27),
-    '400': hslToHex(h, 4, 33),
-    '500': hslToHex(h, 3, 40),
-    '600': hslToHex(h, 2, 53),
-    '700': hslToHex(h, 1, 67),
-    '800': hslToHex(h, 1, 80),
-    '900': hslToHex(h, 0, 93),
+    "50": cardHex,
+    "100": hslToHex(h, 8, 11),
+    "200": hslToHex(h, 7, 16),
+    "300": hslToHex(h, 5, 27),
+    "400": hslToHex(h, 4, 33),
+    "500": hslToHex(h, 3, 40),
+    "600": hslToHex(h, 2, 53),
+    "700": hslToHex(h, 1, 67),
+    "800": hslToHex(h, 1, 80),
+    "900": hslToHex(h, 0, 93),
     DEFAULT: cardHex,
     foreground: fgHex,
   };

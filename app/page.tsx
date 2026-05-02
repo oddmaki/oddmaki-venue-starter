@@ -1,6 +1,7 @@
-import { Suspense } from 'react';
-import { MarketGrid } from '@/features/markets/components';
-import { VenueSetupGuard } from '@/features/venue/components';
+import { Suspense } from "react";
+
+import { MarketGrid } from "@/features/markets/components";
+import { VenueSetupGuard } from "@/features/venue/components";
 
 export default function Home() {
   return (

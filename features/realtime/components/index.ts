@@ -1,2 +1,2 @@
-export { RealtimeProvider } from './RealtimeProvider';
-export { ConnectionStatusIndicator } from './ConnectionStatusIndicator';
+export { RealtimeProvider } from "./RealtimeProvider";
+export { ConnectionStatusIndicator } from "./ConnectionStatusIndicator";

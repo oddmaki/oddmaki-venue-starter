@@ -1,21 +1,23 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import {
   Dropdown,
   DropdownTrigger,
   DropdownMenu,
   DropdownItem,
-} from '@heroui/dropdown';
-import { Button } from '@heroui/button';
-import { useConnection } from 'wagmi';
-import { CreateMarketModal } from './CreateMarketModal';
-import { CreateMarketGroupModal } from '@/features/market-groups/components/CreateMarketGroupModal';
-import { CreatePriceMarketModal } from '@/features/price-market';
-import { useCanCreateMarket } from '@/features/access-control';
-import { getVenueId } from '@/config/venue.config';
+} from "@heroui/dropdown";
+import { Button } from "@heroui/button";
+import { useConnection } from "wagmi";
 
-type ModalType = 'binary' | 'multi-outcome' | 'price' | null;
+import { CreateMarketModal } from "./CreateMarketModal";
+
+import { CreateMarketGroupModal } from "@/features/market-groups/components/CreateMarketGroupModal";
+import { CreatePriceMarketModal } from "@/features/price-market";
+import { useCanCreateMarket } from "@/features/access-control";
+import { getVenueId } from "@/config/venue.config";
+
+type ModalType = "binary" | "multi-outcome" | "price" | null;
 
 export function CreateMarketDropdown() {
   const [mounted, setMounted] = useState(false);
@@ -34,7 +36,11 @@ export function CreateMarketDropdown() {
     <>
       <Dropdown placement="bottom-end">
         <DropdownTrigger>
-          <Button variant="flat" size="md" className="hover:text-primary transition-colors">
+          <Button
+            className="hover:text-primary transition-colors"
+            size="md"
+            variant="flat"
+          >
             New Market
           </Button>
         </DropdownTrigger>
@@ -61,17 +67,17 @@ export function CreateMarketDropdown() {
       </Dropdown>
 
       <CreateMarketModal
-        isOpen={activeModal === 'binary'}
+        isOpen={activeModal === "binary"}
         onClose={() => setActiveModal(null)}
       />
       <CreateMarketGroupModal
-        isOpen={activeModal === 'multi-outcome'}
+        isOpen={activeModal === "multi-outcome"}
         onClose={() => setActiveModal(null)}
       />
       <CreatePriceMarketModal
-        isOpen={activeModal === 'price'}
-        onClose={() => setActiveModal(null)}
+        isOpen={activeModal === "price"}
         venueId={venueId}
+        onClose={() => setActiveModal(null)}
       />
     </>
   );

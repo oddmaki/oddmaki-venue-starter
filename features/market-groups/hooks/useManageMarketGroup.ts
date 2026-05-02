@@ -1,11 +1,13 @@
-'use client';
+"use client";
 
-import { useCallback } from 'react';
-import { useConnection, usePublicClient } from 'wagmi';
-import { useOddMakiClient } from '@/lib/oddmaki/hooks';
-import { queryKeys } from '@/lib/oddmaki/queryKeys';
-import { useTransactionFlow } from '@/lib/oddmaki/useTransactionFlow';
-import type { FlowStep } from '@/lib/oddmaki/useTransactionFlow';
+import type { FlowStep } from "@/lib/oddmaki/useTransactionFlow";
+
+import { useCallback } from "react";
+import { useConnection, usePublicClient } from "wagmi";
+
+import { useOddMakiClient } from "@/lib/oddmaki/hooks";
+import { queryKeys } from "@/lib/oddmaki/queryKeys";
+import { useTransactionFlow } from "@/lib/oddmaki/useTransactionFlow";
 
 /** Wait for RPC nodes to propagate state after a confirmed transaction. */
 const waitForRPCSync = (ms = 2000) =>
@@ -29,7 +31,7 @@ export function useAddMarketToGroup(groupId: string) {
 
       const steps: FlowStep[] = [
         {
-          id: 'add-market',
+          id: "add-market",
           label: `Add Market: ${marketName}`,
           execute: async () => {
             await waitForRPCSync();
@@ -38,6 +40,7 @@ export function useAddMarketToGroup(groupId: string) {
               marketName,
               marketQuestion,
             });
+
             await publicClient.waitForTransactionReceipt({ hash });
           },
         },
@@ -69,14 +72,15 @@ export function useAddPlaceholders(groupId: string) {
 
       const steps: FlowStep[] = [
         {
-          id: 'add-placeholders',
-          label: `Add ${count} Placeholder${count > 1 ? 's' : ''}`,
+          id: "add-placeholders",
+          label: `Add ${count} Placeholder${count > 1 ? "s" : ""}`,
           execute: async () => {
             await waitForRPCSync();
             const hash = await client.market.addPlaceholderMarkets({
               marketGroupId: BigInt(groupId),
               count: BigInt(count),
             });
+
             await publicClient.waitForTransactionReceipt({ hash });
           },
         },
@@ -109,13 +113,14 @@ export function useActivateMarketGroup(groupId: string) {
 
     const steps: FlowStep[] = [
       {
-        id: 'activate-group',
-        label: 'Activate Market Group',
+        id: "activate-group",
+        label: "Activate Market Group",
         execute: async () => {
           await waitForRPCSync();
           const hash = await client.market.activateMarketGroup({
             marketGroupId: BigInt(groupId),
           });
+
           await publicClient.waitForTransactionReceipt({ hash });
         },
       },
@@ -145,7 +150,7 @@ export function useActivatePlaceholder(groupId: string) {
 
       const steps: FlowStep[] = [
         {
-          id: 'activate-placeholder',
+          id: "activate-placeholder",
           label: `Activate: ${marketName}`,
           execute: async () => {
             await waitForRPCSync();
@@ -155,6 +160,7 @@ export function useActivatePlaceholder(groupId: string) {
               marketName,
               marketQuestion,
             });
+
             await publicClient.waitForTransactionReceipt({ hash });
           },
         },

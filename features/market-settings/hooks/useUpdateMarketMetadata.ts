@@ -1,18 +1,19 @@
-'use client';
+"use client";
 
-import { useOddMakiClient } from '@/lib/oddmaki/hooks';
-import { useTransaction } from '@/lib/oddmaki/useTransaction';
-import { queryKeys } from '@/lib/oddmaki/queryKeys';
-import { uploadImageToIPFS, uploadToIPFS } from '@/lib/ipfs';
-import type { MarketMetadata } from '@oddmaki-protocol/sdk';
+import type { MarketMetadata } from "@oddmaki-protocol/sdk";
+
+import { useOddMakiClient } from "@/lib/oddmaki/hooks";
+import { useTransaction } from "@/lib/oddmaki/useTransaction";
+import { queryKeys } from "@/lib/oddmaki/queryKeys";
+import { uploadImageToIPFS, uploadToIPFS } from "@/lib/ipfs";
 
 export function useUpdateMarketMetadata(marketId: string) {
   const client = useOddMakiClient();
 
   const { execute, isLoading, error } = useTransaction({
-    pendingMessage: 'Updating market metadata...',
-    successMessage: 'Market metadata updated!',
-    errorMessage: 'Failed to update metadata',
+    pendingMessage: "Updating market metadata...",
+    successMessage: "Market metadata updated!",
+    errorMessage: "Failed to update metadata",
     invalidateKeys: [queryKeys.markets.detail(marketId)],
   });
 

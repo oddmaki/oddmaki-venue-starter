@@ -1,43 +1,39 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { ConnectButton as RKConnectButton } from '@rainbow-me/rainbowkit';
-import { useDisconnect } from 'wagmi';
-import { Button } from '@heroui/button';
-import { UserSettings } from '../../components/UserSettings';
-import type { ConnectButtonProps } from '../../types';
+import type { ConnectButtonProps } from "../../types";
+
+import React from "react";
+import { ConnectButton as RKConnectButton } from "@rainbow-me/rainbowkit";
+import { useDisconnect } from "wagmi";
+import { Button } from "@heroui/button";
+
+import { UserSettings } from "../../components/UserSettings";
 
 export function RainbowKitConnectButton(_props: ConnectButtonProps) {
   const { disconnect } = useDisconnect();
 
   return (
     <RKConnectButton.Custom>
-      {({
-        account,
-        chain,
-        openChainModal,
-        openConnectModal,
-        mounted,
-      }) => {
+      {({ account, chain, openChainModal, openConnectModal, mounted }) => {
         const ready = mounted;
         const connected = ready && account && chain;
 
         return (
           <div
             {...(!ready && {
-              'aria-hidden': true,
+              "aria-hidden": true,
               style: {
                 opacity: 0,
-                pointerEvents: 'none' as const,
-                userSelect: 'none' as const,
+                pointerEvents: "none" as const,
+                userSelect: "none" as const,
               },
             })}
           >
             {!connected ? (
               <Button
                 color="primary"
-                variant="flat"
                 size="sm"
+                variant="flat"
                 onPress={openConnectModal}
               >
                 Connect
@@ -45,8 +41,8 @@ export function RainbowKitConnectButton(_props: ConnectButtonProps) {
             ) : chain.unsupported ? (
               <Button
                 color="danger"
-                variant="flat"
                 size="sm"
+                variant="flat"
                 onPress={openChainModal}
               >
                 Wrong Network
@@ -54,8 +50,8 @@ export function RainbowKitConnectButton(_props: ConnectButtonProps) {
             ) : (
               <UserSettings
                 address={account.address}
-                switchNetwork={openChainModal}
                 disconnect={disconnect}
+                switchNetwork={openChainModal}
               />
             )}
           </div>

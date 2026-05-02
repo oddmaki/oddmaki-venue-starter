@@ -1,7 +1,8 @@
-'use client';
+"use client";
 
-import { useQuery } from '@tanstack/react-query';
-import { queryKeys } from '@/lib/oddmaki/queryKeys';
+import { useQuery } from "@tanstack/react-query";
+
+import { queryKeys } from "@/lib/oddmaki/queryKeys";
 
 /** Shape of a single feed from Hermes /v2/price_feeds */
 interface HermesPythFeed {
@@ -30,10 +31,11 @@ export interface GroupedPythFeeds {
   [assetType: string]: PythFeedOption[];
 }
 
-const HERMES_FEEDS_URL = 'https://hermes.pyth.network/v2/price_feeds';
+const HERMES_FEEDS_URL = "https://hermes.pyth.network/v2/price_feeds";
 
 async function fetchPythFeeds(): Promise<PythFeedOption[]> {
   const res = await fetch(HERMES_FEEDS_URL);
+
   if (!res.ok) throw new Error(`Failed to fetch Pyth feeds: ${res.status}`);
   const data: HermesPythFeed[] = await res.json();
 
@@ -49,14 +51,17 @@ async function fetchPythFeeds(): Promise<PythFeedOption[]> {
 
 function groupByAssetType(feeds: PythFeedOption[]): GroupedPythFeeds {
   const groups: GroupedPythFeeds = {};
+
   for (const feed of feeds) {
-    const type = feed.assetType || 'Other';
+    const type = feed.assetType || "Other";
+
     if (!groups[type]) groups[type] = [];
     groups[type].push(feed);
   }
   for (const type of Object.keys(groups)) {
     groups[type].sort((a, b) => a.displaySymbol.localeCompare(b.displaySymbol));
   }
+
   return groups;
 }
 

@@ -1,45 +1,50 @@
-'use client';
+"use client";
 
-import { useCallback } from 'react';
-import { useConnection, usePublicClient } from 'wagmi';
-import { useOddMakiClient } from '@/lib/oddmaki/hooks';
-import { queryKeys } from '@/lib/oddmaki/queryKeys';
+import type { FlowStep } from "@/lib/oddmaki/useTransactionFlow";
+
+import { useCallback } from "react";
+import { useConnection, usePublicClient } from "wagmi";
+
+import { useOddMakiClient } from "@/lib/oddmaki/hooks";
+import { queryKeys } from "@/lib/oddmaki/queryKeys";
 import {
   USDC_ADDRESS,
   DIAMOND_ADDRESS,
   CTF_ADDRESS,
   USDC_DECIMALS,
-} from '@/lib/oddmaki/constants';
-import { useTransactionFlow, waitForAllowance } from '@/lib/oddmaki/useTransactionFlow';
-import type { FlowStep } from '@/lib/oddmaki/useTransactionFlow';
+} from "@/lib/oddmaki/constants";
+import {
+  useTransactionFlow,
+  waitForAllowance,
+} from "@/lib/oddmaki/useTransactionFlow";
 
 const ERC1155_APPROVAL_ABI = [
   {
-    type: 'function' as const,
-    name: 'isApprovedForAll' as const,
+    type: "function" as const,
+    name: "isApprovedForAll" as const,
     inputs: [
-      { name: 'account', type: 'address' },
-      { name: 'operator', type: 'address' },
+      { name: "account", type: "address" },
+      { name: "operator", type: "address" },
     ],
-    outputs: [{ name: '', type: 'bool' }],
-    stateMutability: 'view' as const,
+    outputs: [{ name: "", type: "bool" }],
+    stateMutability: "view" as const,
   },
   {
-    type: 'function' as const,
-    name: 'setApprovalForAll' as const,
+    type: "function" as const,
+    name: "setApprovalForAll" as const,
     inputs: [
-      { name: 'operator', type: 'address' },
-      { name: 'approved', type: 'bool' },
+      { name: "operator", type: "address" },
+      { name: "approved", type: "bool" },
     ],
     outputs: [],
-    stateMutability: 'nonpayable' as const,
+    stateMutability: "nonpayable" as const,
   },
 ] as const;
 
 interface PlaceLimitOrderParams {
   marketId: string;
   outcomeIndex: 0 | 1;
-  side: 'BUY' | 'SELL';
+  side: "BUY" | "SELL";
   price: string;
   quantity: string;
   expiry: string;
@@ -67,7 +72,7 @@ export function usePlaceLimitOrder() {
       const marketIdBig = BigInt(params.marketId);
       const steps: FlowStep[] = [];
 
-      if (params.side === 'BUY') {
+      if (params.side === "BUY") {
         // USDC approval for buy: price * quantity
         const cost = BigInt(
           Math.round(
@@ -76,8 +81,9 @@ export function usePlaceLimitOrder() {
               Math.pow(10, USDC_DECIMALS),
           ),
         );
+
         steps.push({
-          id: 'usdc-approval',
+          id: "usdc-approval",
           label: `USDC Approval ($${(Number(cost) / Math.pow(10, USDC_DECIMALS)).toFixed(2)})`,
           shouldSkip: async () => {
             const allowance = (await client.token.getAllowance(
@@ -85,6 +91,7 @@ export function usePlaceLimitOrder() {
               address,
               DIAMOND_ADDRESS,
             )) as bigint;
+
             return allowance >= cost;
           },
           execute: async () => {
@@ -93,6 +100,7 @@ export function usePlaceLimitOrder() {
               DIAMOND_ADDRESS,
               cost,
             );
+
             await publicClient.waitForTransactionReceipt({ hash });
             await waitForAllowance(
               publicClient,
@@ -106,15 +114,16 @@ export function usePlaceLimitOrder() {
       } else {
         // CTF approval for sell
         steps.push({
-          id: 'ctf-approval',
-          label: 'Token Approval',
+          id: "ctf-approval",
+          label: "Token Approval",
           shouldSkip: async () => {
             const approved = await publicClient.readContract({
               address: CTF_ADDRESS,
               abi: ERC1155_APPROVAL_ABI,
-              functionName: 'isApprovedForAll',
+              functionName: "isApprovedForAll",
               args: [address, DIAMOND_ADDRESS],
             });
+
             return approved;
           },
           execute: async () => {
@@ -123,12 +132,13 @@ export function usePlaceLimitOrder() {
             const { request } = await publicClient.simulateContract({
               address: CTF_ADDRESS,
               abi: ERC1155_APPROVAL_ABI,
-              functionName: 'setApprovalForAll',
+              functionName: "setApprovalForAll",
               args: [DIAMOND_ADDRESS, true],
               account,
             });
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
             const hash = await wallet.writeContract(request as any);
+
             await publicClient.waitForTransactionReceipt({ hash });
           },
         });
@@ -136,17 +146,18 @@ export function usePlaceLimitOrder() {
 
       // Place order step
       steps.push({
-        id: 'place-order',
-        label: `Place ${params.side === 'BUY' ? 'Buy' : 'Sell'} Order`,
+        id: "place-order",
+        label: `Place ${params.side === "BUY" ? "Buy" : "Sell"} Order`,
         execute: async () => {
           const hash = await client.trade.placeOrderSimple({
             marketId: marketIdBig,
             outcomeId: BigInt(params.outcomeIndex),
-            side: params.side === 'BUY' ? 0 : 1,
+            side: params.side === "BUY" ? 0 : 1,
             price: params.price,
             quantity: params.quantity,
             expiry: params.expiry,
           });
+
           await publicClient.waitForTransactionReceipt({ hash });
         },
       });

@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
-import { useQuery } from '@tanstack/react-query';
-import { useOddMakiClient } from '@/lib/oddmaki/hooks';
-import { queryKeys } from '@/lib/oddmaki/queryKeys';
+import { useQuery } from "@tanstack/react-query";
+
+import { useOddMakiClient } from "@/lib/oddmaki/hooks";
+import { queryKeys } from "@/lib/oddmaki/queryKeys";
 
 /**
  * Fetch the market-level trading AC override address from the Diamond.
@@ -13,7 +14,7 @@ export function useMarketTradingAC(marketId: bigint | undefined) {
 
   return useQuery<`0x${string}`>({
     queryKey: queryKeys.accessControl.marketTradingAC(
-      marketId?.toString() ?? '',
+      marketId?.toString() ?? "",
     ),
     queryFn: async () => {
       return client.accessControl.getMarketTradingAC({ marketId: marketId! });

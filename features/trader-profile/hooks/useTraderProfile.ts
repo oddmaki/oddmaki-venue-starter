@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
-import { useQuery } from '@tanstack/react-query';
-import { useOddMakiClient } from '@/lib/oddmaki/hooks';
-import { queryKeys } from '@/lib/oddmaki/queryKeys';
+import { useQuery } from "@tanstack/react-query";
+
+import { useOddMakiClient } from "@/lib/oddmaki/hooks";
+import { queryKeys } from "@/lib/oddmaki/queryKeys";
 
 export function useTraderProfile(address: string) {
   const client = useOddMakiClient();
@@ -11,6 +12,7 @@ export function useTraderProfile(address: string) {
     queryKey: queryKeys.trader.profile(address),
     queryFn: async () => {
       const result = await client.public.getTraderProfile(address);
+
       return result.user ?? null;
     },
     enabled: !!address,

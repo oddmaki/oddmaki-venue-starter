@@ -14,11 +14,13 @@ export function tradesToChartData(
   tickSize: string,
 ): ChartDataPoint[] {
   const tickSizeNum = parseFloat(tickSize);
+
   if (tickSizeNum === 0) return [];
 
   return trades.map((t) => {
     const rawPrice = (parseFloat(t.tick) * tickSizeNum) / 1e18;
     const isYes = parseInt(t.outcome) === 0;
+
     return {
       time: parseInt(t.timestamp),
       value: isYes ? rawPrice : 1 - rawPrice,
@@ -35,9 +37,11 @@ export function deduplicateByTimestamp(
   data: ChartDataPoint[],
 ): ChartDataPoint[] {
   const map = new Map<number, ChartDataPoint>();
+
   for (const point of data) {
     map.set(point.time, point);
   }
+
   return Array.from(map.values()).sort((a, b) => a.time - b.time);
 }
 
@@ -59,10 +63,7 @@ export function downsampleLTTB(
 
   for (let i = 1; i < threshold - 1; i++) {
     const bucketStart = Math.floor((i - 1) * bucketSize) + 1;
-    const bucketEnd = Math.min(
-      Math.floor(i * bucketSize) + 1,
-      data.length - 1,
-    );
+    const bucketEnd = Math.min(Math.floor(i * bucketSize) + 1, data.length - 1);
 
     // Calculate average point in next bucket (for triangle area)
     const nextBucketStart = Math.floor(i * bucketSize) + 1;
@@ -96,6 +97,7 @@ export function downsampleLTTB(
         (prev.time - avgTime) * (data[j].value - prev.value) -
           (prev.time - data[j].time) * (avgValue - prev.value),
       );
+
       if (area > maxArea) {
         maxArea = area;
         maxIndex = j;
@@ -107,6 +109,7 @@ export function downsampleLTTB(
   }
 
   sampled.push(data[data.length - 1]);
+
   return sampled;
 }
 
@@ -133,12 +136,14 @@ export function padToTimeWindow(
 
   if (data.length === 0) {
     const flatValue = fallbackPrice!;
+
     for (let t = windowStart; t < windowEnd; t += step) {
       result.push({ time: t, value: flatValue });
     }
     if (result.length === 0 || result[result.length - 1].time < windowEnd) {
       result.push({ time: windowEnd, value: flatValue });
     }
+
     return result;
   }
 
@@ -147,6 +152,7 @@ export function padToTimeWindow(
 
   // Leading fill: from windowStart up to (but not including) first real point
   const firstDataTime = data[0].time;
+
   for (let t = windowStart; t < firstDataTime; t += step) {
     result.push({ time: t, value: leadValue });
   }
@@ -158,6 +164,7 @@ export function padToTimeWindow(
 
   // Trailing fill: from after last real point to windowEnd
   const lastDataTime = data[data.length - 1].time;
+
   for (let t = lastDataTime + step; t < windowEnd; t += step) {
     result.push({ time: t, value: trailValue });
   }

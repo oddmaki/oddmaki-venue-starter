@@ -1,23 +1,29 @@
-'use client';
+"use client";
 
-import { use } from 'react';
-import { Accordion, AccordionItem } from '@heroui/accordion';
-import { useMarketDetail } from '@/features/market-detail/hooks/useMarketDetail';
-import { MarketDetailHeader } from '@/features/market-detail/components/MarketDetailHeader';
-import { MarketDetailSkeleton } from '@/features/market-detail/components/MarketDetailSkeleton';
-import { MarketDescription } from '@/features/market-detail/components/MarketDescription';
-import { RecentTradesPanel } from '@/features/market-detail/components/RecentTradesPanel';
-import { OrderbookPanel } from '@/features/orderbook/components/OrderbookPanel';
-import { UnifiedTradingPanel } from '@/features/trading/components/UnifiedTradingPanel';
-import { UserPositionsPanel } from '@/features/trading/components/UserPositionsPanel';
-import { UserOrdersPanel } from '@/features/trading/components/UserOrdersPanel';
-import { MatchOrdersButton } from '@/features/trading/components/MatchOrdersButton';
-import { ResolutionPanel } from '@/features/resolution/components/ResolutionPanel';
-import { ResolvedOutcomeCard } from '@/features/resolution/components/ResolvedOutcomeCard';
-import { RedeemPanel } from '@/features/resolution/components/RedeemPanel';
-import { PriceChartPanel } from '@/features/price-chart';
-import { TopHoldersPanel } from '@/features/market-holders';
-import { usePriceMarketData, PriceMarketInfo, PriceMarketResolutionPanel, PriceMarketChartSection } from '@/features/price-market';
+import { use } from "react";
+import { Accordion, AccordionItem } from "@heroui/accordion";
+
+import { useMarketDetail } from "@/features/market-detail/hooks/useMarketDetail";
+import { MarketDetailHeader } from "@/features/market-detail/components/MarketDetailHeader";
+import { MarketDetailSkeleton } from "@/features/market-detail/components/MarketDetailSkeleton";
+import { MarketDescription } from "@/features/market-detail/components/MarketDescription";
+import { RecentTradesPanel } from "@/features/market-detail/components/RecentTradesPanel";
+import { OrderbookPanel } from "@/features/orderbook/components/OrderbookPanel";
+import { UnifiedTradingPanel } from "@/features/trading/components/UnifiedTradingPanel";
+import { UserPositionsPanel } from "@/features/trading/components/UserPositionsPanel";
+import { UserOrdersPanel } from "@/features/trading/components/UserOrdersPanel";
+import { MatchOrdersButton } from "@/features/trading/components/MatchOrdersButton";
+import { ResolutionPanel } from "@/features/resolution/components/ResolutionPanel";
+import { ResolvedOutcomeCard } from "@/features/resolution/components/ResolvedOutcomeCard";
+import { RedeemPanel } from "@/features/resolution/components/RedeemPanel";
+import { PriceChartPanel } from "@/features/price-chart";
+import { TopHoldersPanel } from "@/features/market-holders";
+import {
+  usePriceMarketData,
+  PriceMarketInfo,
+  PriceMarketResolutionPanel,
+  PriceMarketChartSection,
+} from "@/features/price-market";
 
 export default function MarketDetailPage({
   params,
@@ -41,7 +47,7 @@ export default function MarketDetailPage({
       <section className="flex flex-col gap-6 pt-4 pb-8 md:pt-6 md:pb-10">
         <div className="text-center py-12">
           <p className="text-default-500">
-            {error ? 'Failed to load market' : 'Market not found'}
+            {error ? "Failed to load market" : "Market not found"}
           </p>
         </div>
       </section>
@@ -49,10 +55,12 @@ export default function MarketDetailPage({
   }
 
   const isPriceMarket = priceMarket?.isPriceMarket && priceMarket.data;
-  const isResolved = market.status === 'Resolved';
+  const isResolved = market.status === "Resolved";
   const winningOutcome =
     market.resolvedOutcome != null
-      ? market.resolvedOutcome === 0 ? 'YES' : 'NO'
+      ? market.resolvedOutcome === 0
+        ? "YES"
+        : "NO"
       : undefined;
 
   return (
@@ -66,39 +74,42 @@ export default function MarketDetailPage({
         <div className="flex flex-col gap-4 order-2 md:order-1">
           {isPriceMarket ? (
             <PriceMarketChartSection
-              marketId={market.marketId}
-              tickSize={market.tickSize}
-              outcomes={market.outcomes}
               lastPriceTick={market.lastPriceTick_0}
+              marketId={market.marketId}
+              outcomes={market.outcomes}
               priceMarketData={priceMarket!.data!}
+              tickSize={market.tickSize}
             />
           ) : (
             <PriceChartPanel
-              marketId={market.marketId}
-              tickSize={market.tickSize}
-              outcomes={market.outcomes}
               lastPriceTick={market.lastPriceTick_0}
+              marketId={market.marketId}
+              outcomes={market.outcomes}
+              tickSize={market.tickSize}
             />
           )}
           <OrderbookPanel
             marketId={market.marketId}
-            tickSize={market.tickSize}
             outcomes={market.outcomes}
+            tickSize={market.tickSize}
           />
-          <MatchOrdersButton marketId={market.marketId} tickSize={market.tickSize} />
+          <MatchOrdersButton
+            marketId={market.marketId}
+            tickSize={market.tickSize}
+          />
 
           <MarketDescription description={market.description} />
           <UserPositionsPanel
             marketId={market.marketId}
+            noPrice={market.noPrice}
             outcomes={market.outcomes}
             yesPrice={market.yesPrice}
-            noPrice={market.noPrice}
           />
           <UserOrdersPanel
+            isResolved={isResolved}
             marketId={market.marketId}
             outcomes={market.outcomes}
             tickSize={market.tickSize}
-            isResolved={isResolved}
           />
           <RecentTradesPanel
             marketId={market.marketId}
@@ -121,51 +132,58 @@ export default function MarketDetailPage({
           ) : (
             <UnifiedTradingPanel
               marketId={market.marketId}
+              noPrice={market.noPrice}
               outcomes={market.outcomes}
               tickSize={market.tickSize}
               yesPrice={market.yesPrice}
-              noPrice={market.noPrice}
             />
           )}
           {/* Price market info (always shown for price markets) */}
           {isPriceMarket && (
-            <PriceMarketInfo data={priceMarket.data!} outcomes={market.outcomes} />
+            <PriceMarketInfo
+              data={priceMarket.data!}
+              outcomes={market.outcomes}
+            />
           )}
 
           {/* Resolution section */}
           {isResolved ? (
             <RedeemPanel
+              standalone
               marketId={market.marketId}
               outcomes={market.outcomes}
               winningOutcome={winningOutcome}
-              standalone
             />
           ) : isPriceMarket ? (
             <>
               <PriceMarketResolutionPanel
-                marketId={BigInt(market.marketId)}
                 canResolve={priceMarket.canResolve}
                 data={priceMarket.data!}
+                marketId={BigInt(market.marketId)}
               />
-              <Accordion variant="bordered" className="px-0">
+              <Accordion className="px-0" variant="bordered">
                 <AccordionItem
                   key="uma-fallback"
                   aria-label="Oracle Resolution (UMA)"
                   classNames={{
                     base: "px-4",
                   }}
-                  title={
-                    <span className="text-base font-semibold">Oracle Resolution (UMA)</span>
-                  }
                   subtitle={
-                    <span className="text-xs text-default-400">Fallback — requires posting a bond</span>
+                    <span className="text-xs text-default-400">
+                      Fallback — requires posting a bond
+                    </span>
+                  }
+                  title={
+                    <span className="text-base font-semibold">
+                      Oracle Resolution (UMA)
+                    </span>
                   }
                 >
                   <ResolutionPanel
+                    bare
+                    description="Resolve via UMA's optimistic oracle. Requires posting a collateral bond and a challenge period."
                     marketId={market.marketId}
                     outcomes={market.outcomes}
-                    description="Resolve via UMA's optimistic oracle. Requires posting a collateral bond and a challenge period."
-                    bare
                   />
                 </AccordionItem>
               </Accordion>

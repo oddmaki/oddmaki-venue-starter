@@ -1,11 +1,13 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { usePrivy } from '@privy-io/react-auth';
-import { useConnection } from 'wagmi';
-import { Button } from '@heroui/button';
-import { UserSettings } from '../../components/UserSettings';
-import type { ConnectButtonProps } from '../../types';
+import type { ConnectButtonProps } from "../../types";
+
+import React from "react";
+import { usePrivy } from "@privy-io/react-auth";
+import { useConnection } from "wagmi";
+import { Button } from "@heroui/button";
+
+import { UserSettings } from "../../components/UserSettings";
 
 export function PrivyConnectButton(_props: ConnectButtonProps) {
   const { ready, authenticated, login, logout } = usePrivy();
@@ -13,7 +15,7 @@ export function PrivyConnectButton(_props: ConnectButtonProps) {
 
   if (!ready) {
     return (
-      <Button size="sm" isDisabled isLoading>
+      <Button isDisabled isLoading size="sm">
         Loading...
       </Button>
     );
@@ -21,16 +23,11 @@ export function PrivyConnectButton(_props: ConnectButtonProps) {
 
   if (!authenticated || !address) {
     return (
-      <Button size="sm" color="primary" variant="flat" onPress={() => login()}>
+      <Button color="primary" size="sm" variant="flat" onPress={() => login()}>
         Connect
       </Button>
     );
   }
 
-  return (
-    <UserSettings
-      address={address}
-      disconnect={logout}
-    />
-  );
+  return <UserSettings address={address} disconnect={logout} />;
 }

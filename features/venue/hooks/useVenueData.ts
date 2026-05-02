@@ -1,11 +1,12 @@
-'use client';
+"use client";
 
-import { useQuery } from '@tanstack/react-query';
-import { useConnection, usePublicClient } from 'wagmi';
-import { getVenueId } from '@/config/venue.config';
-import { queryKeys } from '@/lib/oddmaki/queryKeys';
-import { DIAMOND_ADDRESS } from '@/lib/oddmaki/constants';
-import { VenueFacetABI } from '@oddmaki-protocol/sdk';
+import { useQuery } from "@tanstack/react-query";
+import { useConnection, usePublicClient } from "wagmi";
+import { VenueFacetABI } from "@oddmaki-protocol/sdk";
+
+import { getVenueId } from "@/config/venue.config";
+import { queryKeys } from "@/lib/oddmaki/queryKeys";
+import { DIAMOND_ADDRESS } from "@/lib/oddmaki/constants";
 
 export interface VenueData {
   venueId: bigint;
@@ -24,7 +25,7 @@ export interface VenueData {
   active: boolean;
 }
 
-const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
 export function useVenueData() {
   const venueId = getVenueId();
@@ -32,14 +33,15 @@ export function useVenueData() {
   const publicClient = usePublicClient();
 
   const { data: venue, isLoading } = useQuery<VenueData>({
-    queryKey: queryKeys.venue.detail(venueId?.toString() ?? ''),
+    queryKey: queryKeys.venue.detail(venueId?.toString() ?? ""),
     queryFn: async () => {
       const result = await publicClient!.readContract({
         address: DIAMOND_ADDRESS,
         abi: VenueFacetABI,
-        functionName: 'getVenue',
+        functionName: "getVenue",
         args: [venueId!],
       });
+
       return result as unknown as VenueData;
     },
     enabled: !!publicClient && venueId !== undefined,

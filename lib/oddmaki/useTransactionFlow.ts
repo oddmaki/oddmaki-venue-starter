@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 /**
  * Multi-Step Transaction Flow Hook
@@ -8,12 +8,13 @@
  * Supports retry from the failed step.
  */
 
-import { useState, useRef, useCallback } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
-import type { Address, PublicClient } from 'viem';
-import { erc20Abi } from 'viem';
+import type { Address, PublicClient } from "viem";
 
-export type StepStatus = 'pending' | 'active' | 'completed' | 'error';
+import { useState, useRef, useCallback } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { erc20Abi } from "viem";
+
+export type StepStatus = "pending" | "active" | "completed" | "error";
 
 /**
  * Poll until ERC20 allowance meets the required amount.
@@ -33,9 +34,10 @@ export async function waitForAllowance(
     const allowance = await publicClient.readContract({
       address: token,
       abi: erc20Abi,
-      functionName: 'allowance',
+      functionName: "allowance",
       args: [owner, spender],
     });
+
     if (allowance >= requiredAmount) return;
     await new Promise((resolve) => setTimeout(resolve, intervalMs));
   }
@@ -92,8 +94,9 @@ export function useTransactionFlow(options: UseTransactionFlowOptions = {}) {
         if (step.shouldSkip) {
           try {
             const skip = await step.shouldSkip();
+
             if (skip) {
-              updateStep(i, { status: 'completed' });
+              updateStep(i, { status: "completed" });
               continue;
             }
           } catch {
@@ -101,17 +104,18 @@ export function useTransactionFlow(options: UseTransactionFlowOptions = {}) {
           }
         }
 
-        updateStep(i, { status: 'active', error: undefined });
+        updateStep(i, { status: "active", error: undefined });
 
         try {
           await step.execute();
-          updateStep(i, { status: 'completed' });
+          updateStep(i, { status: "completed" });
         } catch (err) {
-          const message =
-            err instanceof Error ? err.message : 'Unknown error';
-          updateStep(i, { status: 'error', error: message });
+          const message = err instanceof Error ? err.message : "Unknown error";
+
+          updateStep(i, { status: "error", error: message });
           failedIndexRef.current = i;
           setIsRunning(false);
+
           return;
         }
       }
@@ -133,7 +137,11 @@ export function useTransactionFlow(options: UseTransactionFlowOptions = {}) {
       stepsRef.current = steps;
       failedIndexRef.current = -1;
       setStepStates(
-        steps.map((s) => ({ id: s.id, label: s.label, status: 'pending' as StepStatus })),
+        steps.map((s) => ({
+          id: s.id,
+          label: s.label,
+          status: "pending" as StepStatus,
+        })),
       );
       // Small delay to let React render the initial pending states
       await new Promise((resolve) => setTimeout(resolve, 0));
@@ -156,8 +164,8 @@ export function useTransactionFlow(options: UseTransactionFlowOptions = {}) {
   }, []);
 
   const isComplete =
-    stepStates.length > 0 && stepStates.every((s) => s.status === 'completed');
-  const hasError = stepStates.some((s) => s.status === 'error');
+    stepStates.length > 0 && stepStates.every((s) => s.status === "completed");
+  const hasError = stepStates.some((s) => s.status === "error");
 
   return { stepStates, start, retry, reset, isRunning, isComplete, hasError };
 }

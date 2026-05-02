@@ -1,28 +1,33 @@
-'use client';
+"use client";
 
-import { useMemo, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { useUnifiedFeed } from '../hooks/useUnifiedFeed';
-import { useFilterToggle } from '../hooks/useFilterToggle';
-import { MarketCard } from './MarketCard';
-import { MarketSkeleton } from './MarketSkeleton';
-import { EmptyState } from './EmptyState';
-import { MarketGroupCard } from '@/features/market-groups/components/MarketGroupCard';
-import { MarketGroupSkeleton } from '@/features/market-groups/components/MarketGroupSkeleton';
-import { MarketStatusFilter } from './MarketStatusFilter';
-import type { StatusFilter } from './MarketStatusFilter';
-import { CATEGORIES } from '@/config/tags.config';
-import type { UnifiedFeedItem } from '../types';
+import type { StatusFilter } from "./MarketStatusFilter";
+import type { UnifiedFeedItem } from "../types";
+
+import { useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
+
+import { useUnifiedFeed } from "../hooks/useUnifiedFeed";
+import { useFilterToggle } from "../hooks/useFilterToggle";
+
+import { MarketCard } from "./MarketCard";
+import { MarketSkeleton } from "./MarketSkeleton";
+import { EmptyState } from "./EmptyState";
+import { MarketStatusFilter } from "./MarketStatusFilter";
+
+import { MarketGroupCard } from "@/features/market-groups/components/MarketGroupCard";
+import { MarketGroupSkeleton } from "@/features/market-groups/components/MarketGroupSkeleton";
+import { CATEGORIES } from "@/config/tags.config";
 
 export function MarketGrid() {
   const searchParams = useSearchParams();
-  const selectedCategory = searchParams.get('category');
-  const sortParam = searchParams.get('sort');
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>('Active');
+  const selectedCategory = searchParams.get("category");
+  const sortParam = searchParams.get("sort");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("Active");
   const { showFilters } = useFilterToggle();
 
   // Categories always use volume sort; only 'new' sort mode uses created
-  const sortBy = sortParam === 'new' && !selectedCategory ? 'created' : 'volume';
+  const sortBy =
+    sortParam === "new" && !selectedCategory ? "created" : "volume";
 
   const { data: items, isLoading, error } = useUnifiedFeed(sortBy);
 
@@ -34,10 +39,12 @@ export function MarketGrid() {
     // Filter by category
     if (selectedCategory) {
       const category = CATEGORIES.find((c) => c.id === selectedCategory);
+
       if (category && category.matchTags.length > 0) {
         result = result.filter((item: UnifiedFeedItem) => {
           const tags =
-            item.type === 'standalone' ? item.data.tags : item.data.tags;
+            item.type === "standalone" ? item.data.tags : item.data.tags;
+
           return tags?.some((tag: string) => category.matchTags.includes(tag));
         });
       }
@@ -46,7 +53,8 @@ export function MarketGrid() {
     // Filter by status
     result = result.filter((item: UnifiedFeedItem) => {
       const status =
-        item.type === 'standalone' ? item.data.status : item.data.status;
+        item.type === "standalone" ? item.data.status : item.data.status;
+
       return status === statusFilter;
     });
 
@@ -56,8 +64,8 @@ export function MarketGrid() {
   if (error) {
     return (
       <EmptyState
-        title="Error loading markets"
         description="There was an error loading markets. Please try again later."
+        title="Error loading markets"
       />
     );
   }
@@ -90,13 +98,13 @@ export function MarketGrid() {
 
       {filteredItems.length === 0 ? (
         <EmptyState
-          title="No markets found"
           description="No markets match the current filters. Try adjusting your selection."
+          title="No markets found"
         />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {filteredItems.map((item: UnifiedFeedItem) =>
-            item.type === 'standalone' ? (
+            item.type === "standalone" ? (
               <MarketCard key={`m-${item.data.marketId}`} market={item.data} />
             ) : (
               <MarketGroupCard

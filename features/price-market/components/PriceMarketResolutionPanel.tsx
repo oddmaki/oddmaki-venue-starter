@@ -1,11 +1,13 @@
-'use client';
+"use client";
 
-import { Card, CardHeader, CardBody } from '@heroui/card';
-import { Button } from '@heroui/button';
-import { useConnection } from 'wagmi';
-import type { PriceMarketData } from '@oddmaki-protocol/sdk';
-import { useResolvePriceMarket } from '../hooks/useResolvePriceMarket';
-import { formatCountdown } from '../lib/format';
+import type { PriceMarketData } from "@oddmaki-protocol/sdk";
+
+import { Card, CardHeader, CardBody } from "@heroui/card";
+import { Button } from "@heroui/button";
+import { useConnection } from "wagmi";
+
+import { useResolvePriceMarket } from "../hooks/useResolvePriceMarket";
+import { formatCountdown } from "../lib/format";
 
 interface PriceMarketResolutionPanelProps {
   marketId: bigint;
@@ -29,29 +31,33 @@ export function PriceMarketResolutionPanel({
       <CardHeader className="flex-col items-start">
         <h2 className="text-lg font-semibold">On-Chain Resolution</h2>
         <p className="text-sm text-default-400 mt-1">
-          Resolve using verified Pyth Network price data. Permissionless — no bond required.
+          Resolve using verified Pyth Network price data. Permissionless — no
+          bond required.
         </p>
       </CardHeader>
       <CardBody>
         {isBeforeClose ? (
           <p className="text-sm text-default-500">
-            Market closes in{' '}
-            <span className="font-semibold">{formatCountdown(data.closeTime)}</span>.
-            Resolution will be available after close.
+            Market closes in{" "}
+            <span className="font-semibold">
+              {formatCountdown(data.closeTime)}
+            </span>
+            . Resolution will be available after close.
           </p>
         ) : canResolve ? (
           <div className="flex flex-col gap-3">
             <p className="text-sm text-default-500">
-              The market has closed. Anyone can resolve it on-chain using Pyth price data.
+              The market has closed. Anyone can resolve it on-chain using Pyth
+              price data.
             </p>
             <Button
+              className="w-full"
               color="primary"
               isDisabled={!isConnected}
               isLoading={isLoading}
               onPress={resolvePriceMarket}
-              className="w-full"
             >
-              {!isConnected ? 'Connect Wallet' : 'Resolve with Pyth'}
+              {!isConnected ? "Connect Wallet" : "Resolve with Pyth"}
             </Button>
           </div>
         ) : (

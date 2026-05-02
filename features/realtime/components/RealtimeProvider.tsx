@@ -1,27 +1,40 @@
-'use client';
+"use client";
 
-import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+  useMemo,
+} from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
-import { DIAMOND_ADDRESS, CTF_ADDRESS } from '@/lib/oddmaki/constants';
-import { getWsPublicClient, destroyWsPublicClient, isWsConfigured } from '../lib/wsClient';
-import { diamondEventsAbi } from '../lib/diamondEventsAbi';
-import { ctfEventsAbi } from '../lib/ctfEventsAbi';
-import { eventToInvalidationKeys } from '../lib/eventToInvalidation';
-import { createInvalidationDebouncer } from '../lib/debounce';
+import {
+  getWsPublicClient,
+  destroyWsPublicClient,
+  isWsConfigured,
+} from "../lib/wsClient";
+import { diamondEventsAbi } from "../lib/diamondEventsAbi";
+import { ctfEventsAbi } from "../lib/ctfEventsAbi";
+import { eventToInvalidationKeys } from "../lib/eventToInvalidation";
+import { createInvalidationDebouncer } from "../lib/debounce";
 import {
   RealtimeContext,
   type ConnectionStatus,
   type RealtimeContextValue,
-} from '../hooks/useRealtimeConnection';
+} from "../hooks/useRealtimeConnection";
+
+import { DIAMOND_ADDRESS, CTF_ADDRESS } from "@/lib/oddmaki/constants";
 
 export function RealtimeProvider({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient();
-  const [status, setStatus] = useState<ConnectionStatus>('unavailable');
+  const [status, setStatus] = useState<ConnectionStatus>("unavailable");
   const [eventCount, setEventCount] = useState(0);
   const [lastEventAt, setLastEventAt] = useState<number | null>(null);
   const unwatchRefs = useRef<(() => void)[]>([]);
-  const debouncerRef = useRef<ReturnType<typeof createInvalidationDebouncer> | null>(null);
+  const debouncerRef = useRef<ReturnType<
+    typeof createInvalidationDebouncer
+  > | null>(null);
   const followUpTimers = useRef<Set<ReturnType<typeof setTimeout>>>(new Set());
 
   // Subgraph indexing lags behind the chain by a few seconds. When we
@@ -45,6 +58,7 @@ export function RealtimeProvider({ children }: { children: React.ReactNode }) {
         followUpTimers.current.delete(timer);
         invalidate();
       }, FOLLOW_UP_DELAY_MS);
+
       followUpTimers.current.add(timer);
     },
     [queryClient],
@@ -53,23 +67,27 @@ export function RealtimeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Check on the client side (this effect only runs client-side)
     if (!isWsConfigured()) {
-      setStatus('unavailable');
+      setStatus("unavailable");
+
       return;
     }
 
-    setStatus('connecting');
+    setStatus("connecting");
 
     const client = getWsPublicClient();
+
     if (!client) {
-      setStatus('unavailable');
+      setStatus("unavailable");
+
       return;
     }
 
     const debouncer = createInvalidationDebouncer(handleInvalidations, 300);
+
     debouncerRef.current = debouncer;
 
     const onLogs = (logs: any[]) => {
-      setStatus('connected');
+      setStatus("connected");
       for (const log of logs) {
         const eventName = (log as any).eventName as string | undefined;
         const args = (log as any).args as Record<string, unknown> | undefined;
@@ -77,8 +95,9 @@ export function RealtimeProvider({ children }: { children: React.ReactNode }) {
         if (!eventName) continue;
 
         const keys = eventToInvalidationKeys(eventName, args ?? {});
+
         if (keys.length > 0) {
-          console.log(`[realtime] ${eventName}`, args, '→ invalidating', keys);
+          console.log(`[realtime] ${eventName}`, args, "→ invalidating", keys);
           debouncer.add(keys);
         }
       }
@@ -87,8 +106,8 @@ export function RealtimeProvider({ children }: { children: React.ReactNode }) {
     };
 
     const onError = (error: Error) => {
-      console.warn('[realtime] WebSocket error:', error.message);
-      setStatus('disconnected');
+      console.warn("[realtime] WebSocket error:", error.message);
+      setStatus("disconnected");
     };
 
     try {
@@ -112,8 +131,8 @@ export function RealtimeProvider({ children }: { children: React.ReactNode }) {
         }),
       );
     } catch (err) {
-      console.warn('[realtime] Failed to start event watcher:', err);
-      setStatus('disconnected');
+      console.warn("[realtime] Failed to start event watcher:", err);
+      setStatus("disconnected");
     }
 
     return () => {

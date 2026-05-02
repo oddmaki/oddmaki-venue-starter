@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { Input } from '@heroui/input';
+import { Input } from "@heroui/input";
 
 interface ColorPickerProps {
   label: string;
@@ -14,23 +14,24 @@ export function ColorPicker({ label, value, onChange }: ColorPickerProps) {
   return (
     <div className="flex items-center gap-3">
       <input
+        className="w-10 h-10 rounded-lg border border-default-200 cursor-pointer bg-transparent p-0.5"
         type="color"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-10 h-10 rounded-lg border border-default-200 cursor-pointer bg-transparent p-0.5"
       />
       <Input
+        className="flex-1"
+        classNames={{ input: "font-mono text-xs uppercase" }}
         label={label}
         size="sm"
         value={value}
         onValueChange={(v) => {
-          const hex = v.startsWith('#') ? v : `#${v}`;
+          const hex = v.startsWith("#") ? v : `#${v}`;
+
           if (HEX_REGEX.test(hex)) {
             onChange(hex);
           }
         }}
-        className="flex-1"
-        classNames={{ input: 'font-mono text-xs uppercase' }}
       />
     </div>
   );

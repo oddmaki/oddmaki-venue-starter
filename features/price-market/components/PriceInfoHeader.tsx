@@ -1,7 +1,8 @@
-'use client';
+"use client";
 
-import { Skeleton } from '@heroui/skeleton';
-import { formatDollarPrice } from '../lib/format';
+import { Skeleton } from "@heroui/skeleton";
+
+import { formatDollarPrice } from "../lib/format";
 
 interface PriceInfoHeaderProps {
   /** Strike price as a number */
@@ -11,7 +12,7 @@ interface PriceInfoHeaderProps {
   /** Whether the live price is still loading */
   isLoading: boolean;
   /** Direction of current price vs strike */
-  priceDirection: 'up' | 'down' | null;
+  priceDirection: "up" | "down" | null;
   /** Final price when resolved */
   finalPrice?: number;
   /** Whether the market is resolved */
@@ -28,7 +29,8 @@ export function PriceInfoHeader({
 }: PriceInfoHeaderProps) {
   const displayPrice = resolved ? finalPrice : currentPrice;
   const delta = displayPrice != null ? displayPrice - strikePriceNum : null;
-  const direction = delta != null ? (delta >= 0 ? 'up' : 'down') : priceDirection;
+  const direction =
+    delta != null ? (delta >= 0 ? "up" : "down") : priceDirection;
 
   return (
     <div className="flex items-start gap-6">
@@ -46,16 +48,16 @@ export function PriceInfoHeader({
       <div className="flex flex-col gap-0.5">
         <div className="flex items-center gap-1.5">
           <span className="text-[10px] text-default-400 uppercase tracking-wider">
-            {resolved ? 'Final Price' : 'Current Price'}
+            {resolved ? "Final Price" : "Current Price"}
           </span>
           {delta != null && (
             <span
               className={`text-[10px] font-semibold ${
-                direction === 'up' ? 'text-success' : 'text-danger'
+                direction === "up" ? "text-success" : "text-danger"
               }`}
             >
-              {direction === 'up' ? '\u25B2' : '\u25BC'}{' '}
-              ${Math.abs(delta).toFixed(2)}
+              {direction === "up" ? "\u25B2" : "\u25BC"} $
+              {Math.abs(delta).toFixed(2)}
             </span>
           )}
         </div>
@@ -64,11 +66,11 @@ export function PriceInfoHeader({
         ) : displayPrice !== undefined ? (
           <span
             className={`font-mono text-xl font-bold ${
-              direction === 'up'
-                ? 'text-success'
-                : direction === 'down'
-                  ? 'text-danger'
-                  : 'text-default-700'
+              direction === "up"
+                ? "text-success"
+                : direction === "down"
+                  ? "text-danger"
+                  : "text-default-700"
             }`}
           >
             ${formatDollarPrice(displayPrice)}

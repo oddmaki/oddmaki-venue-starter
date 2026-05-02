@@ -1,37 +1,39 @@
-'use client';
+"use client";
 
-import { useCallback } from 'react';
-import { useConnection, usePublicClient } from 'wagmi';
-import { useOddMakiClient } from '@/lib/oddmaki/hooks';
-import { queryKeys } from '@/lib/oddmaki/queryKeys';
+import type { FlowStep } from "@/lib/oddmaki/useTransactionFlow";
+
+import { useCallback } from "react";
+import { useConnection, usePublicClient } from "wagmi";
+
+import { useOddMakiClient } from "@/lib/oddmaki/hooks";
+import { queryKeys } from "@/lib/oddmaki/queryKeys";
 import {
   DIAMOND_ADDRESS,
   CTF_ADDRESS,
   USDC_DECIMALS,
-} from '@/lib/oddmaki/constants';
-import { useTransactionFlow } from '@/lib/oddmaki/useTransactionFlow';
-import type { FlowStep } from '@/lib/oddmaki/useTransactionFlow';
+} from "@/lib/oddmaki/constants";
+import { useTransactionFlow } from "@/lib/oddmaki/useTransactionFlow";
 
 const ERC1155_APPROVAL_ABI = [
   {
-    type: 'function' as const,
-    name: 'isApprovedForAll' as const,
+    type: "function" as const,
+    name: "isApprovedForAll" as const,
     inputs: [
-      { name: 'account', type: 'address' },
-      { name: 'operator', type: 'address' },
+      { name: "account", type: "address" },
+      { name: "operator", type: "address" },
     ],
-    outputs: [{ name: '', type: 'bool' }],
-    stateMutability: 'view' as const,
+    outputs: [{ name: "", type: "bool" }],
+    stateMutability: "view" as const,
   },
   {
-    type: 'function' as const,
-    name: 'setApprovalForAll' as const,
+    type: "function" as const,
+    name: "setApprovalForAll" as const,
     inputs: [
-      { name: 'operator', type: 'address' },
-      { name: 'approved', type: 'bool' },
+      { name: "operator", type: "address" },
+      { name: "approved", type: "bool" },
     ],
     outputs: [],
-    stateMutability: 'nonpayable' as const,
+    stateMutability: "nonpayable" as const,
   },
 ] as const;
 
@@ -65,15 +67,16 @@ export function useMergePositions() {
 
       const steps: FlowStep[] = [
         {
-          id: 'ctf-approval',
-          label: 'Token Approval',
+          id: "ctf-approval",
+          label: "Token Approval",
           shouldSkip: async () => {
             const approved = await publicClient.readContract({
               address: CTF_ADDRESS,
               abi: ERC1155_APPROVAL_ABI,
-              functionName: 'isApprovedForAll',
+              functionName: "isApprovedForAll",
               args: [address, DIAMOND_ADDRESS],
             });
+
             return approved;
           },
           execute: async () => {
@@ -82,23 +85,22 @@ export function useMergePositions() {
             const { request } = await publicClient.simulateContract({
               address: CTF_ADDRESS,
               abi: ERC1155_APPROVAL_ABI,
-              functionName: 'setApprovalForAll',
+              functionName: "setApprovalForAll",
               args: [DIAMOND_ADDRESS, true],
               account,
             });
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
             const hash = await wallet.writeContract(request as any);
+
             await publicClient.waitForTransactionReceipt({ hash });
           },
         },
         {
-          id: 'merge-positions',
-          label: 'Merge Positions',
+          id: "merge-positions",
+          label: "Merge Positions",
           execute: async () => {
-            const hash = await client.trade.mergePositions(
-              marketIdBig,
-              amount,
-            );
+            const hash = await client.trade.mergePositions(marketIdBig, amount);
+
             await publicClient.waitForTransactionReceipt({ hash });
           },
         },
