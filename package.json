@@ -58,7 +58,7 @@
     "@heroui/toast": "2.0.20",
     "@heroui/tooltip": "2.2.27",
     "@heroui/user": "2.2.25",
-    "@oddmaki-protocol/sdk": "^1.1.0",
+    "@oddmaki-protocol/sdk": "^1.1.1",
     "@privy-io/react-auth": "^3.14.1",
     "@privy-io/wagmi": "^4.0.2",
     "@rainbow-me/rainbowkit": "^2.2.10",
