@@ -39,16 +39,39 @@ Everything a venue operator needs to run a prediction market platform:
 
 ## Environment Variables
 
-| Variable | Required | Description |
+### Required for first run
+
+Set this and the app boots:
+
+| Variable | Description |
+|---|---|
+| `NEXT_PUBLIC_VENUE_ID` | Your venue ID on the OddMaki Protocol. Without it, the app shows a setup modal blocking everything else. |
+
+### Required for production
+
+| Variable | Description |
+|---|---|
+| `NEXT_PUBLIC_GRAPH_API_KEY` | The Graph gateway API key. Optional locally — the SDK falls back to the hosted Studio endpoint. See [Subgraph data](#subgraph-data) below. |
+
+### Conditionally required
+
+Only needed if you opt into the corresponding feature:
+
+| Variable | Required when |
+|---|---|
+| `NEXT_PUBLIC_PRIVY_APP_ID` | `NEXT_PUBLIC_AUTH_PROVIDER=privy` |
+| `PINATA_JWT` | You enable image uploads in the market-creation flow (server-side; consumed by `/api/ipfs/upload`) |
+
+### Optional (with defaults)
+
+| Variable | Default | Description |
 |---|---|---|
-| `NEXT_PUBLIC_VENUE_ID` | Yes | Your venue ID on the OddMaki Protocol |
-| `NEXT_PUBLIC_GRAPH_API_KEY` | Production | The Graph gateway API key. Optional locally — see [Subgraph data](#subgraph-data) |
-| `NEXT_PUBLIC_CHAIN_ID` | No | `8453` (Base mainnet, default) or `84532` (Base Sepolia) |
-| `NEXT_PUBLIC_VENUE_NAME` | No | Display name (default: `"OddMaki Markets"`) |
-| `NEXT_PUBLIC_AUTH_PROVIDER` | No | `rainbowkit` or `privy` (default: `rainbowkit`) |
-| `NEXT_PUBLIC_PRIVY_APP_ID` | No | Required if using Privy auth |
-| `NEXT_PUBLIC_ENABLE_THEME_EDITOR` | No | Enable theme editor at `/admin/theme` |
-| `PINATA_JWT` | No | Pinata JWT for IPFS uploads (server-side) |
+| `NEXT_PUBLIC_CHAIN_ID` | `8453` | `8453` (Base mainnet) or `84532` (Base Sepolia) |
+| `NEXT_PUBLIC_VENUE_NAME` | `"OddMaki Markets"` | Display name |
+| `NEXT_PUBLIC_AUTH_PROVIDER` | `rainbowkit` | `rainbowkit` or `privy` |
+| `NEXT_PUBLIC_ENABLE_THEME_EDITOR` | `false` | Enable theme editor at `/admin/theme` |
+| `NEXT_PUBLIC_WS_RPC_URL` | _(unset)_ | WebSocket RPC URL for real-time event streaming. Without it, the app falls back to polling. |
+| `NEXT_PUBLIC_IPFS_GATEWAY` | SDK default | Custom IPFS gateway for resolving market images and metadata |
 
 ### Subgraph data
 
