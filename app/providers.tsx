@@ -10,7 +10,6 @@ import { Toaster } from "sonner";
 
 import { AuthProvider } from "@/features/auth";
 import { RealtimeProvider } from "@/features/realtime";
-import { ThemeOverrideProvider } from "@/features/theme-editor/components/ThemeOverrideProvider";
 import { FilterToggleProvider } from "@/features/markets/hooks/useFilterToggle";
 
 export interface ProvidersProps {
@@ -34,12 +33,10 @@ export function Providers({ children, themeProps }: ProvidersProps) {
       <RealtimeProvider>
         <HeroUIProvider navigate={router.push}>
           <NextThemesProvider {...themeProps}>
-            <ThemeOverrideProvider>
-              <FilterToggleProvider>
-                {children}
-                <Toaster closeButton richColors position="bottom-right" />
-              </FilterToggleProvider>
-            </ThemeOverrideProvider>
+            <FilterToggleProvider>
+              {children}
+              <Toaster closeButton richColors position="bottom-right" />
+            </FilterToggleProvider>
           </NextThemesProvider>
         </HeroUIProvider>
       </RealtimeProvider>

@@ -230,7 +230,7 @@ export const cardStyles = {
     fontFamily: fonts.sans,
   },
   visual: {
-    background: "#0A0A14",
+    background: colors.darkCard,
     borderRadius: radii["5xl"],
     border: borders.dim,
     boxShadow: shadows.card,

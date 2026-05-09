@@ -13,7 +13,7 @@ export default function OddMakiIcon() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#06060F",
+          background: "#121312",
           borderRadius: "50%",
         }}
       >

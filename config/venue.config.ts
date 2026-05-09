@@ -2,8 +2,8 @@
  * Venue Configuration
  *
  * venueId comes exclusively from the NEXT_PUBLIC_VENUE_ID env var.
- * If not set, VenueSetupGuard shows a modal to create a venue and
- * instructs the developer to set the env var and restart.
+ * If not set, VenueSetupGuard shows a notice instructing the developer
+ * to set the env var and restart.
  */
 
 import { ACTIVE_CHAIN_ID } from "@/lib/oddmaki/chain";
@@ -33,11 +33,6 @@ export const venueConfig = {
     logo: "/logo.svg",
     favicon: "/favicon.ico",
     // Note: Theme colors are configured in theme.config.json
-  },
-
-  // Feature flags
-  features: {
-    enableThemeEditor: process.env.NEXT_PUBLIC_ENABLE_THEME_EDITOR === "true",
   },
 
   // Network settings — driven by NEXT_PUBLIC_CHAIN_ID (see lib/oddmaki/chain.ts)

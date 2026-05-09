@@ -12,7 +12,6 @@ import { ConnectButton } from "@/features/auth";
 import { siteConfig } from "@/config/site";
 import { Logo } from "@/components/icons";
 import { WalletPanel } from "@/features/wallet/components";
-import { CreateMarketDropdown } from "@/features/market-creation/components";
 
 export const Navbar = () => {
   return (
@@ -31,11 +30,8 @@ export const Navbar = () => {
         </NavbarBrand>
       </NavbarContent>
 
-      {/* Right - Create Market (md+), Wallet, Connect */}
+      {/* Right - Wallet, Connect */}
       <NavbarContent className="gap-1 sm:gap-2" justify="end">
-        <NavbarItem className="hidden md:flex">
-          <CreateMarketDropdown />
-        </NavbarItem>
         <NavbarItem>
           <WalletPanel />
         </NavbarItem>

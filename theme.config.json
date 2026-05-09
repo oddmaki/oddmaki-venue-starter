@@ -2,5 +2,10 @@
   "brand": {
     "primary": "#00F0FF",
     "secondary": "#FF00E5"
+  },
+  "surfaces": {
+    "background": "#121312",
+    "card": "#181818",
+    "foreground": "#FFFFFF"
   }
 }

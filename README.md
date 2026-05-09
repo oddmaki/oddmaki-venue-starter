@@ -60,7 +60,7 @@ Only needed if you opt into the corresponding feature:
 | Variable | Required when |
 |---|---|
 | `NEXT_PUBLIC_PRIVY_APP_ID` | `NEXT_PUBLIC_AUTH_PROVIDER=privy` |
-| `PINATA_JWT` | You enable image uploads in the market-creation flow (server-side; consumed by `/api/ipfs/upload`) |
+| `PINATA_JWT` | You enable image uploads when editing market metadata (server-side; consumed by `/api/ipfs/upload`) |
 
 ### Optional (with defaults)
 
@@ -69,7 +69,6 @@ Only needed if you opt into the corresponding feature:
 | `NEXT_PUBLIC_CHAIN_ID` | `8453` | `8453` (Base mainnet) or `84532` (Base Sepolia) |
 | `NEXT_PUBLIC_VENUE_NAME` | `"OddMaki Markets"` | Display name |
 | `NEXT_PUBLIC_AUTH_PROVIDER` | `rainbowkit` | `rainbowkit` or `privy` |
-| `NEXT_PUBLIC_ENABLE_THEME_EDITOR` | `false` | Enable theme editor at `/admin/theme` |
 | `NEXT_PUBLIC_WS_RPC_URL` | _(unset)_ | WebSocket RPC URL for real-time event streaming. Without it, the app falls back to polling. |
 | `NEXT_PUBLIC_IPFS_GATEWAY` | SDK default | Custom IPFS gateway for resolving market images and metadata |
 
@@ -109,7 +108,7 @@ Brand colors in `theme.config.json`:
 }
 ```
 
-Only `primary` and `secondary` are required. Full shade scales, surface colors, and semantic tokens are auto-generated. Set `NEXT_PUBLIC_ENABLE_THEME_EDITOR=true` and visit `/admin/theme` for a live preview editor.
+Only `primary` and `secondary` are required. Full shade scales and semantic tokens are auto-generated. Override `surfaces.background`, `surfaces.card`, and `surfaces.foreground` to customize backgrounds.
 
 ## Project Structure
 
@@ -119,18 +118,16 @@ Only `primary` and `secondary` are required. Full shade scales, surface colors, 
 │   ├── market/[id]/             # Market detail
 │   ├── market/multi/[id]/       # Market group detail
 │   ├── leaderboard/             # Trader leaderboard
-│   ├── trader/[address]/        # Trader profile
-│   └── admin/theme/             # Theme editor
+│   └── trader/[address]/        # Trader profile
 ├── components/                   # Shared UI (navbar, icons, theme)
 ├── config/                       # Venue settings, contracts, network
 ├── features/                     # Feature modules
 │   ├── auth/                    # Pluggable auth (RainbowKit / Privy)
-│   ├── venue/                   # Venue setup + management
+│   ├── venue/                   # Venue config check + read-only data
 │   ├── wallet/                  # Balances, funding, approvals
 │   ├── markets/                 # Market list grid
-│   ├── market-creation/         # Create market form
 │   ├── market-detail/           # Market detail data + layout
-│   ├── market-groups/           # Multi-outcome market groups
+│   ├── market-groups/           # Multi-outcome market group views
 │   ├── price-market/            # Pyth price feed markets
 │   ├── orderbook/               # Orderbook depth visualization
 │   ├── trading/                 # Orders, positions, split/merge
@@ -139,8 +136,7 @@ Only `primary` and `secondary` are required. Full shade scales, surface colors, 
 │   ├── leaderboard/             # Trader rankings
 │   ├── trader-profile/          # Trader stats + history
 │   ├── price-chart/             # Price chart
-│   ├── realtime/                # Real-time data
-│   └── theme-editor/            # Theme editor
+│   └── realtime/                # Real-time data
 ├── lib/                          # Utilities
 │   ├── oddmaki/                 # SDK hooks, transaction utils, query keys
 │   ├── theme/                   # Color generation, theme resolution

@@ -8,8 +8,9 @@ import {
 } from "./color-utils";
 
 const DEFAULTS = {
-  background: "#06060F",
+  background: "#121312",
   foreground: "#FFFFFF",
+  card: "#181818",
   success: "#00E68C",
   warning: "#FFB800",
   danger: "#FF6B6B",
@@ -21,7 +22,7 @@ export function resolveTheme(config: ThemeConfig): ResolvedTheme {
   const fg =
     config.surfaces?.foreground ??
     autoForeground(bg, "#000000", DEFAULTS.foreground);
-  const card = config.surfaces?.card ?? lighten(bg, 0.03);
+  const card = config.surfaces?.card ?? DEFAULTS.card;
 
   return {
     primary: generateColorScale(config.brand.primary, bg),

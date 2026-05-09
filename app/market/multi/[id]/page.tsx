@@ -7,7 +7,6 @@ import { useGroupMarkets } from "@/features/market-groups/hooks/useGroupMarkets"
 import { MarketGroupDetailHeader } from "@/features/market-groups/components/MarketGroupDetailHeader";
 import { GroupOutcomesList } from "@/features/market-groups/components/GroupOutcomesList";
 import { MarketGroupDetailSkeleton } from "@/features/market-groups/components/MarketGroupDetailSkeleton";
-import { MarketGroupManagementPanel } from "@/features/market-groups/components/MarketGroupManagementPanel";
 import { OrderbookPanel } from "@/features/orderbook/components/OrderbookPanel";
 import { UnifiedTradingPanel } from "@/features/trading/components/UnifiedTradingPanel";
 import { UserPositionsPanel } from "@/features/trading/components/UserPositionsPanel";
@@ -159,7 +158,6 @@ export default function MarketGroupDetailPage({
               )}
             </>
           )}
-          <MarketGroupManagementPanel group={group} groupId={id} />
         </div>
       </div>
     </section>
