@@ -67,7 +67,7 @@ export function WalletPanel() {
             <p className="text-2xl font-bold mt-1">${formatted}</p>
           </div>
 
-          {/* Mint (testnet) */}
+          {/* Faucet link (testnet) */}
           <FundWalletButton />
         </div>
       </PopoverContent>

@@ -88,7 +88,7 @@ export function MarketGrid() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-1 flex-col gap-4">
       {/* Filter controls — toggled via filter icon in category bar */}
       {showFilters && (
         <div className="flex items-center gap-2">
