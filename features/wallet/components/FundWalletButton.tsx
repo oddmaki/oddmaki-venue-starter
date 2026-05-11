@@ -2,21 +2,21 @@
 
 import { Button } from "@heroui/button";
 
-import { useMintUSDC } from "../hooks/useMintUSDC";
+const CIRCLE_FAUCET_URL = "https://faucet.circle.com";
 
 export function FundWalletButton() {
-  const { mint, isMinting } = useMintUSDC();
-
   return (
     <Button
+      as="a"
       className="w-full"
       color="primary"
-      isLoading={isMinting}
+      href={CIRCLE_FAUCET_URL}
+      rel="noopener noreferrer"
       size="sm"
+      target="_blank"
       variant="flat"
-      onPress={mint}
     >
-      {isMinting ? "Minting..." : "Mint 1,000 USDC"}
+      Get testnet USDC
     </Button>
   );
 }
