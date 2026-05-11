@@ -7,7 +7,7 @@ import type {
   MarketGroupStatus,
 } from "@/features/market-groups/types";
 
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { parseAncillaryData } from "@oddmaki-protocol/sdk";
 
 import { calculateMarketPrices, formatVolume } from "../utils/formatting";
@@ -15,6 +15,8 @@ import { calculateMarketPrices, formatVolume } from "../utils/formatting";
 import { useOddMakiClient } from "@/lib/oddmaki/hooks";
 import { getVenueId } from "@/config/venue.config";
 import { queryKeys } from "@/lib/oddmaki/queryKeys";
+
+export const UNIFIED_FEED_PAGE_SIZE = 50;
 
 /**
  * Transform raw standalone market to FormattedMarket
@@ -78,22 +80,29 @@ function formatGroup(sdkFormatted: any, rawGroup: any): FormattedMarketGroup {
   };
 }
 
+type UnifiedFeedPage = {
+  items: UnifiedFeedItem[];
+  hasMore: boolean;
+};
+
 export function useUnifiedFeed(sortBy: "created" | "volume" = "created") {
   const client = useOddMakiClient();
   const venueId = getVenueId();
 
-  return useQuery<UnifiedFeedItem[]>({
+  return useInfiniteQuery({
     queryKey: queryKeys.unifiedFeed.list(venueId?.toString(), sortBy),
-    queryFn: async () => {
+    initialPageParam: 0,
+    queryFn: async ({ pageParam }): Promise<UnifiedFeedPage> => {
       const feedData = await client.public.getUnifiedMarketFeed({
         venueId,
-        first: 50,
+        first: UNIFIED_FEED_PAGE_SIZE,
+        skip: pageParam,
         sortBy,
       });
 
       const merged = client.public.mergeAndSortFeed(feedData, sortBy);
 
-      return merged.map((item: any): UnifiedFeedItem => {
+      const items = merged.map((item: any): UnifiedFeedItem => {
         if (item.type === "standalone") {
           return { type: "standalone", data: formatStandaloneMarket(item) };
         } else {
@@ -102,7 +111,19 @@ export function useUnifiedFeed(sortBy: "created" | "volume" = "created") {
           return { type: "group", data: formatGroup(formatted, item) };
         }
       });
+
+      // SDK fetches up to `first` of each kind. If either bucket came back
+      // full, there is likely another page.
+      const standaloneCount = feedData?.standaloneMarkets?.length ?? 0;
+      const groupCount = feedData?.marketGroups?.length ?? 0;
+      const hasMore =
+        standaloneCount >= UNIFIED_FEED_PAGE_SIZE ||
+        groupCount >= UNIFIED_FEED_PAGE_SIZE;
+
+      return { items, hasMore };
     },
+    getNextPageParam: (lastPage, allPages) =>
+      lastPage.hasMore ? allPages.length * UNIFIED_FEED_PAGE_SIZE : undefined,
     enabled: !!client && venueId !== undefined,
     staleTime: 30_000,
     refetchInterval: 60_000,

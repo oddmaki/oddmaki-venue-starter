@@ -3,7 +3,7 @@
 import type { StatusFilter } from "./MarketStatusFilter";
 import type { UnifiedFeedItem } from "../types";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 import { useUnifiedFeed } from "../hooks/useUnifiedFeed";
@@ -29,10 +29,22 @@ export function MarketGrid() {
   const sortBy =
     sortParam === "new" && !selectedCategory ? "created" : "volume";
 
-  const { data: items, isLoading, error } = useUnifiedFeed(sortBy);
+  const {
+    data,
+    isLoading,
+    error,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useUnifiedFeed(sortBy);
+
+  const items = useMemo(
+    () => data?.pages.flatMap((page) => page.items) ?? [],
+    [data],
+  );
 
   const filteredItems = useMemo(() => {
-    if (!items) return [];
+    if (items.length === 0) return [];
 
     let result = items;
 
@@ -83,7 +95,7 @@ export function MarketGrid() {
     );
   }
 
-  if (!items || items.length === 0) {
+  if (items.length === 0) {
     return <EmptyState />;
   }
 
@@ -96,25 +108,75 @@ export function MarketGrid() {
         </div>
       )}
 
-      {filteredItems.length === 0 ? (
+      {filteredItems.length === 0 && !hasNextPage ? (
         <EmptyState
           description="No markets match the current filters. Try adjusting your selection."
           title="No markets found"
         />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {filteredItems.map((item: UnifiedFeedItem) =>
-            item.type === "standalone" ? (
-              <MarketCard key={`m-${item.data.marketId}`} market={item.data} />
-            ) : (
-              <MarketGroupCard
-                key={`g-${item.data.groupId}`}
-                group={item.data}
-              />
-            ),
-          )}
-        </div>
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {filteredItems.map((item: UnifiedFeedItem) =>
+              item.type === "standalone" ? (
+                <MarketCard
+                  key={`m-${item.data.marketId}`}
+                  market={item.data}
+                />
+              ) : (
+                <MarketGroupCard
+                  key={`g-${item.data.groupId}`}
+                  group={item.data}
+                />
+              ),
+            )}
+            {isFetchingNextPage &&
+              Array.from({ length: 4 }).map((_, i) => (
+                <MarketSkeleton key={`next-${i}`} />
+              ))}
+          </div>
+          <InfiniteScrollSentinel
+            hasNextPage={hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+            onLoadMore={fetchNextPage}
+          />
+        </>
       )}
     </div>
   );
+}
+
+function InfiniteScrollSentinel({
+  hasNextPage,
+  isFetchingNextPage,
+  onLoadMore,
+}: {
+  hasNextPage: boolean;
+  isFetchingNextPage: boolean;
+  onLoadMore: () => void;
+}) {
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!hasNextPage) return;
+    const node = sentinelRef.current;
+
+    if (!node) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting && !isFetchingNextPage) {
+          onLoadMore();
+        }
+      },
+      { rootMargin: "400px 0px" },
+    );
+
+    observer.observe(node);
+
+    return () => observer.disconnect();
+  }, [hasNextPage, isFetchingNextPage, onLoadMore]);
+
+  if (!hasNextPage) return null;
+
+  return <div ref={sentinelRef} aria-hidden className="h-1 w-full" />;
 }
