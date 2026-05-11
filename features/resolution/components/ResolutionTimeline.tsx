@@ -2,7 +2,11 @@
 
 import type { ResolutionPhase } from "../hooks/useMarketStatus";
 
-import { CheckCircleIcon, CircleIcon } from "@/components/icons";
+import {
+  CheckCircleIcon,
+  CircleIcon,
+  ErrorCircleIcon,
+} from "@/components/icons";
 
 interface ResolutionTimelineProps {
   phase: ResolutionPhase;
@@ -11,7 +15,7 @@ interface ResolutionTimelineProps {
   winningOutcome: string | null;
 }
 
-type StepStatus = "completed" | "current" | "pending";
+type StepStatus = "completed" | "current" | "pending" | "disputed";
 
 interface TimelineStep {
   label: string;
@@ -28,6 +32,33 @@ function deriveSteps(
 
   const outcomeLabel = `Outcome proposed: ${assertedOutcome || "?"}`;
 
+  // Disputed assertions follow a different path: they escalate to UMA's DVM.
+  // The third step reflects DVM progress — once `settleAssertion` becomes
+  // callable (phase advances past ASSERTION_PENDING) the DVM has resolved.
+  if (isDisputed && phase !== "RESOLVED") {
+    let dvmLabel: string;
+    let dvmStatus: StepStatus;
+
+    if (phase === "ASSERTION_PENDING") {
+      dvmLabel = "Awaiting DVM resolution";
+      dvmStatus = "current";
+    } else {
+      // ASSERTION_EXPIRED or SETTLED_NOT_REPORTED — DVM has returned a price.
+      dvmLabel = "DVM resolved";
+      dvmStatus = "completed";
+    }
+
+    return [
+      { label: outcomeLabel, status: "completed" },
+      { label: "Disputed — escalated to UMA DVM", status: "disputed" },
+      { label: dvmLabel, status: dvmStatus },
+      {
+        label: "Final",
+        status: dvmStatus === "completed" ? "current" : "pending",
+      },
+    ];
+  }
+
   let disputeLabel: string;
   let disputeStatus: StepStatus;
   let finalLabel: string;
@@ -35,7 +66,7 @@ function deriveSteps(
 
   switch (phase) {
     case "ASSERTION_PENDING":
-      disputeLabel = isDisputed ? "Disputed" : "Dispute window";
+      disputeLabel = "Dispute window";
       disputeStatus = "current";
       finalLabel = "Final";
       finalStatus = "pending";
@@ -48,7 +79,7 @@ function deriveSteps(
       finalStatus = "pending";
       break;
     case "RESOLVED":
-      disputeLabel = "No dispute";
+      disputeLabel = isDisputed ? "Disputed — DVM ruled" : "No dispute";
       disputeStatus = "completed";
       finalLabel = `Final outcome: ${winningOutcome || "?"}`;
       finalStatus = "completed";
@@ -68,6 +99,9 @@ function StepCircle({ status }: { status: StepStatus }) {
   if (status === "completed") {
     return <CheckCircleIcon className="text-primary" size={20} />;
   }
+  if (status === "disputed") {
+    return <ErrorCircleIcon className="text-secondary" size={20} />;
+  }
 
   return (
     <CircleIcon
@@ -81,11 +115,20 @@ function stepTextClass(status: StepStatus): string {
   switch (status) {
     case "completed":
       return "text-primary";
+    case "disputed":
+      return "text-secondary font-medium";
     case "current":
       return "text-foreground";
     default:
       return "text-default-400";
   }
+}
+
+function connectorClass(prevStatus: StepStatus): string {
+  if (prevStatus === "completed") return "bg-primary";
+  if (prevStatus === "disputed") return "bg-secondary";
+
+  return "bg-default-200";
 }
 
 export function ResolutionTimeline({
@@ -105,11 +148,7 @@ export function ResolutionTimeline({
           {i > 0 && (
             <div className="flex ml-[9px]">
               <div
-                className={`w-0.5 h-4 ${
-                  steps[i - 1].status === "completed"
-                    ? "bg-primary"
-                    : "bg-default-200"
-                }`}
+                className={`w-0.5 h-4 ${connectorClass(steps[i - 1].status)}`}
               />
             </div>
           )}

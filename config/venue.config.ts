@@ -31,7 +31,7 @@ export const venueConfig = {
     name: process.env.NEXT_PUBLIC_VENUE_NAME || "OddMaki Markets",
     description: "Trade on prediction markets powered by OddMaki Protocol",
     logo: "/logo.svg",
-    favicon: "/favicon.ico",
+    favicon: "/favicon.svg",
     // Note: Theme colors are configured in theme.config.json
   },
 

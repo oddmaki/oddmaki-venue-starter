@@ -1,14 +1,17 @@
 "use client";
 
+import { useState } from "react";
 import { Card, CardHeader, CardBody } from "@heroui/card";
 import { Button } from "@heroui/button";
 import { Chip } from "@heroui/chip";
 import { Skeleton } from "@heroui/skeleton";
+import { Tooltip } from "@heroui/tooltip";
 import { useConnection } from "wagmi";
 
 import { useMarketStatus } from "../hooks/useMarketStatus";
 import { useSettleAssertion } from "../hooks/useSettleAssertion";
 import { useReportResolution } from "../hooks/useReportResolution";
+import { useDisputeAssertion } from "../hooks/useDisputeAssertion";
 
 import { ResolutionTimeline } from "./ResolutionTimeline";
 import { AssertOutcomeForm } from "./AssertOutcomeForm";
@@ -36,10 +39,45 @@ function formatCountdown(expirationTime: number): string {
   return `${minutes}m`;
 }
 
-function shortenAddress(addr: string): string {
-  if (addr.length < 10) return addr;
+function shortenHash(hash: string): string {
+  if (hash.length < 14) return hash;
 
-  return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
+  return `${hash.slice(0, 10)}...${hash.slice(-8)}`;
+}
+
+// USDC bond formatting (6 decimals). Mirrors AssertOutcomeForm — kept inline to
+// avoid coupling to that component's internals.
+function formatBondUSDC(bond: bigint): string {
+  return (Number(bond) / 1e6).toFixed(2);
+}
+
+function CopyableId({ value, label }: { value: string; label: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      // ignore clipboard errors
+    }
+  };
+
+  return (
+    <div className="flex items-center gap-2">
+      <span className="text-sm text-default-500">{label}:</span>
+      <Tooltip content={copied ? "Copied!" : "Click to copy"}>
+        <button
+          className="text-xs font-mono text-default-600 hover:text-foreground transition-colors"
+          type="button"
+          onClick={handleCopy}
+        >
+          {shortenHash(value)}
+        </button>
+      </Tooltip>
+    </div>
+  );
 }
 
 export function ResolutionPanel({
@@ -55,6 +93,11 @@ export function ResolutionPanel({
     useSettleAssertion(marketId);
   const { reportResolution, isLoading: isReporting } =
     useReportResolution(marketId);
+  const { disputeAssertion, isLoading: isDisputing } =
+    useDisputeAssertion(marketId);
+
+  const isDisputed = status?.assertionDetails?.isDisputed ?? false;
+  const disputeBond = status?.assertionDetails?.bond;
 
   const body =
     isLoading || !status ? (
@@ -67,10 +110,20 @@ export function ResolutionPanel({
         {/* Vertical timeline (hidden when no assertion) */}
         <ResolutionTimeline
           assertedOutcome={status.assertion.outcome}
-          isDisputed={status.assertionDetails?.isDisputed ?? false}
+          isDisputed={isDisputed}
           phase={status.phase}
           winningOutcome={status.resolution.winningOutcome}
         />
+
+        {/* Assertion identifier — copyable for inspection on UMA Oracle */}
+        {status.assertion.assertionId && (
+          <div className="mt-4">
+            <CopyableId
+              label="Assertion ID"
+              value={status.assertion.assertionId}
+            />
+          </div>
+        )}
 
         {/* ACTIVE_NO_ASSERTION — show assert form */}
         {status.phase === "ACTIVE_NO_ASSERTION" && (
@@ -82,32 +135,123 @@ export function ResolutionPanel({
           />
         )}
 
-        {/* ASSERTION_PENDING — show countdown + details */}
-        {status.phase === "ASSERTION_PENDING" && status.assertionDetails && (
-          <div className="flex flex-col gap-3 mt-4">
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-default-500">Asserter:</span>
-              <span className="text-sm font-mono">
-                {shortenAddress(status.assertionDetails.asserter)}
-              </span>
+        {/* DISPUTED, DVM not yet resolved — escalation explainer */}
+        {isDisputed &&
+          status.phase === "ASSERTION_PENDING" &&
+          status.assertionDetails && (
+            <div className="flex flex-col gap-3 mt-4">
+              <CopyableId
+                label="Asserter"
+                value={status.assertionDetails.asserter}
+              />
+              <CopyableId
+                label="Disputer"
+                value={status.assertionDetails.disputer}
+              />
+              <div className="rounded-lg border border-secondary-200 bg-secondary-50/40 p-3">
+                <p className="text-sm text-secondary-700 font-medium mb-1">
+                  Assertion disputed
+                </p>
+                <p className="text-xs text-default-600 leading-relaxed">
+                  This assertion has been escalated to UMA&apos;s Data
+                  Verification Mechanism (DVM). UMA tokenholders will vote on
+                  the correct outcome and the result will be returned to the
+                  Optimistic Oracle. Once the DVM resolves (typically ~48h),
+                  anyone can settle the assertion to finalize this market.
+                </p>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-default-500">
-                Challenge period ends:
-              </span>
-              <Chip color="primary" size="sm" variant="flat">
-                {formatCountdown(status.assertionDetails.expirationTime)}
-              </Chip>
-            </div>
-            <p className="text-xs text-default-400">
-              The assertion is in its challenge period. If unchallenged, it can
-              be settled after expiration.
-            </p>
-          </div>
-        )}
+          )}
 
-        {/* ASSERTION_EXPIRED — show settle button */}
-        {status.phase === "ASSERTION_EXPIRED" && (
+        {/* DISPUTED, DVM resolved — show settle button */}
+        {isDisputed &&
+          status.phase === "ASSERTION_EXPIRED" &&
+          status.assertionDetails && (
+            <div className="flex flex-col gap-3 mt-4">
+              <CopyableId
+                label="Asserter"
+                value={status.assertionDetails.asserter}
+              />
+              <CopyableId
+                label="Disputer"
+                value={status.assertionDetails.disputer}
+              />
+              <div className="rounded-lg border border-secondary-200 bg-secondary-50/40 p-3">
+                <p className="text-sm text-secondary-700 font-medium mb-1">
+                  DVM resolved
+                </p>
+                <p className="text-xs text-default-600 leading-relaxed">
+                  UMA&apos;s DVM has returned a price for this dispute. Anyone
+                  can now settle the assertion to apply the DVM&apos;s outcome
+                  and finalize this market.
+                </p>
+              </div>
+              <Button
+                className="w-full"
+                color="primary"
+                isDisabled={!isConnected || !status.assertion.assertionId}
+                isLoading={isSettling}
+                onPress={() => {
+                  if (status.assertion.assertionId) {
+                    settleAssertion(status.assertion.assertionId);
+                  }
+                }}
+              >
+                {!isConnected ? "Connect Wallet" : "Settle Assertion"}
+              </Button>
+            </div>
+          )}
+
+        {/* ASSERTION_PENDING (undisputed) — countdown + details + dispute button */}
+        {status.phase === "ASSERTION_PENDING" &&
+          !isDisputed &&
+          status.assertionDetails && (
+            <div className="flex flex-col gap-3 mt-4">
+              <CopyableId
+                label="Asserter"
+                value={status.assertionDetails.asserter}
+              />
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-default-500">
+                  Challenge period ends:
+                </span>
+                <Chip color="primary" size="sm" variant="flat">
+                  {formatCountdown(status.assertionDetails.expirationTime)}
+                </Chip>
+              </div>
+              <p className="text-xs text-default-400">
+                The assertion is in its challenge period. If unchallenged, it
+                can be settled after expiration.
+              </p>
+              <Button
+                className="w-full"
+                color="primary"
+                isDisabled={!isConnected || !status.assertion.assertionId}
+                isLoading={isDisputing}
+                variant="flat"
+                onPress={() => {
+                  if (status.assertion.assertionId) {
+                    disputeAssertion(status.assertion.assertionId);
+                  }
+                }}
+              >
+                {!isConnected
+                  ? "Connect Wallet"
+                  : disputeBond
+                    ? `Dispute Assertion (Bond: $${formatBondUSDC(disputeBond)})`
+                    : "Dispute Assertion"}
+              </Button>
+              <p className="text-[11px] text-default-400 leading-relaxed">
+                Disputing escalates to UMA&apos;s DVM. You must post a matching
+                bond. If the DVM agrees with you, the asserter&apos;s bond is
+                forfeited and you are reimbursed plus a share of the
+                loser&apos;s bond.
+              </p>
+            </div>
+          )}
+
+        {/* ASSERTION_EXPIRED (undisputed) — show settle button */}
+        {status.phase === "ASSERTION_EXPIRED" && !isDisputed && (
           <div className="flex flex-col gap-3 mt-4">
             <p className="text-sm text-default-500">
               The challenge period has expired. Anyone can now settle the

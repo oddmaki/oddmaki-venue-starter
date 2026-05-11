@@ -1,6 +1,10 @@
 "use client";
 
+import type { Address } from "viem";
+
 import { useQuery } from "@tanstack/react-query";
+import { usePublicClient } from "wagmi";
+import { UmaOracleABI } from "@oddmaki-protocol/sdk";
 
 import { useOddMakiClient } from "@/lib/oddmaki/hooks";
 import { queryKeys } from "@/lib/oddmaki/queryKeys";
@@ -26,6 +30,9 @@ export interface MarketResolutionStatus {
     expirationTime: number;
     canSettle: boolean;
     isDisputed: boolean;
+    disputer: string;
+    currency: Address;
+    bond: bigint;
   } | null;
   question: {
     requiredBond: bigint;
@@ -44,13 +51,13 @@ export interface MarketResolutionStatus {
  */
 export function useMarketStatus(marketId: string) {
   const client = useOddMakiClient();
+  const publicClient = usePublicClient();
 
   return useQuery<MarketResolutionStatus>({
     queryKey: queryKeys.resolution.status(BigInt(marketId)),
     queryFn: async () => {
       const status = await client.uma.getMarketStatus(BigInt(marketId));
 
-      // Determine phase
       let phase: ResolutionPhase;
       let assertionDetails: MarketResolutionStatus["assertionDetails"] = null;
 
@@ -59,21 +66,44 @@ export function useMarketStatus(marketId: string) {
       } else if (status.canReportResolution) {
         phase = "SETTLED_NOT_REPORTED";
       } else if (status.assertion.hasAssertion && !status.assertion.settled) {
-        // Fetch assertion details to check expiration
         try {
           const details = await client.uma.getAssertionDetails(
             status.assertion.assertionId as `0x${string}`,
           );
 
+          // For disputed assertions the time-based canSettle is meaningless —
+          // settling depends on the DVM having pushed a price. Probe by
+          // simulating settleAssertion on the oracle: it succeeds iff the
+          // DVM (or mock OracleAncillary in tests) has resolved.
+          let canSettle = details.canSettle;
+
+          if (details.isDisputed) {
+            const oracleAddress = await client.uma.getUmaOracleAddress();
+
+            try {
+              await publicClient!.simulateContract({
+                address: oracleAddress,
+                abi: UmaOracleABI,
+                functionName: "settleAssertion",
+                args: [status.assertion.assertionId as `0x${string}`],
+              });
+              canSettle = true;
+            } catch {
+              canSettle = false;
+            }
+          }
+
           assertionDetails = {
             asserter: details.asserter,
             expirationTime: details.expirationTime,
-            canSettle: details.canSettle,
+            canSettle,
             isDisputed: details.isDisputed,
+            disputer: details.disputer,
+            currency: details.currency,
+            bond: details.bond,
           };
-          phase = details.canSettle ? "ASSERTION_EXPIRED" : "ASSERTION_PENDING";
+          phase = canSettle ? "ASSERTION_EXPIRED" : "ASSERTION_PENDING";
         } catch {
-          // If we can't fetch details, assume pending
           phase = "ASSERTION_PENDING";
         }
       } else {
@@ -89,7 +119,7 @@ export function useMarketStatus(marketId: string) {
         resolution: status.resolution,
       };
     },
-    enabled: !!marketId,
+    enabled: !!marketId && !!publicClient,
     staleTime: 15_000,
     refetchInterval: 30_000,
   });
