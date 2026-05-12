@@ -20,7 +20,9 @@ export function ApprovalBreakdown({
   additionalRewardUsdc,
   isPriceMarket = false,
 }: ApprovalBreakdownProps) {
-  const total = creationFeeUsdc + baseUmaRewardUsdc + additionalRewardUsdc;
+  const total = isPriceMarket
+    ? creationFeeUsdc
+    : creationFeeUsdc + baseUmaRewardUsdc + additionalRewardUsdc;
 
   if (total <= 0) {
     return (
@@ -36,8 +38,9 @@ export function ApprovalBreakdown({
           lineHeight: 1.55,
         }}
       >
-        No USDC approval required — this venue has zero market-creation fee and
-        zero UMA reward.
+        {isPriceMarket
+          ? "No USDC approval required — this venue has zero market-creation fee."
+          : "No USDC approval required — this venue has zero market-creation fee and zero UMA reward."}
       </div>
     );
   }
@@ -89,19 +92,13 @@ export function ApprovalBreakdown({
           label="Market creation fee (venue)"
           value={formatUsd(creationFeeUsdc)}
         />
-        <Row
-          hint={
-            isPriceMarket
-              ? "Pyth resolution is automatic; UMA is the fallback if Pyth fails. Reward amount comes from venue config on-chain."
-              : "Default reward this venue pays UMA asserters. Read from venue config on-chain."
-          }
-          label={
-            isPriceMarket
-              ? "UMA fallback reward (venue)"
-              : "Base UMA reward (venue)"
-          }
-          value={formatUsd(baseUmaRewardUsdc)}
-        />
+        {!isPriceMarket && (
+          <Row
+            hint="Default reward this venue pays UMA asserters. Read from venue config on-chain."
+            label="Base UMA reward (venue)"
+            value={formatUsd(baseUmaRewardUsdc)}
+          />
+        )}
         {!isPriceMarket && additionalRewardUsdc > 0 && (
           <Row
             hint="Optional boost you set on the previous step."

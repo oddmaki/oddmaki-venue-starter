@@ -24,7 +24,6 @@ import { TransactionFlowModal } from "@/lib/oddmaki/TransactionFlowModal";
 interface PriceMarketWizardProps {
   venueId: bigint;
   creationFee: number;
-  baseUmaReward: number;
   onChangeType: () => void;
   onClose?: () => void;
 }
@@ -122,7 +121,6 @@ function isStepValid(
 export function PriceMarketWizard({
   venueId,
   creationFee,
-  baseUmaReward,
   onChangeType,
   onClose,
 }: PriceMarketWizardProps) {
@@ -350,7 +348,6 @@ export function PriceMarketWizard({
         )}
         {currentStep === "review" && (
           <StepPriceReview
-            baseUmaReward={baseUmaReward}
             closeDisplay={closeDisplay}
             creationFee={creationFee}
             formData={formData}

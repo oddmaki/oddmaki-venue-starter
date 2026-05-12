@@ -82,13 +82,6 @@ function parseDatetimeLocalInTz(value: string, tz: string): number {
   return naiveUtc - offset;
 }
 
-const LIVENESS_PRESETS: { label: string; seconds: number }[] = [
-  { label: "Default (2h)", seconds: 0 },
-  { label: "30 minutes", seconds: 1800 },
-  { label: "1 hour", seconds: 3600 },
-  { label: "4 hours", seconds: 14400 },
-];
-
 export function StepPriceWindow({
   formData,
   updateField,
@@ -269,56 +262,6 @@ export function StepPriceWindow({
             </span>
           </div>
         )}
-      </div>
-
-      <div>
-        <div
-          style={{
-            fontSize: 12,
-            color: "#cfcfcf",
-            marginBottom: 8,
-            fontFamily: fonts.sans,
-            fontWeight: 500,
-          }}
-        >
-          UMA fallback challenge period
-        </div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-          {LIVENESS_PRESETS.map((p) => {
-            const selected = formData.liveness === p.seconds;
-
-            return (
-              <button
-                key={p.label}
-                style={{
-                  padding: "8px 14px",
-                  background: selected ? `${colors.neonCyan}14` : "transparent",
-                  border: `1px solid ${selected ? `${colors.neonCyan}66` : "#ffffff14"}`,
-                  borderRadius: 8,
-                  color: selected ? "white" : "#bbb",
-                  fontSize: 12,
-                  fontFamily: fonts.sans,
-                  cursor: "pointer",
-                }}
-                type="button"
-                onClick={() => updateField("liveness", p.seconds)}
-              >
-                {p.label}
-              </button>
-            );
-          })}
-        </div>
-        <div
-          style={{
-            fontSize: 11,
-            color: "#9a9a9a",
-            marginTop: 8,
-            fontFamily: fonts.sans,
-            lineHeight: 1.55,
-          }}
-        >
-          Used only if Pyth resolution fails and the market falls back to UMA.
-        </div>
       </div>
 
       <Field

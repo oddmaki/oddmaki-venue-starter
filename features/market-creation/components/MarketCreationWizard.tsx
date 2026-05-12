@@ -167,7 +167,6 @@ export function MarketCreationWizard({ onClose }: MarketCreationWizardProps) {
       )}
       {marketType === "price" && (
         <PriceMarketWizard
-          baseUmaReward={baseUmaReward}
           creationFee={creationFee}
           venueId={venueId}
           onChangeType={() => setMarketType(null)}

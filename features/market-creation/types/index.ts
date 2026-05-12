@@ -42,11 +42,11 @@ export const MARKET_TYPES: MarketTypeOption[] = [
     label: "Price Market",
     tagline: "Pyth-powered automatic resolution",
     description:
-      "A binary market that resolves automatically from a Pyth Network price feed at a fixed close time. Use Up/Down vs. price at creation, or Above/Below an explicit strike. No UMA assertion required.",
+      "A binary market that resolves automatically from a Pyth Network price feed at a fixed close time. Use Up/Down vs. the price at creation, or Above/Below an explicit strike price.",
     examples: [
-      "ETH 24h close above open?",
-      "BTC ≥ $100,000 on Jan 1, 2027?",
-      "SOL above $250 in the next 4 hours?",
+      "Will ETH be Up or Down 24h from now? (Up/Down vs. price at creation)",
+      "Will BTC trade Above or Below $120,000 at Friday's close? (Strike: Above/Below)",
+      "Will SOL be Above or Below $200 on Jan 1, 2027? (Strike: Above/Below)",
     ],
   },
 ];
@@ -249,7 +249,7 @@ export const PRICE_WIZARD_STEPS: {
     number: 4,
     label: "Review",
     description:
-      "Confirm and submit. Price markets resolve automatically against Pyth at close.",
+      "Confirm and submit. Price markets resolve automatically against the Pyth feed at close time.",
   },
 ];
 
@@ -264,7 +264,6 @@ export interface PriceMarketFormData {
   customDatetime: string;
   customTimezone: string;
   tickSize: TickSize;
-  liveness: number;
   resolutionWindow: number;
   title: string;
   description: string;
@@ -282,7 +281,6 @@ export const DEFAULT_PRICE_FORM: PriceMarketFormData = {
   customDatetime: "",
   customTimezone: "local",
   tickSize: "0.01",
-  liveness: 0,
   resolutionWindow: 0,
   title: "",
   description: "",

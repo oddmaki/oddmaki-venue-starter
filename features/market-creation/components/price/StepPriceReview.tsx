@@ -12,7 +12,6 @@ interface StepPriceReviewProps {
   closeDisplay: string | null;
   outcomes: [string, string];
   creationFee: number;
-  baseUmaReward: number;
 }
 
 function shortenFeed(id: string): string {
@@ -28,7 +27,6 @@ export function StepPriceReview({
   closeDisplay,
   outcomes,
   creationFee,
-  baseUmaReward,
 }: StepPriceReviewProps) {
   return (
     <div style={{ display: "grid", gap: 16 }}>
@@ -65,12 +63,6 @@ export function StepPriceReview({
           }
         />
         <ReviewRow
-          label="Fallback challenge period"
-          value={
-            formData.liveness === 0 ? "Default (2h)" : `${formData.liveness}s`
-          }
-        />
-        <ReviewRow
           label="Tags"
           value={formData.tags.length ? formData.tags.join(", ") : "(none)"}
         />
@@ -79,7 +71,7 @@ export function StepPriceReview({
       <ApprovalBreakdown
         isPriceMarket
         additionalRewardUsdc={0}
-        baseUmaRewardUsdc={baseUmaReward}
+        baseUmaRewardUsdc={0}
         creationFeeUsdc={creationFee}
       />
     </div>

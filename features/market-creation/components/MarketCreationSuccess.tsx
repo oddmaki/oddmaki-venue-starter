@@ -2,8 +2,6 @@
 
 import type { MarketType } from "../types";
 
-import Link from "next/link";
-
 import { colors, fonts } from "@/lib/tokens";
 
 interface MarketCreationSuccessProps {
@@ -123,22 +121,23 @@ export function MarketCreationSuccess({
         >
           Create another market
         </button>
-        <Link
-          href="/"
+        <button
           style={{
             padding: "10px 22px",
             background: colors.neonCyan,
+            border: "none",
             borderRadius: 8,
             color: colors.darkBg,
             fontSize: 13,
             fontWeight: 700,
-            textDecoration: "none",
+            cursor: "pointer",
             fontFamily: fonts.sans,
           }}
+          type="button"
           onClick={onClose}
         >
           Go to markets
-        </Link>
+        </button>
       </div>
     </div>
   );

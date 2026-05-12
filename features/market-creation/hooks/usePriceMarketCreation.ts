@@ -75,18 +75,14 @@ export function usePriceMarketCreation(
     ) => {
       if (!publicClient) throw new Error("Public client not available");
 
-      const venue: any = await publicClient.readContract({
+      const venue = (await publicClient.readContract({
         address: DIAMOND_ADDRESS,
         abi: VenueFacetABI,
         functionName: "getVenue",
         args: [venueId],
-      });
+      })) as { marketCreationFee?: bigint };
 
       const creationFee = BigInt(venue.marketCreationFee ?? 0);
-      // Approve the UMA fallback reward as well: if Pyth resolution fails the market falls back
-      // to a UMA assertion, which still pays the venue's configured umaReward to the asserter.
-      const baseUmaReward = BigInt(venue.umaRewardAmount ?? 0);
-      const totalApproval = creationFee + baseUmaReward;
 
       const steps: FlowStep[] = [];
 
@@ -98,18 +94,12 @@ export function usePriceMarketCreation(
         },
       });
 
-      if (totalApproval > BigInt(0)) {
-        const totalUsd = (Number(totalApproval) / 10 ** USDC_DECIMALS).toFixed(
-          2,
-        );
+      if (creationFee > BigInt(0)) {
         const feeUsd = (Number(creationFee) / 10 ** USDC_DECIMALS).toFixed(2);
-        const rewardUsd = (Number(baseUmaReward) / 10 ** USDC_DECIMALS).toFixed(
-          2,
-        );
 
         steps.push({
           id: "usdc-approval",
-          label: `Approve $${totalUsd} USDC (fee $${feeUsd} + UMA fallback $${rewardUsd})`,
+          label: `Approve $${feeUsd} USDC market creation fee`,
           shouldSkip: async () => {
             const allowance = (await client.token.getAllowance(
               USDC_ADDRESS,
@@ -117,13 +107,13 @@ export function usePriceMarketCreation(
               DIAMOND_ADDRESS,
             )) as bigint;
 
-            return allowance >= totalApproval;
+            return allowance >= creationFee;
           },
           execute: async () => {
             const hash = await client.token.approve(
               USDC_ADDRESS,
               DIAMOND_ADDRESS,
-              totalApproval,
+              creationFee,
             );
 
             await publicClient.waitForTransactionReceipt({ hash });
@@ -132,7 +122,7 @@ export function usePriceMarketCreation(
               USDC_ADDRESS,
               signer,
               DIAMOND_ADDRESS,
-              totalApproval,
+              creationFee,
             );
           },
         });
@@ -144,8 +134,6 @@ export function usePriceMarketCreation(
         execute: async () => {
           await waitForRPCSync();
 
-          // For preset durations, recompute close time off the wall clock at submit time
-          // and add a buffer for wallet signing + block inclusion.
           const closeTime =
             formData.closeMode === "preset"
               ? Math.floor(Date.now() / 1000) +
@@ -174,7 +162,7 @@ export function usePriceMarketCreation(
               title: submission.title,
               description: submission.description,
             },
-            liveness: BigInt(formData.liveness),
+            liveness: BigInt(0),
             tags: formData.tags,
             resolutionWindow: BigInt(formData.resolutionWindow),
           });
