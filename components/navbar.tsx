@@ -12,6 +12,7 @@ import { ConnectButton } from "@/features/auth";
 import { siteConfig } from "@/config/site";
 import { Logo } from "@/components/icons";
 import { WalletPanel } from "@/features/wallet/components";
+import { CreateMarketButton } from "@/features/market-creation";
 
 export const Navbar = () => {
   return (
@@ -32,6 +33,9 @@ export const Navbar = () => {
 
       {/* Right - Wallet, Connect */}
       <NavbarContent className="gap-1 sm:gap-2" justify="end">
+        <NavbarItem>
+          <CreateMarketButton />
+        </NavbarItem>
         <NavbarItem>
           <WalletPanel />
         </NavbarItem>
