@@ -129,8 +129,8 @@ importers:
         specifier: 2.2.25
         version: 2.2.25(@heroui/system@2.4.26(@heroui/theme@2.4.26(tailwindcss@4.1.11))(framer-motion@11.18.2(@emotion/is-prop-valid@1.4.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@heroui/theme@2.4.26(tailwindcss@4.1.11))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@oddmaki-protocol/sdk':
-        specifier: ^1.8.0
-        version: 1.8.0(bufferutil@4.1.0)(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@4.3.6)
+        specifier: ^1.9.0
+        version: 1.9.0(bufferutil@4.1.0)(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@4.3.6)
       '@privy-io/react-auth':
         specifier: ^3.14.1
         version: 3.14.1(@solana-program/system@0.10.0(@solana/kit@5.5.1(bufferutil@4.1.0)(typescript@5.6.3)(utf-8-validate@5.0.10)))(@solana-program/token@0.9.0(@solana/kit@5.5.1(bufferutil@4.1.0)(typescript@5.6.3)(utf-8-validate@5.0.10)))(@solana/kit@5.5.1(bufferutil@4.1.0)(typescript@5.6.3)(utf-8-validate@5.0.10))(@solana/sysvars@5.5.1(typescript@5.6.3))(@tanstack/query-core@5.90.20)(@tanstack/react-query@5.90.20(react@18.3.1))(@types/react@18.3.3)(bufferutil@4.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.6.3)(use-sync-external-store@1.4.0(react@18.3.1))(utf-8-validate@5.0.10)(zod@4.3.6)
@@ -1370,8 +1370,8 @@ packages:
     resolution: {integrity: sha512-nn5ozdjYQpUCZlWGuxcJY/KpxkWQs4DcbMCmKojjyrYDEAGy4Ce19NN4v5MduafTwJlbKc99UA8YhSVqq9yPZA==}
     engines: {node: '>=12.4.0'}
 
-  '@oddmaki-protocol/sdk@1.8.0':
-    resolution: {integrity: sha512-aHN2pk+ZlONu8wrv82HK6XnO5o/8jQh0I/HOtyQiZ80YB/qpQC8U5SrsjPTZXDbhW5LZs9hhCO8Z6wh8parIGA==}
+  '@oddmaki-protocol/sdk@1.9.0':
+    resolution: {integrity: sha512-zSkfr4H5JiChZyh8xY++nYONOiS/pvfq5Ga/ygEd9qIl+inxaZI6A1vlIQ9lszQGe/Cje2ZJbvV8aoZUu9d07w==}
 
   '@paulmillr/qr@0.2.1':
     resolution: {integrity: sha512-IHnV6A+zxU7XwmKFinmYjUcwlyK9+xkG3/s9KcQhI9BjQKycrJ1JRO+FbNYPwZiPKW3je/DR0k7w8/gLa5eaxQ==}
@@ -7354,7 +7354,7 @@ snapshots:
 
   '@nolyfill/is-core-module@1.0.39': {}
 
-  '@oddmaki-protocol/sdk@1.8.0(bufferutil@4.1.0)(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@4.3.6)':
+  '@oddmaki-protocol/sdk@1.9.0(bufferutil@4.1.0)(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@4.3.6)':
     dependencies:
       '@graphql-typed-document-node/core': 3.2.0(graphql@16.13.2)
       graphql: 16.13.2
