@@ -33,6 +33,7 @@ export interface MarketDetail {
   metadataURI: string;
   createdAt: string;
   creator: string;
+  tags: string[];
 }
 
 function formatVolume(volume: string, decimals: number = 6): string {
@@ -87,6 +88,7 @@ export function useMarketDetail(marketId: string) {
         metadataURI: m.metadataURI || "",
         createdAt: m.createdAt || "0",
         creator: m.creator?.id || m.creator?.address || "",
+        tags: m.tags || [],
       };
     },
     enabled: !!marketId,

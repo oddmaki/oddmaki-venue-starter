@@ -24,6 +24,11 @@ import {
   PriceMarketResolutionPanel,
   PriceMarketChartSection,
 } from "@/features/price-market";
+import {
+  TimeWindowStrip,
+  usePriceMarketSeries,
+  extractSeriesKey,
+} from "@/features/price-market-series";
 
 export default function MarketDetailPage({
   params,
@@ -33,6 +38,8 @@ export default function MarketDetailPage({
   const { id } = use(params);
   const { data: market, isLoading, error } = useMarketDetail(id);
   const { data: priceMarket } = usePriceMarketData(BigInt(id));
+  const seriesKey = extractSeriesKey(market?.tags);
+  const { data: series } = usePriceMarketSeries(seriesKey);
 
   if (isLoading) {
     return (
@@ -86,6 +93,12 @@ export default function MarketDetailPage({
               marketId={market.marketId}
               outcomes={market.outcomes}
               tickSize={market.tickSize}
+            />
+          )}
+          {series && (
+            <TimeWindowStrip
+              selectedMarketId={market.marketId}
+              series={series}
             />
           )}
           <OrderbookPanel

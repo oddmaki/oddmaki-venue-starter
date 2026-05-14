@@ -15,6 +15,7 @@ import { calculateMarketPrices, formatVolume } from "../utils/formatting";
 import { useOddMakiClient } from "@/lib/oddmaki/hooks";
 import { getVenueId } from "@/config/venue.config";
 import { queryKeys } from "@/lib/oddmaki/queryKeys";
+import { formatPriceMarketSeries } from "@/features/price-market-series";
 
 export const UNIFIED_FEED_PAGE_SIZE = 50;
 
@@ -105,6 +106,8 @@ export function useUnifiedFeed(sortBy: "created" | "volume" = "created") {
       const items = merged.map((item: any): UnifiedFeedItem => {
         if (item.type === "standalone") {
           return { type: "standalone", data: formatStandaloneMarket(item) };
+        } else if (item.type === "series") {
+          return { type: "series", data: formatPriceMarketSeries(item) };
         } else {
           const formatted = client.public.formatMarketGroupForDisplay(item);
 
@@ -112,13 +115,15 @@ export function useUnifiedFeed(sortBy: "created" | "volume" = "created") {
         }
       });
 
-      // SDK fetches up to `first` of each kind. If either bucket came back
+      // SDK fetches up to `first` of each kind. If any bucket came back
       // full, there is likely another page.
       const standaloneCount = feedData?.standaloneMarkets?.length ?? 0;
       const groupCount = feedData?.marketGroups?.length ?? 0;
+      const seriesCount = feedData?.priceMarketSeries?.length ?? 0;
       const hasMore =
         standaloneCount >= UNIFIED_FEED_PAGE_SIZE ||
-        groupCount >= UNIFIED_FEED_PAGE_SIZE;
+        groupCount >= UNIFIED_FEED_PAGE_SIZE ||
+        seriesCount >= UNIFIED_FEED_PAGE_SIZE;
 
       return { items, hasMore };
     },

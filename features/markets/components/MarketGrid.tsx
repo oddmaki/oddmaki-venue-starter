@@ -16,6 +16,7 @@ import { MarketStatusFilter } from "./MarketStatusFilter";
 
 import { MarketGroupCard } from "@/features/market-groups/components/MarketGroupCard";
 import { MarketGroupSkeleton } from "@/features/market-groups/components/MarketGroupSkeleton";
+import { PriceSeriesCard } from "@/features/price-market-series";
 import { CATEGORIES } from "@/config/tags.config";
 
 export function MarketGrid() {
@@ -54,29 +55,32 @@ export function MarketGrid() {
 
       if (category && category.matchTags.length > 0) {
         result = result.filter((item: UnifiedFeedItem) => {
-          const tags =
-            item.type === "standalone" ? item.data.tags : item.data.tags;
-
-          return tags?.some((tag: string) => category.matchTags.includes(tag));
+          return item.data.tags?.some((tag: string) =>
+            category.matchTags.includes(tag),
+          );
         });
       }
     }
 
     // Filter by status
     result = result.filter((item: UnifiedFeedItem) => {
-      const status =
-        item.type === "standalone" ? item.data.status : item.data.status;
-
-      return status === statusFilter;
+      return item.data.status === statusFilter;
     });
 
     return result;
   }, [items, selectedCategory, statusFilter]);
 
   if (error) {
+    // eslint-disable-next-line no-console
+    console.error("[MarketGrid] unified feed error:", error);
+
     return (
       <EmptyState
-        description="There was an error loading markets. Please try again later."
+        description={
+          error instanceof Error
+            ? error.message
+            : "There was an error loading markets. Please try again later."
+        }
         title="Error loading markets"
       />
     );
@@ -116,19 +120,31 @@ export function MarketGrid() {
       ) : (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {filteredItems.map((item: UnifiedFeedItem) =>
-              item.type === "standalone" ? (
-                <MarketCard
-                  key={`m-${item.data.marketId}`}
-                  market={item.data}
-                />
-              ) : (
+            {filteredItems.map((item: UnifiedFeedItem) => {
+              if (item.type === "standalone") {
+                return (
+                  <MarketCard
+                    key={`m-${item.data.marketId}`}
+                    market={item.data}
+                  />
+                );
+              }
+              if (item.type === "series") {
+                return (
+                  <PriceSeriesCard
+                    key={`s-${item.data.id}`}
+                    series={item.data}
+                  />
+                );
+              }
+
+              return (
                 <MarketGroupCard
                   key={`g-${item.data.groupId}`}
                   group={item.data}
                 />
-              ),
-            )}
+              );
+            })}
             {isFetchingNextPage &&
               Array.from({ length: 4 }).map((_, i) => (
                 <MarketSkeleton key={`next-${i}`} />
