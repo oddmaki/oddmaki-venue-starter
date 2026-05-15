@@ -1,10 +1,30 @@
 # OddMaki Venue Starter
 
-A white-label prediction market frontend for the [OddMaki Protocol](https://github.com/oddmaki/oddmaki-core). Clone this repo, set your venue ID, customize the branding, and deploy your own prediction market platform.
+A white-label prediction market frontend for the [OddMaki Protocol](https://github.com/oddmaki/oddmaki-core). Fork this repo, set your venue ID, customize the branding, and deploy your own prediction market platform.
 
 OddMaki is a permissionless prediction market factory — anyone can launch a venue with custom rules for market creation, trading, fees, and access control. This starter gives you a production-ready frontend out of the box.
 
-## Quick Start
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/oddmaki/oddmaki-venue-starter&env=NEXT_PUBLIC_VENUE_ID,NEXT_PUBLIC_GRAPH_API_KEY&envDescription=NEXT_PUBLIC_VENUE_ID%20is%20your%20on-chain%20venue%20ID%20%28required%20to%20boot%20past%20the%20setup%20modal%29.%20NEXT_PUBLIC_GRAPH_API_KEY%20is%20your%20The%20Graph%20gateway%20key%20%28required%20in%20production%3B%20leave%20blank%20to%20use%20the%20free%20Studio%20fallback%29.&envLink=https://github.com/oddmaki/oddmaki-venue-starter%23environment-variables)
+
+One click forks the repo into your GitHub account and deploys it to Vercel.
+
+## Get the Code
+
+Forking is the recommended path — you keep your own GitHub copy, can pull starter updates with one click, and your `theme.config.json` and customizations live in your repo, not someone else's.
+
+- **Easiest** — click [**Deploy with Vercel**](https://vercel.com/new/clone?repository-url=https://github.com/oddmaki/oddmaki-venue-starter&env=NEXT_PUBLIC_VENUE_ID,NEXT_PUBLIC_GRAPH_API_KEY&envDescription=NEXT_PUBLIC_VENUE_ID%20is%20your%20on-chain%20venue%20ID%20%28required%20to%20boot%20past%20the%20setup%20modal%29.%20NEXT_PUBLIC_GRAPH_API_KEY%20is%20your%20The%20Graph%20gateway%20key%20%28required%20in%20production%3B%20leave%20blank%20to%20use%20the%20free%20Studio%20fallback%29.&envLink=https://github.com/oddmaki/oddmaki-venue-starter%23environment-variables) above (forks + deploys in one flow).
+- **CLI** — `gh repo fork oddmaki/oddmaki-venue-starter --clone && cd oddmaki-venue-starter`
+- **GitHub UI** — click **Fork** at the top of [the repo page](https://github.com/oddmaki/oddmaki-venue-starter), then `git clone` your fork.
+- **Disconnected copy** — if you don't want a link back to the starter, `git clone https://github.com/oddmaki/oddmaki-venue-starter.git` directly.
+
+Forks stay connected to this repo, so pulling in starter updates is one click on GitHub's **Sync fork** button or:
+
+```bash
+git remote add upstream https://github.com/oddmaki/oddmaki-venue-starter.git
+git fetch upstream && git merge upstream/main
+```
+
+## Quick Start (local)
 
 ```bash
 pnpm install
@@ -176,3 +196,4 @@ Standard Next.js deployment. Set the required environment variables in your plat
 ## License
 
 [MIT](./LICENSE) — fork it, brand it, ship it. Copyright (c) 2025-2026 Predictable Reality, Inc.
+
