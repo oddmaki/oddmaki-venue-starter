@@ -10,7 +10,7 @@ import {
 } from "@heroui/modal";
 import { Input } from "@heroui/input";
 import { Button } from "@heroui/button";
-import { useConnection } from "wagmi";
+import { useAccount } from "wagmi";
 
 import { useSplitPosition } from "../hooks/useSplitPosition";
 
@@ -29,7 +29,7 @@ export function SplitModal({
   marketId,
   outcomes,
 }: SplitModalProps) {
-  const { isConnected } = useConnection();
+  const { isConnected } = useAccount();
   const { startSplitPosition, flow } = useSplitPosition();
   const [amount, setAmount] = useState("");
   const [flowOpen, setFlowOpen] = useState(false);

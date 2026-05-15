@@ -3,7 +3,7 @@
 import type { Address } from "viem";
 
 import { useQuery } from "@tanstack/react-query";
-import { useConnection } from "wagmi";
+import { useAccount } from "wagmi";
 
 import { useOddMakiClient } from "@/lib/oddmaki/hooks";
 import { queryKeys } from "@/lib/oddmaki/queryKeys";
@@ -19,7 +19,7 @@ export interface UserPositions {
  */
 export function useUserPositions(marketId: string) {
   const client = useOddMakiClient();
-  const { address } = useConnection();
+  const { address } = useAccount();
 
   return useQuery<UserPositions>({
     queryKey: queryKeys.positions.byMarketUser(BigInt(marketId), address!),

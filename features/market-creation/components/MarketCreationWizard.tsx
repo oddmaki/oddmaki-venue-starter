@@ -3,7 +3,7 @@
 import type { MarketType } from "../types";
 
 import { useState } from "react";
-import { useConnection } from "wagmi";
+import { useAccount } from "wagmi";
 
 import { GroupMarketWizard } from "./group/GroupMarketWizard";
 import { MarketTypeSelector } from "./MarketTypeSelector";
@@ -23,7 +23,7 @@ const ZERO = "0x0000000000000000000000000000000000000000";
 
 export function MarketCreationWizard({ onClose }: MarketCreationWizardProps) {
   const venueId = getVenueId();
-  const { isConnected, address } = useConnection();
+  const { isConnected, address } = useAccount();
   const { venue, isLoading: venueLoading } = useVenueData();
   const [marketType, setMarketType] = useState<MarketType | null>(null);
 

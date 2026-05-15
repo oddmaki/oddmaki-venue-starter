@@ -9,7 +9,7 @@ import { Card, CardHeader, CardBody } from "@heroui/card";
 import { Chip } from "@heroui/chip";
 import { Button } from "@heroui/button";
 import { Skeleton } from "@heroui/skeleton";
-import { useConnection, usePublicClient } from "wagmi";
+import { useAccount, usePublicClient } from "wagmi";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { useUserOrders } from "@/features/market-detail/hooks/useUserOrders";
@@ -60,7 +60,7 @@ export function UserOrdersPanel({
     isFetching,
     refetch,
   } = useUserOrders(marketId);
-  const { address } = useConnection();
+  const { address } = useAccount();
   const client = useOddMakiClient();
   const publicClient = usePublicClient();
   const queryClient = useQueryClient();

@@ -59,6 +59,7 @@ Only needed if you opt into the corresponding feature:
 
 | Variable | Required when |
 |---|---|
+| `NEXT_PUBLIC_WALLETCONNECT_ID` | `NEXT_PUBLIC_AUTH_PROVIDER=rainbowkit` (the default). Enables WalletConnect so mobile wallets can connect. Get one free at [cloud.reown.com](https://cloud.reown.com). |
 | `NEXT_PUBLIC_PRIVY_APP_ID` | `NEXT_PUBLIC_AUTH_PROVIDER=privy` |
 | `PINATA_JWT` | You enable image uploads when editing market metadata (server-side; consumed by `/api/ipfs/upload`) |
 

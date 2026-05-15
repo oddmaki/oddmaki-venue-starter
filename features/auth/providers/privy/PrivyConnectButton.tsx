@@ -4,14 +4,14 @@ import type { ConnectButtonProps } from "../../types";
 
 import React from "react";
 import { usePrivy } from "@privy-io/react-auth";
-import { useConnection } from "wagmi";
+import { useAccount } from "wagmi";
 import { Button } from "@heroui/button";
 
 import { UserSettings } from "../../components/UserSettings";
 
 export function PrivyConnectButton(_props: ConnectButtonProps) {
   const { ready, authenticated, login, logout } = usePrivy();
-  const { address } = useConnection();
+  const { address } = useAccount();
 
   if (!ready) {
     return (

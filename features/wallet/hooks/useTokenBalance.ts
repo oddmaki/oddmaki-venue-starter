@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { useConnection } from "wagmi";
+import { useAccount } from "wagmi";
 
 import { useOddMakiClient } from "@/lib/oddmaki/hooks";
 import { queryKeys } from "@/lib/oddmaki/queryKeys";
@@ -13,7 +13,7 @@ import { USDC_ADDRESS, USDC_DECIMALS } from "@/lib/oddmaki/constants";
  */
 export function useTokenBalance() {
   const client = useOddMakiClient();
-  const { address } = useConnection();
+  const { address } = useAccount();
 
   const {
     data: balance,

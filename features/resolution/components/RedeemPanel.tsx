@@ -4,7 +4,7 @@ import { Card, CardHeader, CardBody } from "@heroui/card";
 import { Button } from "@heroui/button";
 import { Chip } from "@heroui/chip";
 import { Skeleton } from "@heroui/skeleton";
-import { useConnection } from "wagmi";
+import { useAccount } from "wagmi";
 
 import { useRedeemWinnings } from "../hooks/useRedeemWinnings";
 import { useMarketStatus } from "../hooks/useMarketStatus";
@@ -24,7 +24,7 @@ export function RedeemPanel({
   winningOutcome: winningOutcomeProp,
   standalone = false,
 }: RedeemPanelProps) {
-  const { isConnected } = useConnection();
+  const { isConnected } = useAccount();
   const { data: positions } = useUserPositions(marketId);
   const { redeemWinnings, isLoading } = useRedeemWinnings(marketId);
   const { data: status, isLoading: statusLoading } = useMarketStatus(marketId);

@@ -9,7 +9,7 @@ import {
   DropdownSection,
 } from "@heroui/dropdown";
 import { Button } from "@heroui/button";
-import { useConnection } from "wagmi";
+import { useAccount } from "wagmi";
 
 import {
   MarketSettingsModals,
@@ -28,7 +28,7 @@ export function MarketSettingsButton({
   marketId,
   marketCreator,
 }: MarketSettingsButtonProps) {
-  const { address } = useConnection();
+  const { address } = useAccount();
   const { isOperator } = useVenueData();
   const [activeModal, setActiveModal] = useState<SettingsAction | null>(null);
 

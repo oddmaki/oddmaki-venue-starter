@@ -14,7 +14,7 @@ import { Chip } from "@heroui/chip";
 import { Divider } from "@heroui/divider";
 import { Tooltip } from "@heroui/tooltip";
 import { Tabs, Tab } from "@heroui/tabs";
-import { useConnection } from "wagmi";
+import { useAccount } from "wagmi";
 import { isAddress } from "viem";
 
 import { useWhitelistOwner } from "../hooks/useWhitelistOwner";
@@ -43,7 +43,7 @@ export function WhitelistManagementModal({
   acContract,
   title = "Whitelist",
 }: WhitelistManagementModalProps) {
-  const { address: connectedAddress } = useConnection();
+  const { address: connectedAddress } = useAccount();
   const { data: owner, isLoading: ownerLoading } =
     useWhitelistOwner(acContract);
   const { addToWhitelist, isLoading: isAdding } = useAddToWhitelist(acContract);

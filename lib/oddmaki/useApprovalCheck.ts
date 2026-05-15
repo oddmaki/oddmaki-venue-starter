@@ -10,7 +10,7 @@
 import type { Address } from "viem";
 
 import { useQuery } from "@tanstack/react-query";
-import { useConnection } from "wagmi";
+import { useAccount } from "wagmi";
 
 import { useOddMakiClient } from "./hooks";
 import { useTransaction } from "./useTransaction";
@@ -30,7 +30,7 @@ export function useApprovalCheck({
   requiredAmount,
 }: UseApprovalCheckOptions) {
   const client = useOddMakiClient();
-  const { address } = useConnection();
+  const { address } = useAccount();
 
   const {
     data: allowance,

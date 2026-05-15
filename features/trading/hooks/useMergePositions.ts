@@ -3,7 +3,7 @@
 import type { FlowStep } from "@/lib/oddmaki/useTransactionFlow";
 
 import { useCallback } from "react";
-import { useConnection, usePublicClient } from "wagmi";
+import { useAccount, usePublicClient } from "wagmi";
 
 import { useOddMakiClient } from "@/lib/oddmaki/hooks";
 import { queryKeys } from "@/lib/oddmaki/queryKeys";
@@ -45,7 +45,7 @@ interface MergePositionsParams {
 
 export function useMergePositions() {
   const client = useOddMakiClient();
-  const { address } = useConnection();
+  const { address } = useAccount();
   const publicClient = usePublicClient();
 
   const flow = useTransactionFlow({

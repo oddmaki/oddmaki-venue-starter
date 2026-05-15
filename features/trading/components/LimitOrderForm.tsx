@@ -5,7 +5,7 @@ import { Button } from "@heroui/button";
 import { Select, SelectItem } from "@heroui/select";
 import { Switch } from "@heroui/switch";
 import { Divider } from "@heroui/divider";
-import { useConnection } from "wagmi";
+import { useAccount } from "wagmi";
 
 import { usePlaceLimitOrder } from "../hooks/usePlaceLimitOrder";
 
@@ -38,7 +38,7 @@ export function LimitOrderForm({
   side,
   prefillPrice,
 }: LimitOrderFormProps) {
-  const { isConnected } = useConnection();
+  const { isConnected } = useAccount();
   const { startPlaceLimitOrder, flow } = usePlaceLimitOrder();
   const { data: canTrade = true } = useCanTradeOnMarket(
     marketId ? BigInt(marketId) : undefined,

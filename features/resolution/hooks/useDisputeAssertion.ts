@@ -1,6 +1,6 @@
 "use client";
 
-import { useConnection } from "wagmi";
+import { useAccount } from "wagmi";
 
 import { useOddMakiClient } from "@/lib/oddmaki/hooks";
 import { useTransaction } from "@/lib/oddmaki/useTransaction";
@@ -16,7 +16,7 @@ import { queryKeys } from "@/lib/oddmaki/queryKeys";
  */
 export function useDisputeAssertion(marketId: string) {
   const client = useOddMakiClient();
-  const { address } = useConnection();
+  const { address } = useAccount();
 
   const marketIdBig = BigInt(marketId || "0");
 

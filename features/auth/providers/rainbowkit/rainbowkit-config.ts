@@ -1,15 +1,29 @@
 /**
  * RainbowKit Wagmi Configuration
  *
- * Standalone wagmi config for the RainbowKit auth provider.
- * RainbowKit injects its own connectors via the provider.
+ * Uses RainbowKit's `getDefaultConfig` so WalletConnect (mobile wallets)
+ * is wired up alongside the injected/Coinbase connectors. Requires
+ * `NEXT_PUBLIC_WALLETCONNECT_ID` — create one at https://cloud.reown.com.
  */
 
-import { createConfig } from "wagmi";
+import { getDefaultConfig } from "@rainbow-me/rainbowkit";
 
 import { supportedChains, transports } from "../../utils/wagmi-shared";
 
-export const rainbowkitWagmiConfig = createConfig({
+import { venueConfig } from "@/config/venue.config";
+
+const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_ID;
+
+if (!projectId) {
+  throw new Error(
+    "NEXT_PUBLIC_WALLETCONNECT_ID is not set. Get a free project ID at https://cloud.reown.com and add it to .env.local, or switch NEXT_PUBLIC_AUTH_PROVIDER to 'privy'.",
+  );
+}
+
+export const rainbowkitWagmiConfig = getDefaultConfig({
+  appName: venueConfig.branding.name,
+  projectId,
   chains: supportedChains,
   transports,
+  ssr: true,
 });
