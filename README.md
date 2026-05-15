@@ -59,7 +59,6 @@ Only needed if you opt into the corresponding feature:
 
 | Variable | Required when |
 |---|---|
-| `NEXT_PUBLIC_WALLETCONNECT_ID` | `NEXT_PUBLIC_AUTH_PROVIDER=rainbowkit` (the default). Enables WalletConnect so mobile wallets can connect. Get one free at [cloud.reown.com](https://cloud.reown.com). |
 | `NEXT_PUBLIC_PRIVY_APP_ID` | `NEXT_PUBLIC_AUTH_PROVIDER=privy` |
 | `PINATA_JWT` | You enable image uploads when editing market metadata (server-side; consumed by `/api/ipfs/upload`) |
 
@@ -70,6 +69,7 @@ Only needed if you opt into the corresponding feature:
 | `NEXT_PUBLIC_CHAIN_ID` | `8453` | `8453` (Base mainnet) or `84532` (Base Sepolia) |
 | `NEXT_PUBLIC_VENUE_NAME` | `"OddMaki Markets"` | Display name |
 | `NEXT_PUBLIC_AUTH_PROVIDER` | `rainbowkit` | `rainbowkit` or `privy` |
+| `NEXT_PUBLIC_WALLETCONNECT_ID` | _(unset)_ | WalletConnect / Reown project ID. Set it to enable mobile wallet support (WalletConnect QR) in the RainbowKit modal. Without it, only browser-extension wallets work. Get one free at [cloud.reown.com](https://cloud.reown.com). |
 | `NEXT_PUBLIC_WS_RPC_URL` | _(unset)_ | WebSocket RPC URL for real-time event streaming. Without it, the app falls back to polling. |
 | `NEXT_PUBLIC_IPFS_GATEWAY` | SDK default | Custom IPFS gateway for resolving market images and metadata |
 
