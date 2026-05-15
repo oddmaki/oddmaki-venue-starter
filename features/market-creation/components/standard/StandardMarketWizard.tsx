@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { useConnection } from "wagmi";
+import { useAccount } from "wagmi";
 import { isAddress } from "viem";
 
 import {
@@ -86,7 +86,7 @@ export function StandardMarketWizard({
   onChangeType,
   onClose,
 }: StandardMarketWizardProps) {
-  const { address } = useConnection();
+  const { address } = useAccount();
   const [formData, setFormData] = useState<StandardMarketFormData>(
     DEFAULT_STANDARD_FORM,
   );

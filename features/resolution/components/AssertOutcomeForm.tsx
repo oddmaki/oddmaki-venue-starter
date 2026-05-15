@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@heroui/button";
-import { useConnection } from "wagmi";
+import { useAccount } from "wagmi";
 
 import { useAssertOutcome } from "../hooks/useAssertOutcome";
 
@@ -35,7 +35,7 @@ export function AssertOutcomeForm({
   requiredBond,
   liveness,
 }: AssertOutcomeFormProps) {
-  const { isConnected } = useConnection();
+  const { isConnected } = useAccount();
   const { assertOutcome, isLoading } = useAssertOutcome(marketId);
   const [selectedOutcome, setSelectedOutcome] = useState<string | null>(null);
 

@@ -10,7 +10,7 @@
 import type { Address } from "viem";
 
 import { useQuery } from "@tanstack/react-query";
-import { useConnection, usePublicClient } from "wagmi";
+import { useAccount, usePublicClient } from "wagmi";
 
 import { useTransaction } from "./useTransaction";
 import { queryKeys } from "./queryKeys";
@@ -49,7 +49,7 @@ interface UseCTFApprovalOptions {
 export function useCTFApproval({
   operator = DIAMOND_ADDRESS,
 }: UseCTFApprovalOptions = {}) {
-  const { address } = useConnection();
+  const { address } = useAccount();
   const publicClient = usePublicClient();
   const client = useOddMakiClient();
 

@@ -13,7 +13,7 @@ import {
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
 import { Chip } from "@heroui/chip";
-import { useConnection } from "wagmi";
+import { useAccount } from "wagmi";
 
 import { useMatchOrders } from "../hooks/useMatchOrders";
 import { useCanMatchOrders } from "../hooks/useCanMatchOrders";
@@ -126,7 +126,7 @@ export function MatchOrdersButton({
   marketId,
   tickSize,
 }: MatchOrdersButtonProps) {
-  const { isConnected } = useConnection();
+  const { isConnected } = useAccount();
   const { startMatchOrders, flow } = useMatchOrders();
   const { data: preview } = useCanMatchOrders(marketId);
   const [maxSteps, setMaxSteps] = useState("10");

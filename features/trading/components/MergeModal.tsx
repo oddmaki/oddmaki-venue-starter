@@ -10,7 +10,7 @@ import {
 } from "@heroui/modal";
 import { Input } from "@heroui/input";
 import { Button } from "@heroui/button";
-import { useConnection } from "wagmi";
+import { useAccount } from "wagmi";
 
 import { useMergePositions } from "../hooks/useMergePositions";
 
@@ -29,7 +29,7 @@ export function MergeModal({
   marketId,
   outcomes,
 }: MergeModalProps) {
-  const { isConnected } = useConnection();
+  const { isConnected } = useAccount();
   const { startMergePositions, flow } = useMergePositions();
   const [amount, setAmount] = useState("");
   const [flowOpen, setFlowOpen] = useState(false);

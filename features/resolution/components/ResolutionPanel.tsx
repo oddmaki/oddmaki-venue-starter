@@ -6,7 +6,7 @@ import { Button } from "@heroui/button";
 import { Chip } from "@heroui/chip";
 import { Skeleton } from "@heroui/skeleton";
 import { Tooltip } from "@heroui/tooltip";
-import { useConnection } from "wagmi";
+import { useAccount } from "wagmi";
 
 import { useMarketStatus } from "../hooks/useMarketStatus";
 import { useSettleAssertion } from "../hooks/useSettleAssertion";
@@ -87,7 +87,7 @@ export function ResolutionPanel({
   description,
   bare = false,
 }: ResolutionPanelProps) {
-  const { isConnected } = useConnection();
+  const { isConnected } = useAccount();
   const { data: status, isLoading } = useMarketStatus(marketId);
   const { settleAssertion, isLoading: isSettling } =
     useSettleAssertion(marketId);

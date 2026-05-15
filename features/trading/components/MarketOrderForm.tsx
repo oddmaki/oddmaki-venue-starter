@@ -5,7 +5,7 @@ import { Input } from "@heroui/input";
 import { Button } from "@heroui/button";
 import { Select, SelectItem } from "@heroui/select";
 import { Divider } from "@heroui/divider";
-import { useConnection } from "wagmi";
+import { useAccount } from "wagmi";
 
 import { usePlaceMarketOrder } from "../hooks/usePlaceMarketOrder";
 
@@ -61,7 +61,7 @@ export function MarketOrderForm({
   const isBuy = side === "BUY";
   const sideLabel = isBuy ? "Buy" : "Sell";
   const sideColor = isBuy ? "primary" : "secondary";
-  const { isConnected } = useConnection();
+  const { isConnected } = useAccount();
   const { startPlaceMarketOrder, flow } = usePlaceMarketOrder();
   const { data: canTrade = true } = useCanTradeOnMarket(
     marketId ? BigInt(marketId) : undefined,

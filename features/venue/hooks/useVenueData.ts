@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { useConnection, usePublicClient } from "wagmi";
+import { useAccount, usePublicClient } from "wagmi";
 import { VenueFacetABI } from "@oddmaki-protocol/sdk";
 
 import { getVenueId } from "@/config/venue.config";
@@ -29,7 +29,7 @@ const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
 export function useVenueData() {
   const venueId = getVenueId();
-  const { address } = useConnection();
+  const { address } = useAccount();
   const publicClient = usePublicClient();
 
   const { data: venue, isLoading } = useQuery<VenueData>({

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useConnection } from "wagmi";
+import { useAccount } from "wagmi";
 
 import {
   DEFAULT_PRICE_FORM,
@@ -124,7 +124,7 @@ export function PriceMarketWizard({
   onChangeType,
   onClose,
 }: PriceMarketWizardProps) {
-  const { address } = useConnection();
+  const { address } = useAccount();
   const [formData, setFormData] =
     useState<PriceMarketFormData>(DEFAULT_PRICE_FORM);
   const [currentStep, setCurrentStep] = useState<PriceWizardStep>("feed");

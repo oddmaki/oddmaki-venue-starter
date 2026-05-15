@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { useConnection } from "wagmi";
+import { useAccount } from "wagmi";
 
 import {
   DEFAULT_GROUP_FORM,
@@ -60,7 +60,7 @@ export function GroupMarketWizard({
   onChangeType,
   onClose,
 }: GroupMarketWizardProps) {
-  const { address } = useConnection();
+  const { address } = useAccount();
   const [formData, setFormData] =
     useState<GroupMarketFormData>(DEFAULT_GROUP_FORM);
   const [currentStep, setCurrentStep] = useState<GroupWizardStep>("info");

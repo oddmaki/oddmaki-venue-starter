@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Popover, PopoverTrigger, PopoverContent } from "@heroui/popover";
 import { Button } from "@heroui/button";
-import { useConnection } from "wagmi";
+import { useAccount } from "wagmi";
 
 import { useTokenBalance } from "../hooks/useTokenBalance";
 
@@ -13,7 +13,7 @@ import { IS_TESTNET } from "@/lib/oddmaki/chain";
 
 export function WalletPanel() {
   const [mounted, setMounted] = useState(false);
-  const { isConnected } = useConnection();
+  const { isConnected } = useAccount();
   const { formatted, isLoading } = useTokenBalance();
 
   useEffect(() => {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { useConnection } from "wagmi";
+import { useAccount } from "wagmi";
 
 import { useOddMakiClient } from "@/lib/oddmaki/hooks";
 import { queryKeys } from "@/lib/oddmaki/queryKeys";
@@ -12,7 +12,7 @@ import { queryKeys } from "@/lib/oddmaki/queryKeys";
  */
 export function useCanTradeOnMarket(marketId: bigint | undefined) {
   const client = useOddMakiClient();
-  const { address } = useConnection();
+  const { address } = useAccount();
 
   return useQuery({
     queryKey: queryKeys.accessControl.canTrade(
@@ -38,7 +38,7 @@ export function useCanTradeOnMarket(marketId: bigint | undefined) {
  */
 export function useCanCreateMarket(venueId: bigint | undefined) {
   const client = useOddMakiClient();
-  const { address } = useConnection();
+  const { address } = useAccount();
 
   return useQuery({
     queryKey: queryKeys.accessControl.canCreate(

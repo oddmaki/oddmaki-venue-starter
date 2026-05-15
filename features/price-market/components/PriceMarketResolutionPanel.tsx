@@ -4,7 +4,7 @@ import type { PriceMarketData } from "@oddmaki-protocol/sdk";
 
 import { Card, CardHeader, CardBody } from "@heroui/card";
 import { Button } from "@heroui/button";
-import { useConnection } from "wagmi";
+import { useAccount } from "wagmi";
 
 import { useResolvePriceMarket } from "../hooks/useResolvePriceMarket";
 import { formatCountdown } from "../lib/format";
@@ -20,7 +20,7 @@ export function PriceMarketResolutionPanel({
   canResolve,
   data,
 }: PriceMarketResolutionPanelProps) {
-  const { isConnected } = useConnection();
+  const { isConnected } = useAccount();
   const { resolvePriceMarket, isLoading } = useResolvePriceMarket(marketId);
 
   const now = Math.floor(Date.now() / 1000);
