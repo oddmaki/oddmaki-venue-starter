@@ -23,7 +23,12 @@ export function PrivyConnectButton(_props: ConnectButtonProps) {
 
   if (!authenticated || !address) {
     return (
-      <Button color="primary" size="sm" variant="flat" onPress={() => login()}>
+      <Button
+        className="sm:h-10 sm:text-sm px-3 sm:px-4 min-w-0 font-semibold"
+        color="primary"
+        size="sm"
+        onPress={() => login()}
+      >
         Connect
       </Button>
     );

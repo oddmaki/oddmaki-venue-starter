@@ -31,9 +31,9 @@ export function RainbowKitConnectButton(_props: ConnectButtonProps) {
           >
             {!connected ? (
               <Button
+                className="sm:h-10 sm:text-sm px-3 sm:px-4 min-w-0 font-semibold"
                 color="primary"
                 size="sm"
-                variant="flat"
                 onPress={openConnectModal}
               >
                 Connect
