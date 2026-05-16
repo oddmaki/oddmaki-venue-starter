@@ -1,7 +1,6 @@
 "use client";
 
 import { use } from "react";
-import { Accordion, AccordionItem } from "@heroui/accordion";
 
 import { useMarketDetail } from "@/features/market-detail/hooks/useMarketDetail";
 import { MarketDetailHeader } from "@/features/market-detail/components/MarketDetailHeader";
@@ -168,39 +167,11 @@ export default function MarketDetailPage({
               winningOutcome={winningOutcome}
             />
           ) : isPriceMarket ? (
-            <>
-              <PriceMarketResolutionPanel
-                canResolve={priceMarket.canResolve}
-                data={priceMarket.data!}
-                marketId={BigInt(market.marketId)}
-              />
-              <Accordion className="px-0" variant="bordered">
-                <AccordionItem
-                  key="uma-fallback"
-                  aria-label="Oracle Resolution (UMA)"
-                  classNames={{
-                    base: "px-4",
-                  }}
-                  subtitle={
-                    <span className="text-xs text-default-400">
-                      Fallback — requires posting a bond
-                    </span>
-                  }
-                  title={
-                    <span className="text-base font-semibold">
-                      Oracle Resolution (UMA)
-                    </span>
-                  }
-                >
-                  <ResolutionPanel
-                    bare
-                    description="Resolve via UMA's optimistic oracle. Requires posting a collateral bond and a challenge period."
-                    marketId={market.marketId}
-                    outcomes={market.outcomes}
-                  />
-                </AccordionItem>
-              </Accordion>
-            </>
+            <PriceMarketResolutionPanel
+              canResolve={priceMarket.canResolve}
+              data={priceMarket.data!}
+              marketId={BigInt(market.marketId)}
+            />
           ) : (
             <ResolutionPanel
               marketId={market.marketId}
