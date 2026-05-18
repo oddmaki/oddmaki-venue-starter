@@ -68,7 +68,9 @@ function displayInterval(interval: string): string {
 
 export function buildSeriesTitle(seriesKey: string): string {
   const { asset, kind, interval } = parseSeriesKey(seriesKey);
-  const left = [displayAsset(asset), displayKind(kind)].filter(Boolean).join(" ");
+  const left = [displayAsset(asset), displayKind(kind)]
+    .filter(Boolean)
+    .join(" ");
   const right = displayInterval(interval);
 
   return right ? `${left} — ${right}` : left;

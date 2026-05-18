@@ -77,10 +77,16 @@ function ResultGlyph({ market }: { market: PriceMarketSeriesMarket }) {
 function ResultDot({ market }: { market: PriceMarketSeriesMarket }) {
   const up = resolvedUp(market);
 
-  if (up === true) return <span className="inline-block h-1.5 w-1.5 rounded-full bg-success" />;
-  if (up === false) return <span className="inline-block h-1.5 w-1.5 rounded-full bg-danger" />;
+  if (up === true)
+    return (
+      <span className="inline-block h-1.5 w-1.5 rounded-full bg-success" />
+    );
+  if (up === false)
+    return <span className="inline-block h-1.5 w-1.5 rounded-full bg-danger" />;
 
-  return <span className="inline-block h-1.5 w-1.5 rounded-full bg-default-300" />;
+  return (
+    <span className="inline-block h-1.5 w-1.5 rounded-full bg-default-300" />
+  );
 }
 
 function isTradeable(market: PriceMarketSeriesMarket, nowSec: number): boolean {
@@ -120,7 +126,10 @@ export function TimeWindowStrip({
     }
 
     const chipSlice = sorted.slice(chipStart, chipEnd);
-    const past = sorted.slice(Math.max(0, chipStart - DROPDOWN_LIMIT), chipStart);
+    const past = sorted.slice(
+      Math.max(0, chipStart - DROPDOWN_LIMIT),
+      chipStart,
+    );
     const future = sorted.slice(chipEnd, chipEnd + DROPDOWN_LIMIT);
 
     return {
@@ -218,7 +227,9 @@ function PastDropdown({ items }: { items: PriceMarketSeriesMarket[] }) {
               startContent={<ResultGlyph market={market} />}
               textValue={`${formatTime(market.closeTime)} ET`}
             >
-              <span className="font-medium">{formatTime(market.closeTime)}</span>
+              <span className="font-medium">
+                {formatTime(market.closeTime)}
+              </span>
               <span className="ml-1 text-default-400">ET</span>
             </DropdownItem>
           );
@@ -261,7 +272,9 @@ function MoreDropdown({ items }: { items: PriceMarketSeriesMarket[] }) {
               }
               textValue={`${formatTime(market.closeTime)} ET`}
             >
-              <span className="font-medium">{formatTime(market.closeTime)}</span>
+              <span className="font-medium">
+                {formatTime(market.closeTime)}
+              </span>
               <span className="ml-1 text-default-400">ET</span>
             </DropdownItem>
           );

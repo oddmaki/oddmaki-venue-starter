@@ -1,6 +1,9 @@
 "use client";
 
-import type { PriceMarketData } from "@oddmaki-protocol/sdk";
+import type {
+  PriceMarketData,
+  ProjectedOpenPrice,
+} from "@oddmaki-protocol/sdk";
 import type { Timeframe } from "@/features/price-chart/lib/timeframes";
 
 import { useState } from "react";
@@ -33,6 +36,13 @@ interface PriceMarketChartSectionProps {
   outcomes: string[];
   lastPriceTick?: string;
   priceMarketData: PriceMarketData;
+  /**
+   * For deferred Up/Down markets the on-chain strike is 0 until resolution.
+   * Pass the SDK-projected open price (derived from Hermes using the same rule
+   * the contract will apply) so the UI can render a meaningful strike before
+   * resolution. `null` for resolved or explicit-strike markets.
+   */
+  projectedOpenPrice?: ProjectedOpenPrice | null;
 }
 
 export function PriceMarketChartSection({
@@ -41,6 +51,7 @@ export function PriceMarketChartSection({
   outcomes,
   lastPriceTick,
   priceMarketData,
+  projectedOpenPrice,
 }: PriceMarketChartSectionProps) {
   const [activeTab, setActiveTab] = useState<ChartTab>("probability");
   const [timeframe, setTimeframe] = useState<Timeframe>(DEFAULT_TIMEFRAME);
@@ -75,15 +86,26 @@ export function PriceMarketChartSection({
     fallbackPrice,
   );
 
-  // Determine price direction
+  // For deferred markets pending resolution, the on-chain strikePrice is 0 and
+  // we use the SDK-projected open price (same selection rule the contract will
+  // apply at resolution). Once resolved, the on-chain value backfills.
+  const isStrikePending =
+    !priceMarketData.resolved && priceMarketData.strikePrice === BigInt(0);
+  const effectiveStrike =
+    isStrikePending && projectedOpenPrice
+      ? projectedOpenPrice.price
+      : priceMarketData.strikePrice;
   const strikeNum =
-    Number(priceMarketData.strikePrice) *
-    Math.pow(10, priceMarketData.priceExpo);
-  const priceDirection: "up" | "down" | null = livePrice
-    ? livePrice.price >= strikeNum
-      ? "up"
-      : "down"
-    : null;
+    Number(effectiveStrike) * Math.pow(10, priceMarketData.priceExpo);
+  // While the strike is pending and we don't even have a projection yet (the
+  // open window for a scheduled market hasn't opened), don't show a direction.
+  const strikeKnown = !isStrikePending || !!projectedOpenPrice;
+  const priceDirection: "up" | "down" | null =
+    livePrice && strikeKnown
+      ? livePrice.price >= strikeNum
+        ? "up"
+        : "down"
+      : null;
 
   const hasNoProbabilityData =
     !chartResult ||
@@ -107,6 +129,12 @@ export function PriceMarketChartSection({
             isLoading={livePriceLoading}
             priceDirection={priceDirection}
             resolved={isResolved}
+            strikeKnown={strikeKnown}
+            strikePending={
+              isStrikePending && projectedOpenPrice
+                ? !projectedOpenPrice.canonical
+                : isStrikePending
+            }
             strikePriceNum={strikeNum}
           />
           {!isResolved && (

@@ -84,6 +84,7 @@ export default function MarketDetailPage({
               marketId={market.marketId}
               outcomes={market.outcomes}
               priceMarketData={priceMarket!.data!}
+              projectedOpenPrice={priceMarket!.projectedOpenPrice}
               tickSize={market.tickSize}
             />
           ) : (
@@ -155,6 +156,7 @@ export default function MarketDetailPage({
             <PriceMarketInfo
               data={priceMarket.data!}
               outcomes={market.outcomes}
+              projectedOpenPrice={priceMarket.projectedOpenPrice}
             />
           )}
 

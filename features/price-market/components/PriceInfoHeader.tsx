@@ -5,7 +5,7 @@ import { Skeleton } from "@heroui/skeleton";
 import { formatDollarPrice } from "../lib/format";
 
 interface PriceInfoHeaderProps {
-  /** Strike price as a number */
+  /** Strike price as a number — may be a projection while `strikePending`. */
   strikePriceNum: number;
   /** Live price from Pyth (numeric) */
   currentPrice?: number;
@@ -17,6 +17,17 @@ interface PriceInfoHeaderProps {
   finalPrice?: number;
   /** Whether the market is resolved */
   resolved?: boolean;
+  /**
+   * `true` when we have a strike value to display (either on-chain or a Hermes
+   * projection). `false` for scheduled markets that haven't reached `openTime`
+   * yet — render "Strike pending" instead of a number.
+   */
+  strikeKnown?: boolean;
+  /**
+   * `true` when the displayed strike is a Hermes projection that may still
+   * shift (open window not yet fully elapsed). Renders a subtle indicator.
+   */
+  strikePending?: boolean;
 }
 
 export function PriceInfoHeader({
@@ -26,9 +37,12 @@ export function PriceInfoHeader({
   priceDirection,
   finalPrice,
   resolved,
+  strikeKnown = true,
+  strikePending = false,
 }: PriceInfoHeaderProps) {
   const displayPrice = resolved ? finalPrice : currentPrice;
-  const delta = displayPrice != null ? displayPrice - strikePriceNum : null;
+  const delta =
+    strikeKnown && displayPrice != null ? displayPrice - strikePriceNum : null;
   const direction =
     delta != null ? (delta >= 0 ? "up" : "down") : priceDirection;
 
@@ -38,10 +52,19 @@ export function PriceInfoHeader({
       <div className="flex flex-col gap-0.5">
         <span className="text-[10px] text-default-400 uppercase tracking-wider">
           Price To Beat
+          {strikePending && strikeKnown ? (
+            <span className="ml-1 text-warning normal-case">(pending)</span>
+          ) : null}
         </span>
-        <span className="font-mono text-xl font-bold text-default-700">
-          ${formatDollarPrice(strikePriceNum)}
-        </span>
+        {strikeKnown ? (
+          <span className="font-mono text-xl font-bold text-default-700">
+            ${formatDollarPrice(strikePriceNum)}
+          </span>
+        ) : (
+          <span className="font-mono text-xl text-default-400">
+            Set at open
+          </span>
+        )}
       </div>
 
       {/* Current / Final Price */}
@@ -56,8 +79,7 @@ export function PriceInfoHeader({
                 direction === "up" ? "text-success" : "text-danger"
               }`}
             >
-              {direction === "up" ? "\u25B2" : "\u25BC"} $
-              {Math.abs(delta).toFixed(2)}
+              {direction === "up" ? "▲" : "▼"} ${Math.abs(delta).toFixed(2)}
             </span>
           )}
         </div>

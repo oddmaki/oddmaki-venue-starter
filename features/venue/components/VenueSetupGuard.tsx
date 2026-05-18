@@ -58,9 +58,9 @@ export function VenueSetupGuard({ children }: VenueSetupGuardProps) {
                 <Snippet
                   hideSymbol
                   className="w-full"
+                  color="primary"
                   size="sm"
                   variant="bordered"
-                  color="primary"
                 >
                   NEXT_PUBLIC_VENUE_ID=&lt;your-id&gt;
                 </Snippet>
@@ -76,8 +76,11 @@ export function VenueSetupGuard({ children }: VenueSetupGuardProps) {
               description={
                 <span className="text-sm">
                   This app is configured for{" "}
-                  <span className="font-semibold">{ACTIVE_CHAIN.name}</span>{" "}
-                  (<Code color="secondary" size="sm">{ACTIVE_CHAIN.id}</Code>).
+                  <span className="font-semibold">{ACTIVE_CHAIN.name}</span> (
+                  <Code color="secondary" size="sm">
+                    {ACTIVE_CHAIN.id}
+                  </Code>
+                  ).
                   <br />
                   Make sure your venue was created on that same chain, or update{" "}
                   <Code size="sm">NEXT_PUBLIC_CHAIN_ID</Code> to target a
